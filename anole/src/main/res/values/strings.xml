@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="anole_console_tag">anole</string>
+
+    <string name="anole_resource_video_capture">视频捕获</string>
+    <string name="anole_resource_audio_capture">音频捕获</string>
+    <string name="anole_resource_protected_media_id">保护的媒体标识符</string>
+    <string name="anole_resource_midi_sysex">MIDI</string>
+</resources>

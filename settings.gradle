@@ -1,0 +1,3 @@
+rootProject.name='Anole'
+include ':app'
+include ':anole'
