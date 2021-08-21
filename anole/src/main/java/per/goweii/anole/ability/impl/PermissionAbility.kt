@@ -11,7 +11,7 @@ import android.webkit.PermissionRequest
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import per.goweii.anole.R
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
 class PermissionAbility(
@@ -84,7 +84,7 @@ class PermissionAbility(
                     }
                     .create()
         }
-) : AnoleAbility() {
+) : WebAbility() {
     private var mainHandler: Handler? = null
     private var context: Context? = null
     private var permissionRequestDialog: Dialog? = null

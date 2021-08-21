@@ -9,7 +9,7 @@ import android.view.View
 import android.webkit.*
 import per.goweii.anole.view.AnoleView
 
-open class AnoleAbility {
+open class WebAbility {
 
     open fun onAttachToWebView(anoleView: AnoleView) {}
 

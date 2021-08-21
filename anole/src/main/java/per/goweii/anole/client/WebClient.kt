@@ -8,22 +8,22 @@ import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
 import android.webkit.WebChromeClient
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
-class AnoleClient(private val anoleView: AnoleView) : DownloadListener {
-    private val abilities = arrayListOf<AnoleAbility>()
+class WebClient(private val anoleView: AnoleView) : DownloadListener {
+    private val abilities = arrayListOf<WebAbility>()
 
-    fun containsAbility(client: AnoleAbility): Boolean {
+    fun containsAbility(client: WebAbility): Boolean {
         return abilities.contains(client)
     }
 
-    fun addAbility(client: AnoleAbility) {
+    fun addAbility(client: WebAbility) {
         abilities.add(client)
         client.onAttachToWebView(anoleView)
     }
 
-    fun removeAbility(client: AnoleAbility) {
+    fun removeAbility(client: WebAbility) {
         client.onDetachFromWebView(anoleView)
         abilities.remove(client)
     }

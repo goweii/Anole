@@ -10,11 +10,11 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.fragment.app.Fragment
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 
 class FileChooseAbility(
     private val activity: Activity? = null
-) : AnoleAbility() {
+) : WebAbility() {
     private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
 
     private val REQ_CODE = 1001

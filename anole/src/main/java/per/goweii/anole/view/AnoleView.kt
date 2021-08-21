@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -23,10 +22,11 @@ import androidx.webkit.WebViewFeature
 import per.goweii.anole.BuildConfig
 import per.goweii.anole.R
 import per.goweii.anole.ability.impl.ProgressAbility
-import per.goweii.anole.client.AnoleClient
-import per.goweii.anole.client.BridgeWebChromeClient
-import per.goweii.anole.client.BridgeWebViewClient
-import per.goweii.anole.client.MixedWebClient
+import per.goweii.anole.client.WebClient
+import per.goweii.anole.kernel.system.SystemWebChromeClient
+import per.goweii.anole.kernel.system.SystemWebViewClient
+import per.goweii.anole.kernel.system.BridgeWebClient
+import per.goweii.anole.kernel.system.NestedWebView
 import per.goweii.anole.utils.UserAgent
 
 /**
@@ -35,9 +35,9 @@ import per.goweii.anole.utils.UserAgent
 class AnoleView : FrameLayout {
     private var mLifecycleObserver: LifecycleObserver = AnoleLifecycleObserver()
     private var mLifecycleOwner: LifecycleOwner? = null
-    private val mAnoleClient = AnoleClient(this)
+    private val mAnoleClient = WebClient(this)
 
-    val client: AnoleClient
+    val client: WebClient
         get() = mAnoleClient
     val bindingLifecycleOwner: LifecycleOwner?
         get() = mLifecycleOwner
@@ -125,9 +125,9 @@ class AnoleView : FrameLayout {
                 CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
             }
             setDownloadListener(mAnoleClient)
-            val mixedWebClient = MixedWebClient(mAnoleClient)
-            webViewClient = BridgeWebViewClient(mixedWebClient)
-            webChromeClient = BridgeWebChromeClient(mixedWebClient)
+            val mixedWebClient = BridgeWebClient(mAnoleClient)
+            webViewClient = SystemWebViewClient(mixedWebClient)
+            webChromeClient = SystemWebChromeClient(mixedWebClient)
         }
     }
 

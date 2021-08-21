@@ -6,10 +6,10 @@ import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
 import android.widget.FrameLayout
 import per.goweii.anole.AnoleBuilder
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
-class WindowAbility : AnoleAbility() {
+class WindowAbility : WebAbility() {
     private var anoleView: AnoleView? = null
 
     override fun onAttachToWebView(anoleView: AnoleView) {

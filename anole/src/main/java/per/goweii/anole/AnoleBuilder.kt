@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.ability.impl.*
 import per.goweii.anole.view.AnoleView
 
@@ -46,7 +46,7 @@ class AnoleBuilder(context: Context) {
         addClient(WindowAbility())
     }
 
-    fun addClient(client: AnoleAbility) = apply {
+    fun addClient(client: WebAbility) = apply {
         this.mAnoleView.client.addAbility(client)
     }
 

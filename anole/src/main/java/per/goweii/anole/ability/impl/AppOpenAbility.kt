@@ -3,9 +3,9 @@ package per.goweii.anole.ability.impl
 import android.content.Intent
 import android.net.Uri
 import android.webkit.WebView
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 
-class AppOpenAbility : AnoleAbility() {
+class AppOpenAbility : WebAbility() {
     override fun shouldOverrideUrlLoading(
         view: WebView,
         reqUri: Uri,

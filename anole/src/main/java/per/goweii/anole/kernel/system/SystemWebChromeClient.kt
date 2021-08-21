@@ -1,4 +1,4 @@
-package per.goweii.anole.client
+package per.goweii.anole.kernel.system
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -6,16 +6,13 @@ import android.os.Message
 import android.view.View
 import android.webkit.*
 
-/**
- * 对WebChromeClient内回调方法进行版本兼容合并
- */
-class BridgeWebChromeClient(
-        private val mixedWebClient: MixedWebClient
+class SystemWebChromeClient(
+        private val bridgeWebClient: BridgeWebClient
 ) : WebChromeClient() {
 
     override fun onRequestFocus(view: WebView) {
         super.onRequestFocus(view)
-        mixedWebClient.onRequestFocus(view)
+        bridgeWebClient.onRequestFocus(view)
     }
 
     override fun onJsAlert(
@@ -24,7 +21,7 @@ class BridgeWebChromeClient(
             message: String?,
             result: JsResult?
     ): Boolean {
-        if (mixedWebClient.onJsAlert(view, url, message, result)) {
+        if (bridgeWebClient.onJsAlert(view, url, message, result)) {
             return true
         }
         return super.onJsAlert(view, url, message, result)
@@ -37,7 +34,7 @@ class BridgeWebChromeClient(
             defaultValue: String?,
             result: JsPromptResult?
     ): Boolean {
-        if (mixedWebClient.onJsPrompt(view, url, message, defaultValue, result)) {
+        if (bridgeWebClient.onJsPrompt(view, url, message, defaultValue, result)) {
             return true
         }
         return super.onJsPrompt(view, url, message, defaultValue, result)
@@ -49,7 +46,7 @@ class BridgeWebChromeClient(
             message: String?,
             result: JsResult?
     ): Boolean {
-        if (mixedWebClient.onJsConfirm(view, url, message, result)) {
+        if (bridgeWebClient.onJsConfirm(view, url, message, result)) {
             return true
         }
         return super.onJsConfirm(view, url, message, result)
@@ -61,14 +58,14 @@ class BridgeWebChromeClient(
             message: String?,
             result: JsResult?
     ): Boolean {
-        if (mixedWebClient.onJsBeforeUnload(view, url, message, result)) {
+        if (bridgeWebClient.onJsBeforeUnload(view, url, message, result)) {
             return true
         }
         return super.onJsBeforeUnload(view, url, message, result)
     }
 
     override fun onJsTimeout(): Boolean {
-        if (mixedWebClient.onJsTimeout()) {
+        if (bridgeWebClient.onJsTimeout()) {
             return true
         }
         return super.onJsTimeout()
@@ -76,7 +73,7 @@ class BridgeWebChromeClient(
 
     override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
         super.onShowCustomView(view, callback)
-        mixedWebClient.onShowCustomView(view, callback)
+        bridgeWebClient.onShowCustomView(view, callback)
     }
 
     override fun onShowCustomView(
@@ -85,12 +82,12 @@ class BridgeWebChromeClient(
             callback: CustomViewCallback?
     ) {
         super.onShowCustomView(view, requestedOrientation, callback)
-        mixedWebClient.onShowCustomView(view, callback)
+        bridgeWebClient.onShowCustomView(view, callback)
     }
 
     override fun onHideCustomView() {
         super.onHideCustomView()
-        mixedWebClient.onHideCustomView()
+        bridgeWebClient.onHideCustomView()
     }
 
     override fun onCreateWindow(
@@ -99,7 +96,7 @@ class BridgeWebChromeClient(
             isUserGesture: Boolean,
             resultMsg: Message
     ): Boolean {
-        if (mixedWebClient.onCreateWindow(view, isDialog, isUserGesture, resultMsg)) {
+        if (bridgeWebClient.onCreateWindow(view, isDialog, isUserGesture, resultMsg)) {
             return true
         }
         return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg)
@@ -107,12 +104,12 @@ class BridgeWebChromeClient(
 
     override fun onCloseWindow(window: WebView) {
         super.onCloseWindow(window)
-        mixedWebClient.onCloseWindow(window)
+        bridgeWebClient.onCloseWindow(window)
     }
 
     override fun onConsoleMessage(message: String?, lineNumber: Int, sourceID: String?) {
         super.onConsoleMessage(message, lineNumber, sourceID)
-        mixedWebClient.onConsoleMessage(
+        bridgeWebClient.onConsoleMessage(
                 ConsoleMessage(
                         message,
                         sourceID,
@@ -123,21 +120,21 @@ class BridgeWebChromeClient(
     }
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        if (mixedWebClient.onConsoleMessage(consoleMessage)) {
+        if (bridgeWebClient.onConsoleMessage(consoleMessage)) {
             return true
         }
         return super.onConsoleMessage(consoleMessage)
     }
 
     override fun onPermissionRequest(request: PermissionRequest?) {
-        if (mixedWebClient.onPermissionRequest(request)) {
+        if (bridgeWebClient.onPermissionRequest(request)) {
             return
         }
         super.onPermissionRequest(request)
     }
 
     override fun onPermissionRequestCanceled(request: PermissionRequest?) {
-        if (mixedWebClient.onPermissionRequestCanceled(request)) {
+        if (bridgeWebClient.onPermissionRequestCanceled(request)) {
             return
         }
         super.onPermissionRequestCanceled(request)
@@ -148,12 +145,12 @@ class BridgeWebChromeClient(
             callback: GeolocationPermissions.Callback?
     ) {
         super.onGeolocationPermissionsShowPrompt(origin, callback)
-        mixedWebClient.onGeolocationPermissionsShowPrompt(origin, callback)
+        bridgeWebClient.onGeolocationPermissionsShowPrompt(origin, callback)
     }
 
     override fun onGeolocationPermissionsHidePrompt() {
         super.onGeolocationPermissionsHidePrompt()
-        mixedWebClient.onGeolocationPermissionsHidePrompt()
+        bridgeWebClient.onGeolocationPermissionsHidePrompt()
     }
 
     override fun onShowFileChooser(
@@ -161,7 +158,7 @@ class BridgeWebChromeClient(
             filePathCallback: ValueCallback<Array<Uri>>?,
             fileChooserParams: FileChooserParams?
     ): Boolean {
-        if (mixedWebClient.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
+        if (bridgeWebClient.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
             return true
         }
         return super.onShowFileChooser(webView, filePathCallback, fileChooserParams)
@@ -169,12 +166,12 @@ class BridgeWebChromeClient(
 
     override fun onReceivedTouchIconUrl(view: WebView, url: String?, precomposed: Boolean) {
         super.onReceivedTouchIconUrl(view, url, precomposed)
-        mixedWebClient.onReceivedTouchIconUrl(view, url, precomposed)
+        bridgeWebClient.onReceivedTouchIconUrl(view, url, precomposed)
     }
 
     override fun onReceivedIcon(view: WebView, icon: Bitmap?) {
         super.onReceivedIcon(view, icon)
-        mixedWebClient.onReceivedIcon(view, icon)
+        bridgeWebClient.onReceivedIcon(view, icon)
     }
 
     override fun onExceededDatabaseQuota(
@@ -193,7 +190,7 @@ class BridgeWebChromeClient(
                 totalQuota,
                 quotaUpdater
         )
-        mixedWebClient.onExceededDatabaseQuota(
+        bridgeWebClient.onExceededDatabaseQuota(
                 url,
                 databaseIdentifier,
                 quota,
@@ -205,7 +202,7 @@ class BridgeWebChromeClient(
 
     override fun onReceivedTitle(view: WebView, title: String?) {
         super.onReceivedTitle(view, title)
-        mixedWebClient.onReceivedTitle(view, title)
+        bridgeWebClient.onReceivedTitle(view, title)
     }
 
     override fun onReachedMaxAppCacheSize(
@@ -214,24 +211,24 @@ class BridgeWebChromeClient(
             quotaUpdater: WebStorage.QuotaUpdater?
     ) {
         super.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
-        mixedWebClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
+        bridgeWebClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
     }
 
     override fun onProgressChanged(view: WebView, newProgress: Int) {
         super.onProgressChanged(view, newProgress)
-        mixedWebClient.onProgressChanged(view, newProgress)
+        bridgeWebClient.onProgressChanged(view, newProgress)
     }
 
     override fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
         super.getVisitedHistory(callback)
-        mixedWebClient.getVisitedHistory(callback)
+        bridgeWebClient.getVisitedHistory(callback)
     }
 
     override fun getVideoLoadingProgressView(): View? {
-        return mixedWebClient.getVideoLoadingProgressView() ?: super.getVideoLoadingProgressView()
+        return bridgeWebClient.getVideoLoadingProgressView() ?: super.getVideoLoadingProgressView()
     }
 
     override fun getDefaultVideoPoster(): Bitmap? {
-        return mixedWebClient.getDefaultVideoPoster() ?: super.getDefaultVideoPoster()
+        return bridgeWebClient.getDefaultVideoPoster() ?: super.getDefaultVideoPoster()
     }
 }

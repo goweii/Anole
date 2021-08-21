@@ -1,4 +1,4 @@
-package per.goweii.anole.client
+package per.goweii.anole.kernel.system
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -8,12 +8,10 @@ import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
 import android.webkit.WebChromeClient
+import per.goweii.anole.client.WebClient
 
-/**
- * 对BridgeWebClient内回调方法进行版本兼容合并
- */
-class MixedWebClient(
-    private val anoleClient: AnoleClient
+class BridgeWebClient(
+    private val webClient: WebClient
 ) {
     fun shouldInterceptRequest(
         view: WebView,
@@ -22,7 +20,7 @@ class MixedWebClient(
         reqMethod: String?,
         userAgent: String?
     ): WebResourceResponse? {
-        return anoleClient.shouldInterceptRequest(
+        return webClient.shouldInterceptRequest(
             view,
             reqUri,
             reqHeaders,
@@ -38,7 +36,7 @@ class MixedWebClient(
         reqMethod: String?,
         userAgent: String?
     ): Boolean {
-        return anoleClient.shouldOverrideUrlLoading(
+        return webClient.shouldOverrideUrlLoading(
             view,
             reqUri,
             reqHeaders,
@@ -48,7 +46,7 @@ class MixedWebClient(
     }
 
     fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean {
-        return anoleClient.shouldOverrideKeyEvent(view, event)
+        return webClient.shouldOverrideKeyEvent(view, event)
     }
 
     fun onSafeBrowsingHit(
@@ -57,11 +55,11 @@ class MixedWebClient(
         threatType: Int,
         callback: SafeBrowsingResponse?
     ) {
-        anoleClient.onSafeBrowsingHit(view, request, threatType, callback)
+        webClient.onSafeBrowsingHit(view, request, threatType, callback)
     }
 
     fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
-        anoleClient.doUpdateVisitedHistory(view, url, isReload)
+        webClient.doUpdateVisitedHistory(view, url, isReload)
     }
 
     fun onReceivedError(
@@ -70,7 +68,7 @@ class MixedWebClient(
         description: String?,
         failingUrl: String?
     ) {
-        anoleClient.onReceivedError(view, errorCode, description, failingUrl)
+        webClient.onReceivedError(view, errorCode, description, failingUrl)
     }
 
     fun onReceivedError(
@@ -78,7 +76,7 @@ class MixedWebClient(
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
-        anoleClient.onReceivedError(view, request, error)
+        webClient.onReceivedError(view, request, error)
     }
 
     fun onReceivedHttpError(
@@ -86,11 +84,11 @@ class MixedWebClient(
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
-        anoleClient.onReceivedHttpError(view, request, errorResponse)
+        webClient.onReceivedHttpError(view, request, errorResponse)
     }
 
     fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean {
-        return anoleClient.onRenderProcessGone(view, detail)
+        return webClient.onRenderProcessGone(view, detail)
     }
 
     fun onReceivedLoginRequest(
@@ -99,31 +97,31 @@ class MixedWebClient(
         account: String?,
         args: String?
     ) {
-        anoleClient.onReceivedLoginRequest(view, realm, account, args)
+        webClient.onReceivedLoginRequest(view, realm, account, args)
     }
 
     fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
-        anoleClient.onPageStarted(view, url, favicon)
+        webClient.onPageStarted(view, url, favicon)
     }
 
     fun onPageFinished(view: WebView, url: String?) {
-        anoleClient.onPageFinished(view, url)
+        webClient.onPageFinished(view, url)
     }
 
     fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
-        anoleClient.onScaleChanged(view, oldScale, newScale)
+        webClient.onScaleChanged(view, oldScale, newScale)
     }
 
     fun onPageCommitVisible(view: WebView, url: String?) {
-        anoleClient.onPageCommitVisible(view, url)
+        webClient.onPageCommitVisible(view, url)
     }
 
     fun onUnhandledKeyEvent(view: WebView, event: KeyEvent?) {
-        anoleClient.onUnhandledKeyEvent(view, event)
+        webClient.onUnhandledKeyEvent(view, event)
     }
 
     fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest?) {
-        anoleClient.onReceivedClientCertRequest(view, request)
+        webClient.onReceivedClientCertRequest(view, request)
     }
 
     fun onReceivedHttpAuthRequest(
@@ -132,27 +130,27 @@ class MixedWebClient(
         host: String?,
         realm: String?
     ) {
-        anoleClient.onReceivedHttpAuthRequest(view, handler, host, realm)
+        webClient.onReceivedHttpAuthRequest(view, handler, host, realm)
     }
 
     fun onReceivedSslError(view: WebView, handler: SslErrorHandler?, error: SslError?) {
-        anoleClient.onReceivedSslError(view, handler, error)
+        webClient.onReceivedSslError(view, handler, error)
     }
 
     fun onTooManyRedirects(view: WebView, cancelMsg: Message?, continueMsg: Message?) {
-        anoleClient.onTooManyRedirects(view, cancelMsg, continueMsg)
+        webClient.onTooManyRedirects(view, cancelMsg, continueMsg)
     }
 
     fun onFormResubmission(view: WebView, dontResend: Message?, resend: Message?) {
-        anoleClient.onFormResubmission(view, dontResend, resend)
+        webClient.onFormResubmission(view, dontResend, resend)
     }
 
     fun onLoadResource(view: WebView, url: String?) {
-        anoleClient.onLoadResource(view, url)
+        webClient.onLoadResource(view, url)
     }
 
     fun onRequestFocus(view: WebView) {
-        anoleClient.onRequestFocus(view)
+        webClient.onRequestFocus(view)
     }
 
     fun onJsAlert(
@@ -161,7 +159,7 @@ class MixedWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return anoleClient.onJsAlert(view, url, message, result)
+        return webClient.onJsAlert(view, url, message, result)
     }
 
     fun onJsPrompt(
@@ -171,7 +169,7 @@ class MixedWebClient(
         defaultValue: String?,
         result: JsPromptResult?
     ): Boolean {
-        return anoleClient.onJsPrompt(view, url, message, defaultValue, result)
+        return webClient.onJsPrompt(view, url, message, defaultValue, result)
     }
 
     fun onJsConfirm(
@@ -180,7 +178,7 @@ class MixedWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return anoleClient.onJsConfirm(view, url, message, result)
+        return webClient.onJsConfirm(view, url, message, result)
     }
 
     fun onJsBeforeUnload(
@@ -189,19 +187,19 @@ class MixedWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return anoleClient.onJsBeforeUnload(view, url, message, result)
+        return webClient.onJsBeforeUnload(view, url, message, result)
     }
 
     fun onJsTimeout(): Boolean {
-        return anoleClient.onJsTimeout()
+        return webClient.onJsTimeout()
     }
 
     fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
-        anoleClient.onShowCustomView(view, callback)
+        webClient.onShowCustomView(view, callback)
     }
 
     fun onHideCustomView() {
-        anoleClient.onHideCustomView()
+        webClient.onHideCustomView()
     }
 
     fun onCreateWindow(
@@ -210,34 +208,34 @@ class MixedWebClient(
         isUserGesture: Boolean,
         resultMsg: Message
     ): Boolean {
-        return anoleClient.onCreateWindow(view, isDialog, isUserGesture, resultMsg)
+        return webClient.onCreateWindow(view, isDialog, isUserGesture, resultMsg)
     }
 
     fun onCloseWindow(window: WebView) {
-        anoleClient.onCloseWindow(window)
+        webClient.onCloseWindow(window)
     }
 
     fun onGeolocationPermissionsShowPrompt(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        anoleClient.onGeolocationPermissionsShowPrompt(origin, callback)
+        webClient.onGeolocationPermissionsShowPrompt(origin, callback)
     }
 
     fun onGeolocationPermissionsHidePrompt() {
-        anoleClient.onGeolocationPermissionsHidePrompt()
+        webClient.onGeolocationPermissionsHidePrompt()
     }
 
     fun onPermissionRequest(request: PermissionRequest?): Boolean {
-        return anoleClient.onPermissionRequest(request)
+        return webClient.onPermissionRequest(request)
     }
 
     fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean {
-        return anoleClient.onPermissionRequestCanceled(request)
+        return webClient.onPermissionRequestCanceled(request)
     }
 
     fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        return anoleClient.onConsoleMessage(consoleMessage)
+        return webClient.onConsoleMessage(consoleMessage)
     }
 
     fun onShowFileChooser(
@@ -245,23 +243,23 @@ class MixedWebClient(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?
     ): Boolean {
-        return anoleClient.onShowFileChooser(webView, filePathCallback, fileChooserParams)
+        return webClient.onShowFileChooser(webView, filePathCallback, fileChooserParams)
     }
 
     fun onReceivedTouchIconUrl(view: WebView, url: String?, precomposed: Boolean) {
-        anoleClient.onReceivedTouchIconUrl(view, url, precomposed)
+        webClient.onReceivedTouchIconUrl(view, url, precomposed)
     }
 
     fun onReceivedIcon(view: WebView, icon: Bitmap?) {
-        anoleClient.onReceivedIcon(view, icon)
+        webClient.onReceivedIcon(view, icon)
     }
 
     fun onReceivedTitle(view: WebView, title: String?) {
-        anoleClient.onReceivedTitle(view, title)
+        webClient.onReceivedTitle(view, title)
     }
 
     fun onProgressChanged(view: WebView, newProgress: Int) {
-        anoleClient.onProgressChanged(view, newProgress)
+        webClient.onProgressChanged(view, newProgress)
     }
 
     fun onExceededDatabaseQuota(
@@ -272,7 +270,7 @@ class MixedWebClient(
         totalQuota: Long,
         quotaUpdater: WebStorage.QuotaUpdater?
     ) {
-        anoleClient.onExceededDatabaseQuota(
+        webClient.onExceededDatabaseQuota(
             url,
             databaseIdentifier,
             quota,
@@ -287,18 +285,18 @@ class MixedWebClient(
         quota: Long,
         quotaUpdater: WebStorage.QuotaUpdater?
     ) {
-        anoleClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
+        webClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
     }
 
     fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
-        anoleClient.getVisitedHistory(callback)
+        webClient.getVisitedHistory(callback)
     }
 
     fun getVideoLoadingProgressView(): View? {
-        return anoleClient.getVideoLoadingProgressView()
+        return webClient.getVideoLoadingProgressView()
     }
 
     fun getDefaultVideoPoster(): Bitmap? {
-        return anoleClient.getDefaultVideoPoster()
+        return webClient.getDefaultVideoPoster()
     }
 }

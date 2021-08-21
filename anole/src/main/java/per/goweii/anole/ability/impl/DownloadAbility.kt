@@ -8,7 +8,7 @@ import android.os.Environment
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
@@ -50,7 +50,7 @@ class DownloadAbility(
         private val onDownloadEnqueue: (Context.(id: Long) -> Unit) = {
             Toast.makeText(this, "开始下载", Toast.LENGTH_SHORT).show()
         }
-) : AnoleAbility() {
+) : WebAbility() {
     private var context: Context? = null
     private var downloadRequestDialog: Dialog? = null
 

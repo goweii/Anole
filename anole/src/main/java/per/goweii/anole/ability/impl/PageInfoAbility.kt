@@ -2,13 +2,13 @@ package per.goweii.anole.ability.impl
 
 import android.graphics.Bitmap
 import android.webkit.WebView
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
 class PageInfoAbility(
     private val onReceivedPageTitle: (PageInfoAbility.(String?) -> Unit)? = null,
     private val onReceivedPageIcon: (PageInfoAbility.(Bitmap?) -> Unit)? = null
-): AnoleAbility() {
+): WebAbility() {
 
     override fun onAttachToWebView(anoleView: AnoleView) {
         super.onAttachToWebView(anoleView)

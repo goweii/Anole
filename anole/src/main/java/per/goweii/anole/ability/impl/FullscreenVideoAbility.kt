@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebChromeClient
 import android.widget.FrameLayout
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 
 class FullscreenVideoAbility(
     private val activity: Activity? = null
-) : AnoleAbility() {
+) : WebAbility() {
     private var view: View? = null
     private var callback: WebChromeClient.CustomViewCallback? = null
     private var oldOrientation = 0

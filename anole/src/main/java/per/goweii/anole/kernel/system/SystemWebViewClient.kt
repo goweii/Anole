@@ -1,4 +1,4 @@
-package per.goweii.anole.client
+package per.goweii.anole.kernel.system
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -9,17 +9,14 @@ import android.view.KeyEvent
 import android.webkit.*
 import androidx.annotation.RequiresApi
 
-/**
- * 对WebViewClient内回调方法进行版本兼容合并
- */
-class BridgeWebViewClient(
-    private val mixedWebClient: MixedWebClient
+class SystemWebViewClient(
+    private val bridgeWebClient: BridgeWebClient
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, url: String?): WebResourceResponse? {
         val reqUri: Uri = Uri.parse(url)
         val response: WebResourceResponse? =
-            mixedWebClient.shouldInterceptRequest(view, reqUri, null, null, null)
+            bridgeWebClient.shouldInterceptRequest(view, reqUri, null, null, null)
         return response ?: super.shouldInterceptRequest(view, url)
     }
 
@@ -32,13 +29,13 @@ class BridgeWebViewClient(
         val reqHeaders = request.requestHeaders
         val reqMethod = request.method
         val response: WebResourceResponse? =
-            mixedWebClient.shouldInterceptRequest(view, reqUri, reqHeaders, reqMethod, null)
+            bridgeWebClient.shouldInterceptRequest(view, reqUri, reqHeaders, reqMethod, null)
         return response ?: super.shouldInterceptRequest(view, request)
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String?): Boolean {
         val reqUri: Uri = Uri.parse(url)
-        val override = mixedWebClient.shouldOverrideUrlLoading(view, reqUri, null, null, null)
+        val override = bridgeWebClient.shouldOverrideUrlLoading(view, reqUri, null, null, null)
         return if (override) true
         else super.shouldOverrideUrlLoading(view, url)
     }
@@ -49,13 +46,13 @@ class BridgeWebViewClient(
         val reqHeaders = request.requestHeaders
         val reqMethod = request.method
         val override =
-            mixedWebClient.shouldOverrideUrlLoading(view, reqUri, reqHeaders, reqMethod, null)
+            bridgeWebClient.shouldOverrideUrlLoading(view, reqUri, reqHeaders, reqMethod, null)
         return if (override) true
         else super.shouldOverrideUrlLoading(view, request)
     }
 
     override fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean {
-        if (mixedWebClient.shouldOverrideKeyEvent(view, event)) {
+        if (bridgeWebClient.shouldOverrideKeyEvent(view, event)) {
             return true
         }
         return super.shouldOverrideKeyEvent(view, event)
@@ -68,12 +65,12 @@ class BridgeWebViewClient(
         callback: SafeBrowsingResponse?
     ) {
         super.onSafeBrowsingHit(view, request, threatType, callback)
-        mixedWebClient.onSafeBrowsingHit(view, request, threatType, callback)
+        bridgeWebClient.onSafeBrowsingHit(view, request, threatType, callback)
     }
 
     override fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
         super.doUpdateVisitedHistory(view, url, isReload)
-        mixedWebClient.doUpdateVisitedHistory(view, url, isReload)
+        bridgeWebClient.doUpdateVisitedHistory(view, url, isReload)
     }
 
     override fun onReceivedError(
@@ -83,7 +80,7 @@ class BridgeWebViewClient(
         failingUrl: String?
     ) {
         super.onReceivedError(view, errorCode, description, failingUrl)
-        mixedWebClient.onReceivedError(view, errorCode, description, failingUrl)
+        bridgeWebClient.onReceivedError(view, errorCode, description, failingUrl)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -93,7 +90,7 @@ class BridgeWebViewClient(
         error: WebResourceError?
     ) {
         super.onReceivedError(view, request, error)
-        mixedWebClient.onReceivedError(view, request, error)
+        bridgeWebClient.onReceivedError(view, request, error)
     }
 
     override fun onReceivedHttpError(
@@ -102,11 +99,11 @@ class BridgeWebViewClient(
         errorResponse: WebResourceResponse?
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
-        mixedWebClient.onReceivedHttpError(view, request, errorResponse)
+        bridgeWebClient.onReceivedHttpError(view, request, errorResponse)
     }
 
     override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean {
-        if (mixedWebClient.onRenderProcessGone(view, detail)) {
+        if (bridgeWebClient.onRenderProcessGone(view, detail)) {
             return true
         }
         return super.onRenderProcessGone(view, detail)
@@ -119,37 +116,37 @@ class BridgeWebViewClient(
         args: String?
     ) {
         super.onReceivedLoginRequest(view, realm, account, args)
-        mixedWebClient.onReceivedLoginRequest(view, realm, account, args)
+        bridgeWebClient.onReceivedLoginRequest(view, realm, account, args)
     }
 
     override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
-        mixedWebClient.onPageStarted(view, url, favicon)
+        bridgeWebClient.onPageStarted(view, url, favicon)
     }
 
     override fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
         super.onScaleChanged(view, oldScale, newScale)
-        mixedWebClient.onScaleChanged(view, oldScale, newScale)
+        bridgeWebClient.onScaleChanged(view, oldScale, newScale)
     }
 
     override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        mixedWebClient.onPageFinished(view, url)
+        bridgeWebClient.onPageFinished(view, url)
     }
 
     override fun onPageCommitVisible(view: WebView, url: String?) {
         super.onPageCommitVisible(view, url)
-        mixedWebClient.onPageCommitVisible(view, url)
+        bridgeWebClient.onPageCommitVisible(view, url)
     }
 
     override fun onUnhandledKeyEvent(view: WebView, event: KeyEvent?) {
         super.onUnhandledKeyEvent(view, event)
-        mixedWebClient.onUnhandledKeyEvent(view, event)
+        bridgeWebClient.onUnhandledKeyEvent(view, event)
     }
 
     override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest?) {
         super.onReceivedClientCertRequest(view, request)
-        mixedWebClient.onReceivedClientCertRequest(view, request)
+        bridgeWebClient.onReceivedClientCertRequest(view, request)
     }
 
     override fun onReceivedHttpAuthRequest(
@@ -159,26 +156,26 @@ class BridgeWebViewClient(
         realm: String?
     ) {
         super.onReceivedHttpAuthRequest(view, handler, host, realm)
-        mixedWebClient.onReceivedHttpAuthRequest(view, handler, host, realm)
+        bridgeWebClient.onReceivedHttpAuthRequest(view, handler, host, realm)
     }
 
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler?, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
-        mixedWebClient.onReceivedSslError(view, handler, error)
+        bridgeWebClient.onReceivedSslError(view, handler, error)
     }
 
     override fun onTooManyRedirects(view: WebView, cancelMsg: Message?, continueMsg: Message?) {
         super.onTooManyRedirects(view, cancelMsg, continueMsg)
-        mixedWebClient.onTooManyRedirects(view, cancelMsg, continueMsg)
+        bridgeWebClient.onTooManyRedirects(view, cancelMsg, continueMsg)
     }
 
     override fun onFormResubmission(view: WebView, dontResend: Message?, resend: Message?) {
         super.onFormResubmission(view, dontResend, resend)
-        mixedWebClient.onFormResubmission(view, dontResend, resend)
+        bridgeWebClient.onFormResubmission(view, dontResend, resend)
     }
 
     override fun onLoadResource(view: WebView, url: String?) {
         super.onLoadResource(view, url)
-        mixedWebClient.onLoadResource(view, url)
+        bridgeWebClient.onLoadResource(view, url)
     }
 }

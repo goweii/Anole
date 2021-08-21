@@ -2,13 +2,13 @@ package per.goweii.anole.ability.impl
 
 import android.view.View
 import android.webkit.WebView
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
 class BackForwardIconAbility(
     private val backView: View?,
     private val forwardView: View?
-): AnoleAbility() {
+): WebAbility() {
     override fun onAttachToWebView(anoleView: AnoleView) {
         super.onAttachToWebView(anoleView)
         backView?.changeEnable(anoleView.canGoBackOrForward(-1))

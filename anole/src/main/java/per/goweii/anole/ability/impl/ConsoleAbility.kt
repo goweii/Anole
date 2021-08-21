@@ -4,10 +4,10 @@ import android.util.Log
 import android.webkit.ConsoleMessage
 import per.goweii.anole.BuildConfig
 import per.goweii.anole.R
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.view.AnoleView
 
-class ConsoleAbility : AnoleAbility() {
+class ConsoleAbility : WebAbility() {
     private var tag = "chrome"
 
     override fun onAttachToWebView(webView: AnoleView) {

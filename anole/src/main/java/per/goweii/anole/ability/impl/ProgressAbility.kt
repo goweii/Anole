@@ -5,11 +5,11 @@ import android.os.Build
 import android.view.View
 import android.webkit.WebView
 import android.widget.ProgressBar
-import per.goweii.anole.ability.AnoleAbility
+import per.goweii.anole.ability.WebAbility
 
 class ProgressAbility(
     private val progressBar: ProgressBar
-) : AnoleAbility() {
+) : WebAbility() {
     private val isShown: Boolean
         get() = progressBar.visibility == View.VISIBLE
 
