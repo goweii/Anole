@@ -7,13 +7,33 @@ import android.view.View
 import per.goweii.anole.client.WebClient
 
 interface WebKernel {
+    val webView: View
+
     val kernelView: View
 
-    var webClient: WebClient?
+    val webClient: WebClient
 
     val hitTestResult: HitTestResult
 
     val settings: WebSettings
+
+    val url: String?
+
+    val originalUrl: String?
+
+    val title: String?
+
+    val favicon: Bitmap?
+
+    val progress: Int
+
+    val contentHeight: Int
+
+    val canGoBack: Boolean
+
+    val canGoForward: Boolean
+
+    val isPrivateBrowsingEnabled: Boolean
 
     fun loadUrl(url: String, additionalHttpHeaders: Map<String?, String?>)
 
@@ -41,19 +61,13 @@ interface WebKernel {
 
     fun reload()
 
-    fun canGoBack(): Boolean
-
     fun goBack()
-
-    fun canGoForward(): Boolean
 
     fun goForward()
 
     fun canGoBackOrForward(steps: Int): Boolean
 
     fun goBackOrForward(steps: Int)
-
-    fun isPrivateBrowsingEnabled(): Boolean
 
     fun pageUp(top: Boolean): Boolean
 
@@ -71,18 +85,6 @@ interface WebKernel {
 
     fun requestImageRef(msg: Message)
 
-    fun getUrl(): String?
-
-    fun getOriginalUrl(): String?
-
-    fun getTitle(): String?
-
-    fun getFavicon(): Bitmap?
-
-    fun getProgress(): Int
-
-    fun getContentHeight(): Int
-
     fun pauseTimers()
 
     fun resumeTimers()
@@ -90,6 +92,8 @@ interface WebKernel {
     fun onPause()
 
     fun onResume()
+
+    fun destroy()
 
     fun freeMemory()
 

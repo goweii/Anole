@@ -1,74 +1,76 @@
 package per.goweii.anole.kernel.system
 
 import android.os.Build
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import per.goweii.anole.kernel.WebSettings
 
 @Suppress("DEPRECATION")
 class SystemWetSettings(
-    private val webView: android.webkit.WebSettings
+    private val settings: android.webkit.WebSettings
 ) : WebSettings {
     override var supportZoom: Boolean
-        get() = webView.supportZoom()
+        get() = settings.supportZoom()
         set(value) {
-            webView.setSupportZoom(value)
+            settings.setSupportZoom(value)
         }
 
     override var builtInZoomControls: Boolean
-        get() = webView.builtInZoomControls
+        get() = settings.builtInZoomControls
         set(value) {
-            webView.builtInZoomControls = value
+            settings.builtInZoomControls = value
         }
 
     override var displayZoomControls: Boolean
-        get() = webView.displayZoomControls
+        get() = settings.displayZoomControls
         set(value) {
-            webView.displayZoomControls = value
+            settings.displayZoomControls = value
         }
 
     override var allowFileAccess: Boolean
-        get() = webView.allowFileAccess
+        get() = settings.allowFileAccess
         set(value) {
-            webView.allowFileAccess = value
+            settings.allowFileAccess = value
         }
 
     override var allowContentAccess: Boolean
-        get() = webView.allowContentAccess
+        get() = settings.allowContentAccess
         set(value) {
-            webView.allowContentAccess = value
+            settings.allowContentAccess = value
         }
 
     override var loadWithOverviewMode: Boolean
-        get() = webView.loadWithOverviewMode
+        get() = settings.loadWithOverviewMode
         set(value) {
-            webView.loadWithOverviewMode = value
+            settings.loadWithOverviewMode = value
         }
 
     override var enableSmoothTransition: Boolean
-        get() = webView.enableSmoothTransition()
+        get() = settings.enableSmoothTransition()
         set(value) {
-            webView.setEnableSmoothTransition(value)
+            settings.setEnableSmoothTransition(value)
         }
 
     override var saveFormData: Boolean
-        get() = webView.saveFormData
+        get() = settings.saveFormData
         set(value) {
-            webView.saveFormData = value
+            settings.saveFormData = value
         }
 
     override var savePassword: Boolean
-        get() = webView.savePassword
+        get() = settings.savePassword
         set(value) {
-            webView.savePassword = value
+            settings.savePassword = value
         }
 
     override var textZoom: Int
-        get() = webView.textZoom
+        get() = settings.textZoom
         set(value) {
-            webView.textZoom = value
+            settings.textZoom = value
         }
 
     override var textSize: WebSettings.TextSize?
-        get() = when (webView.textSize) {
+        get() = when (settings.textSize) {
             android.webkit.WebSettings.TextSize.SMALLEST -> WebSettings.TextSize.SMALLEST
             android.webkit.WebSettings.TextSize.SMALLER -> WebSettings.TextSize.SMALLER
             android.webkit.WebSettings.TextSize.NORMAL -> WebSettings.TextSize.NORMAL
@@ -77,7 +79,7 @@ class SystemWetSettings(
             else -> null
         }
         set(value) {
-            webView.textSize = when (value) {
+            settings.textSize = when (value) {
                 WebSettings.TextSize.SMALLEST -> android.webkit.WebSettings.TextSize.SMALLEST
                 WebSettings.TextSize.SMALLER -> android.webkit.WebSettings.TextSize.SMALLER
                 WebSettings.TextSize.NORMAL -> android.webkit.WebSettings.TextSize.NORMAL
@@ -88,14 +90,14 @@ class SystemWetSettings(
         }
 
     override var defaultZoom: WebSettings.ZoomDensity?
-        get() = when (webView.defaultZoom) {
+        get() = when (settings.defaultZoom) {
             android.webkit.WebSettings.ZoomDensity.FAR -> WebSettings.ZoomDensity.FAR
             android.webkit.WebSettings.ZoomDensity.MEDIUM -> WebSettings.ZoomDensity.MEDIUM
             android.webkit.WebSettings.ZoomDensity.CLOSE -> WebSettings.ZoomDensity.CLOSE
             else -> null
         }
         set(value) {
-            webView.defaultZoom = when (value) {
+            settings.defaultZoom = when (value) {
                 WebSettings.ZoomDensity.FAR -> android.webkit.WebSettings.ZoomDensity.FAR
                 WebSettings.ZoomDensity.MEDIUM -> android.webkit.WebSettings.ZoomDensity.MEDIUM
                 WebSettings.ZoomDensity.CLOSE -> android.webkit.WebSettings.ZoomDensity.CLOSE
@@ -104,26 +106,26 @@ class SystemWetSettings(
         }
 
     override var lightTouchEnabled: Boolean
-        get() = webView.lightTouchEnabled
+        get() = settings.lightTouchEnabled
         set(value) {
-            webView.lightTouchEnabled = value
+            settings.lightTouchEnabled = value
         }
 
     override var useWideViewPort: Boolean
-        get() = webView.useWideViewPort
+        get() = settings.useWideViewPort
         set(value) {
-            webView.useWideViewPort = value
+            settings.useWideViewPort = value
         }
 
     override var supportMultipleWindows: Boolean
-        get() = webView.supportMultipleWindows()
+        get() = settings.supportMultipleWindows()
         set(value) {
-            webView.setSupportMultipleWindows(value)
+            settings.setSupportMultipleWindows(value)
         }
 
     override var layoutAlgorithm: WebSettings.LayoutAlgorithm?
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            when (webView.layoutAlgorithm) {
+            when (settings.layoutAlgorithm) {
                 android.webkit.WebSettings.LayoutAlgorithm.NORMAL -> WebSettings.LayoutAlgorithm.NORMAL
                 android.webkit.WebSettings.LayoutAlgorithm.SINGLE_COLUMN -> WebSettings.LayoutAlgorithm.SINGLE_COLUMN
                 android.webkit.WebSettings.LayoutAlgorithm.NARROW_COLUMNS -> WebSettings.LayoutAlgorithm.NARROW_COLUMNS
@@ -131,7 +133,7 @@ class SystemWetSettings(
                 else -> null
             }
         } else {
-            when (webView.layoutAlgorithm) {
+            when (settings.layoutAlgorithm) {
                 android.webkit.WebSettings.LayoutAlgorithm.NORMAL -> WebSettings.LayoutAlgorithm.NORMAL
                 android.webkit.WebSettings.LayoutAlgorithm.SINGLE_COLUMN -> WebSettings.LayoutAlgorithm.SINGLE_COLUMN
                 android.webkit.WebSettings.LayoutAlgorithm.NARROW_COLUMNS -> WebSettings.LayoutAlgorithm.NARROW_COLUMNS
@@ -139,7 +141,7 @@ class SystemWetSettings(
             }
         }
         set(value) {
-            webView.layoutAlgorithm = when (value) {
+            settings.layoutAlgorithm = when (value) {
                 WebSettings.LayoutAlgorithm.NORMAL -> android.webkit.WebSettings.LayoutAlgorithm.NORMAL
                 WebSettings.LayoutAlgorithm.SINGLE_COLUMN -> android.webkit.WebSettings.LayoutAlgorithm.SINGLE_COLUMN
                 WebSettings.LayoutAlgorithm.NARROW_COLUMNS -> android.webkit.WebSettings.LayoutAlgorithm.NARROW_COLUMNS
@@ -153,111 +155,111 @@ class SystemWetSettings(
         }
 
     override var standardFontFamily: String?
-        get() = webView.standardFontFamily
+        get() = settings.standardFontFamily
         set(value) {
-            webView.standardFontFamily = value
+            settings.standardFontFamily = value
         }
 
     override var fixedFontFamily: String?
-        get() = webView.fixedFontFamily
+        get() = settings.fixedFontFamily
         set(value) {
-            webView.fixedFontFamily = value
+            settings.fixedFontFamily = value
         }
 
     override var sansSerifFontFamily: String?
-        get() = webView.sansSerifFontFamily
+        get() = settings.sansSerifFontFamily
         set(value) {
-            webView.sansSerifFontFamily = value
+            settings.sansSerifFontFamily = value
         }
 
     override var serifFontFamily: String?
-        get() = webView.serifFontFamily
+        get() = settings.serifFontFamily
         set(value) {
-            webView.serifFontFamily = value
+            settings.serifFontFamily = value
         }
 
     override var cursiveFontFamily: String?
-        get() = webView.cursiveFontFamily
+        get() = settings.cursiveFontFamily
         set(value) {
-            webView.cursiveFontFamily = value
+            settings.cursiveFontFamily = value
         }
 
     override var fantasyFontFamily: String?
-        get() = webView.fantasyFontFamily
+        get() = settings.fantasyFontFamily
         set(value) {
-            webView.fantasyFontFamily = value
+            settings.fantasyFontFamily = value
         }
 
     override var minimumFontSize: Int
-        get() = webView.minimumFontSize
+        get() = settings.minimumFontSize
         set(value) {
-            webView.minimumFontSize = value
+            settings.minimumFontSize = value
         }
 
     override var minimumLogicalFontSize: Int
-        get() = webView.minimumLogicalFontSize
+        get() = settings.minimumLogicalFontSize
         set(value) {
-            webView.minimumLogicalFontSize = value
+            settings.minimumLogicalFontSize = value
         }
 
     override var defaultFontSize: Int
-        get() = webView.defaultFontSize
+        get() = settings.defaultFontSize
         set(value) {
-            webView.defaultFontSize = value
+            settings.defaultFontSize = value
         }
 
     override var defaultFixedFontSize: Int
-        get() = webView.defaultFixedFontSize
+        get() = settings.defaultFixedFontSize
         set(value) {
-            webView.defaultFixedFontSize = value
+            settings.defaultFixedFontSize = value
         }
 
     override var loadsImagesAutomatically: Boolean
-        get() = webView.loadsImagesAutomatically
+        get() = settings.loadsImagesAutomatically
         set(value) {
-            webView.loadsImagesAutomatically = value
+            settings.loadsImagesAutomatically = value
         }
 
     override var blockNetworkImage: Boolean
-        get() = webView.blockNetworkImage
+        get() = settings.blockNetworkImage
         set(value) {
-            webView.blockNetworkImage = value
+            settings.blockNetworkImage = value
         }
 
     override var blockNetworkLoads: Boolean
-        get() = webView.blockNetworkLoads
+        get() = settings.blockNetworkLoads
         set(value) {
-            webView.blockNetworkLoads = value
+            settings.blockNetworkLoads = value
         }
 
     override var javaScriptEnabled: Boolean
-        get() = webView.javaScriptEnabled
+        get() = settings.javaScriptEnabled
         set(value) {
-            webView.javaScriptEnabled = value
+            settings.javaScriptEnabled = value
         }
 
     override var allowUniversalAccessFromFileURLs: Boolean
-        get() = webView.allowUniversalAccessFromFileURLs
+        get() = settings.allowUniversalAccessFromFileURLs
         set(value) {
-            webView.allowUniversalAccessFromFileURLs = value
+            settings.allowUniversalAccessFromFileURLs = value
         }
 
     override var allowFileAccessFromFileURLs: Boolean
-        get() = webView.allowFileAccessFromFileURLs
+        get() = settings.allowFileAccessFromFileURLs
         set(value) {
-            webView.allowFileAccessFromFileURLs = value
+            settings.allowFileAccessFromFileURLs = value
         }
 
 
     override var pluginState: WebSettings.PluginState?
-        get() = when (webView.pluginState) {
+        get() = when (settings.pluginState) {
             android.webkit.WebSettings.PluginState.ON -> WebSettings.PluginState.ON
             android.webkit.WebSettings.PluginState.ON_DEMAND -> WebSettings.PluginState.ON_DEMAND
             android.webkit.WebSettings.PluginState.OFF -> WebSettings.PluginState.OFF
             else -> null
         }
         set(value) {
-            webView.pluginState = when (value) {
+            settings.pluginState = when (value) {
                 WebSettings.PluginState.ON -> android.webkit.WebSettings.PluginState.ON
                 WebSettings.PluginState.ON_DEMAND -> android.webkit.WebSettings.PluginState.ON_DEMAND
                 WebSettings.PluginState.OFF -> android.webkit.WebSettings.PluginState.OFF
@@ -266,81 +268,81 @@ class SystemWetSettings(
         }
 
     override var databasePath: String?
-        get() = webView.databasePath
+        get() = settings.databasePath
         set(value) {
-            webView.databasePath = value
+            settings.databasePath = value
         }
 
     override var geolocationDatabasePath: String?
         get() = null
         set(value) {
-            webView.setGeolocationDatabasePath(value)
+            settings.setGeolocationDatabasePath(value)
         }
 
-    override var setAppCacheEnabled: Boolean
+    override var appCacheEnabled: Boolean
         get() = false
         set(value) {
-            webView.setAppCacheEnabled(value)
+            settings.setAppCacheEnabled(value)
         }
 
     override var appCachePath: String?
         get() = null
         set(value) {
-            webView.setAppCachePath(value)
+            settings.setAppCachePath(value)
         }
 
     override var appCacheMaxSize: Long
         get() = 0
         set(value) {
-            webView.setAppCacheMaxSize(value)
+            settings.setAppCacheMaxSize(value)
         }
 
     override var databaseEnabled: Boolean
-        get() = webView.databaseEnabled
+        get() = settings.databaseEnabled
         set(value) {
-            webView.databaseEnabled = value
+            settings.databaseEnabled = value
         }
 
     override var domStorageEnabled: Boolean
-        get() = webView.domStorageEnabled
+        get() = settings.domStorageEnabled
         set(value) {
-            webView.domStorageEnabled = value
+            settings.domStorageEnabled = value
         }
 
     override var geolocationEnabled: Boolean
         get() = false
         set(value) {
-            webView.setGeolocationEnabled(value)
+            settings.setGeolocationEnabled(value)
         }
 
     override var javaScriptCanOpenWindowsAutomatically: Boolean
-        get() = webView.javaScriptCanOpenWindowsAutomatically
+        get() = settings.javaScriptCanOpenWindowsAutomatically
         set(value) {
-            webView.javaScriptCanOpenWindowsAutomatically = value
+            settings.javaScriptCanOpenWindowsAutomatically = value
         }
 
     override var defaultTextEncodingName: String?
-        get() = webView.defaultTextEncodingName
+        get() = settings.defaultTextEncodingName
         set(value) {
-            webView.defaultTextEncodingName = value
+            settings.defaultTextEncodingName = value
         }
 
     override var userAgentString: String?
-        get() = webView.userAgentString
+        get() = settings.userAgentString
         set(value) {
-            webView.userAgentString = value
+            settings.userAgentString = value
         }
 
     override var needInitialFocus: Boolean
         get() = false
         set(value) {
-            webView.setNeedInitialFocus(value)
+            settings.setNeedInitialFocus(value)
         }
 
     override var renderPriority: WebSettings.RenderPriority?
         get() = null
         set(value) {
-            webView.setRenderPriority(
+            settings.setRenderPriority(
                 when (value) {
                     WebSettings.RenderPriority.NORMAL -> android.webkit.WebSettings.RenderPriority.NORMAL
                     WebSettings.RenderPriority.HIGH -> android.webkit.WebSettings.RenderPriority.HIGH
@@ -351,7 +353,7 @@ class SystemWetSettings(
         }
 
     override var cacheMode: WebSettings.CacheMode?
-        get() = when (webView.cacheMode) {
+        get() = when (settings.cacheMode) {
             android.webkit.WebSettings.LOAD_DEFAULT -> WebSettings.CacheMode.LOAD_DEFAULT
             android.webkit.WebSettings.LOAD_NORMAL -> WebSettings.CacheMode.LOAD_NORMAL
             android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK -> WebSettings.CacheMode.LOAD_CACHE_ELSE_NETWORK
@@ -360,7 +362,7 @@ class SystemWetSettings(
             else -> null
         }
         set(value) {
-            webView.cacheMode = when (value) {
+            settings.cacheMode = when (value) {
                 WebSettings.CacheMode.LOAD_DEFAULT -> android.webkit.WebSettings.LOAD_DEFAULT
                 WebSettings.CacheMode.LOAD_NORMAL -> android.webkit.WebSettings.LOAD_NORMAL
                 WebSettings.CacheMode.LOAD_CACHE_ELSE_NETWORK -> android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
@@ -370,23 +372,61 @@ class SystemWetSettings(
             }
         }
     override var forceDark: WebSettings.ForceDark?
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            when (webView.forceDark) {
-                android.webkit.WebSettings.FORCE_DARK_AUTO -> WebSettings.ForceDark.FORCE_DARK_AUTO
-                android.webkit.WebSettings.FORCE_DARK_OFF -> WebSettings.ForceDark.FORCE_DARK_OFF
-                android.webkit.WebSettings.FORCE_DARK_ON -> WebSettings.ForceDark.FORCE_DARK_ON
+        get() = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                when (settings.forceDark) {
+                    android.webkit.WebSettings.FORCE_DARK_AUTO -> WebSettings.ForceDark.FORCE_DARK_AUTO
+                    android.webkit.WebSettings.FORCE_DARK_OFF -> WebSettings.ForceDark.FORCE_DARK_OFF
+                    android.webkit.WebSettings.FORCE_DARK_ON -> WebSettings.ForceDark.FORCE_DARK_ON
+                    else -> null
+                }
+            }
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) -> {
+                when (WebSettingsCompat.getForceDark(settings)) {
+                    WebSettingsCompat.FORCE_DARK_AUTO -> WebSettings.ForceDark.FORCE_DARK_AUTO
+                    WebSettingsCompat.FORCE_DARK_OFF -> WebSettings.ForceDark.FORCE_DARK_OFF
+                    WebSettingsCompat.FORCE_DARK_ON -> WebSettings.ForceDark.FORCE_DARK_ON
+                    else -> null
+                }
+            }
+            else -> null
+        }
+        set(value) {
+            if (value == null) return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                settings.forceDark = when (value) {
+                    WebSettings.ForceDark.FORCE_DARK_AUTO -> android.webkit.WebSettings.FORCE_DARK_AUTO
+                    WebSettings.ForceDark.FORCE_DARK_OFF -> android.webkit.WebSettings.FORCE_DARK_OFF
+                    WebSettings.ForceDark.FORCE_DARK_ON -> android.webkit.WebSettings.FORCE_DARK_ON
+                }
+            } else if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                WebSettingsCompat.setForceDark(
+                    settings, when (value) {
+                        WebSettings.ForceDark.FORCE_DARK_AUTO -> WebSettingsCompat.FORCE_DARK_AUTO
+                        WebSettings.ForceDark.FORCE_DARK_OFF -> WebSettingsCompat.FORCE_DARK_OFF
+                        WebSettings.ForceDark.FORCE_DARK_ON -> WebSettingsCompat.FORCE_DARK_ON
+                    }
+                )
+            }
+        }
+    override var mixedContentMode: WebSettings.MixedContentMode?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            when (settings.mixedContentMode) {
+                android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW -> WebSettings.MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW
+                android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW -> WebSettings.MixedContentMode.MIXED_CONTENT_NEVER_ALLOW
+                android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE -> WebSettings.MixedContentMode.MIXED_CONTENT_COMPATIBILITY_MODE
                 else -> null
             }
         } else {
             null
         }
         set(value) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (value == null) return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 when (value) {
-                    WebSettings.ForceDark.FORCE_DARK_AUTO -> android.webkit.WebSettings.FORCE_DARK_AUTO
-                    WebSettings.ForceDark.FORCE_DARK_OFF -> android.webkit.WebSettings.FORCE_DARK_OFF
-                    WebSettings.ForceDark.FORCE_DARK_ON -> android.webkit.WebSettings.FORCE_DARK_ON
-                    else -> android.webkit.WebSettings.FORCE_DARK_AUTO
+                    WebSettings.MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW -> android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                    WebSettings.MixedContentMode.MIXED_CONTENT_NEVER_ALLOW -> android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                    WebSettings.MixedContentMode.MIXED_CONTENT_COMPATIBILITY_MODE -> android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
                 }
             }
         }

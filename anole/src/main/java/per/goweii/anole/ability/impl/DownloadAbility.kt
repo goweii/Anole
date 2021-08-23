@@ -1,97 +1,111 @@
 package per.goweii.anole.ability.impl
 
+import android.Manifest
 import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import per.goweii.anole.Constants
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.view.AnoleView
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
+import per.goweii.anole.kernel.WebKernel
+import per.goweii.anole.utils.FormatUtils
+import per.goweii.anole.utils.ResultUtils
+import per.goweii.anole.utils.findActivity
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.text.StringBuilder
 
 class DownloadAbility(
-        private val allowedOverRoaming: Boolean = false,
-        private val allowedMobileNetwork: Boolean = false,
-        private val onDownloadRequest: (Context.(
-                url: String,
-                fileName: String,
-                mimeType: String?,
-                contentLength: Long,
-                downloadCallback: () -> Unit
-        ) -> Dialog) = { url, fileName, _, contentLength, downloadCallback ->
-            val msg = StringBuilder()
-                    .append("文件名：$fileName").append("\n")
-                    .append("\n")
-                    .append("文件大小：$contentLength").append("\n")
-                    .append("\n")
-                    .append("下载地址：$url")
-            AlertDialog.Builder(this)
-                    .setTitle("是否下载？")
-                    .setMessage(msg.toString())
-                    .setPositiveButton("下载") { dialog, _ ->
-                        downloadCallback.invoke()
-                        dialog.dismiss()
+    private val allowedOverRoaming: Boolean = false,
+    private val allowedMobileNetwork: Boolean = false,
+    private val onDownloadRequest: (Context.(
+        url: String,
+        fileName: String,
+        mimeType: String?,
+        contentLength: Long,
+        downloadCallback: () -> Unit
+    ) -> Dialog) = { url, fileName, _, contentLength, downloadCallback ->
+        val msg = StringBuilder()
+            .append("文件名：$fileName").append("\n")
+            .append("\n")
+            .append("文件大小：${FormatUtils.formatContentLength(contentLength)}").append("\n")
+            .append("\n")
+            .append("下载地址：$url")
+        AlertDialog.Builder(this)
+            .setTitle("是否下载？")
+            .setMessage(msg.toString())
+            .setPositiveButton("下载") { dialog, _ ->
+                dialog.dismiss()
+                findActivity()?.let { activity ->
+                    ResultUtils.requestPermissionsResult(
+                        activity,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        Constants.REQUEST_CODE_PERMISSION_DOWNLOAD
+                    ) { _, grantResults ->
+                        if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                            downloadCallback.invoke()
+                        }
                     }
-                    .setNegativeButton("取消") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .create()
-        },
-        private val onDownloadExist: (Context.(id: Long) -> Unit) = {
-            Toast.makeText(this, "下载已存在", Toast.LENGTH_SHORT).show()
-        },
-        private val onDownloadEnqueue: (Context.(id: Long) -> Unit) = {
-            Toast.makeText(this, "开始下载", Toast.LENGTH_SHORT).show()
-        }
+                }
+            }
+            .setNegativeButton("取消") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+    },
+    private val onDownloadExist: (Context.(id: Long) -> Unit) = {
+        Toast.makeText(this, "下载已存在", Toast.LENGTH_SHORT).show()
+    },
+    private val onDownloadEnqueue: (Context.(id: Long) -> Unit) = {
+        Toast.makeText(this, "开始下载", Toast.LENGTH_SHORT).show()
+    }
 ) : WebAbility() {
     private var context: Context? = null
     private var downloadRequestDialog: Dialog? = null
 
-    override fun onAttachToWebView(webView: AnoleView) {
-        super.onAttachToWebView(webView)
-        this.context = webView.context
+    override fun onAttachToKernel(kernel: WebKernel) {
+        super.onAttachToKernel(kernel)
+        this.context = kernel.kernelView.context
     }
 
-    override fun onDetachFromWebView(webView: AnoleView) {
+    override fun onDetachFromKernel(kernel: WebKernel) {
         downloadRequestDialog?.cancel()
         this.context = null
-        super.onDetachFromWebView(webView)
+        super.onDetachFromKernel(kernel)
     }
 
     override fun onDownloadStart(
-            url: String?,
-            userAgent: String?,
-            contentDisposition: String?,
-            mimeType: String?,
-            contentLength: Long
+        url: String?,
+        userAgent: String?,
+        contentDisposition: String?,
+        mimeType: String?,
+        contentLength: Long
     ): Boolean {
         val context = context ?: return false
         val realUrl = getRealUrl(url) ?: return false
         downloadRequestDialog?.cancel()
         val fileName = getFilename(realUrl, contentDisposition, mimeType)
-        downloadRequestDialog = onDownloadRequest.invoke(context, realUrl, fileName, mimeType, contentLength) {
-            startDownload(context, realUrl, fileName, mimeType)
-        }.apply {
-            setOnDismissListener {
-                downloadRequestDialog = null
+        downloadRequestDialog =
+            onDownloadRequest.invoke(context, realUrl, fileName, mimeType, contentLength) {
+                startDownload(context, realUrl, fileName, mimeType)
+            }.apply {
+                setOnDismissListener {
+                    downloadRequestDialog = null
+                }
+                show()
             }
-            show()
-        }
         return true
     }
 
     private fun startDownload(
-            context: Context,
-            url: String,
-            fileName: String,
-            mimeType: String?
+        context: Context,
+        url: String,
+        fileName: String,
+        mimeType: String?
     ) {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
         downloadManager ?: return
@@ -135,41 +149,77 @@ class DownloadAbility(
     }
 
     private fun getFilename(
-            url: String,
-            contentDisposition: String?,
-            mimeType: String?
+        url: String,
+        contentDisposition: String?,
+        mimeType: String?
     ): String {
+        var filename: String? = null
+        var extension: String? = null
         contentDisposition?.let { disposition ->
             val pattern = Pattern.compile("filename=\"(.*?)\"")
             val matcher = pattern.matcher(disposition)
             while (matcher.find()) {
                 val fileName = matcher.group(1)
                 if (!fileName.isNullOrBlank()) {
-                    return fileName
+                    filename = fileName
                 }
                 break
             }
         }
-        val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)?.let {
-            ".$it"
-        } ?: ""
-        Uri.parse(url).lastPathSegment?.let { fileName ->
-            if (fileName.isNotBlank()) {
-                return if (fileName.contains(".")) {
-                    fileName
-                } else {
-                    "$fileName$ext"
+        if (filename.isNullOrBlank()) {
+            Uri.parse(url).lastPathSegment?.let { fileName ->
+                if (fileName.isNotBlank()) {
+                    filename = fileName
                 }
             }
         }
-        try {
-            val fileName = URLEncoder.encode(url, "GBK")
-            if (!fileName.isNullOrBlank()) {
-                return "$fileName$ext"
+        if (!filename.isNullOrBlank()) {
+            val dotIndex = filename!!.lastIndexOf(".")
+            if (dotIndex > 0) {
+                val maybeExt = filename!!.substring(dotIndex + 1)
+                val typeFromExt = MimeTypeMap.getSingleton().getMimeTypeFromExtension(maybeExt)
+                if (!typeFromExt.isNullOrBlank()) {
+                    filename = filename!!.substring(0, dotIndex)
+                    extension = maybeExt
+                }
             }
-        } catch (e: UnsupportedEncodingException) {
         }
-        val fileName = UUID.randomUUID().toString()
-        return "$fileName$ext"
+        if (filename.isNullOrBlank()) {
+            filename = "download_${System.currentTimeMillis()}"
+        }
+        if (!mimeType.isNullOrBlank()) {
+            val extFromType = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+            if (!extFromType.isNullOrBlank()) {
+                extension = extFromType
+            }
+            if (extension.isNullOrBlank()) {
+                if (mimeType.toLowerCase(Locale.ROOT).startsWith("text/")) {
+                    extension = if (mimeType.equals("text/html", ignoreCase = true)) {
+                        ".html"
+                    } else {
+                        ".txt"
+                    }
+                }
+            }
+            if (extension.isNullOrBlank()) {
+                val index = mimeType.lastIndexOf("/")
+                if (index > 0) {
+                    val maybeExt = mimeType.substring(index + 1)
+                    val maybeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(maybeExt)
+                    if (!maybeType.isNullOrBlank()) {
+                        val extFromMaybeType =
+                            MimeTypeMap.getSingleton().getExtensionFromMimeType(maybeType)
+                        if (!extFromMaybeType.isNullOrBlank()) {
+                            extension = extFromMaybeType
+                        }
+                    }
+                }
+            }
+        }
+        return if (extension.isNullOrBlank()) {
+            "$filename"
+        } else {
+            "$filename.$extension"
+        }
     }
 }

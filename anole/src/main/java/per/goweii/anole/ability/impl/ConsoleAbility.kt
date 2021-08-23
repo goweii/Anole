@@ -5,14 +5,14 @@ import android.webkit.ConsoleMessage
 import per.goweii.anole.BuildConfig
 import per.goweii.anole.R
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.view.AnoleView
+import per.goweii.anole.kernel.WebKernel
 
 class ConsoleAbility : WebAbility() {
-    private var tag = "chrome"
+    private var tag = "Anole"
 
-    override fun onAttachToWebView(webView: AnoleView) {
-        super.onAttachToWebView(webView)
-        tag = webView.context.getString(R.string.anole_console_tag)
+    override fun onAttachToKernel(kernel: WebKernel) {
+        super.onAttachToKernel(kernel)
+        tag = kernel.kernelView.context.getString(R.string.anole_console_tag)
     }
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {

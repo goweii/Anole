@@ -1,28 +1,35 @@
 package per.goweii.anole.ability.impl
 
 import android.view.View
-import android.webkit.WebView
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.view.AnoleView
+import per.goweii.anole.kernel.WebKernel
 
 class BackForwardIconAbility(
     private val backView: View?,
     private val forwardView: View?
-): WebAbility() {
-    override fun onAttachToWebView(anoleView: AnoleView) {
-        super.onAttachToWebView(anoleView)
-        backView?.changeEnable(anoleView.canGoBackOrForward(-1))
-        forwardView?.changeEnable(anoleView.canGoBackOrForward(1))
+) : WebAbility() {
+    private var kernel: WebKernel? = null
+
+    override fun onAttachToKernel(kernel: WebKernel) {
+        super.onAttachToKernel(kernel)
+        this.kernel = kernel
+        backView?.changeEnable(kernel.canGoBackOrForward(-1))
+        forwardView?.changeEnable(kernel.canGoBackOrForward(1))
+    }
+
+    override fun onDetachFromKernel(kernel: WebKernel) {
+        super.onDetachFromKernel(kernel)
+        this.kernel = null
     }
 
     override fun doUpdateVisitedHistory(
-        view: WebView,
+        webView: View,
         url: String,
         isReload: Boolean
     ): Boolean {
-        backView?.changeEnable(view.canGoBack())
-        forwardView?.changeEnable(view.canGoForward())
-        return super.doUpdateVisitedHistory(view, url, isReload)
+        backView?.changeEnable(kernel?.canGoBack ?: false)
+        forwardView?.changeEnable(kernel?.canGoForward ?: false)
+        return super.doUpdateVisitedHistory(webView, url, isReload)
     }
 
     private fun View.changeEnable(enable: Boolean) {

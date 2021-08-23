@@ -1,39 +1,38 @@
 package per.goweii.android.anole
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.util.SparseArray
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.core.util.forEach
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import per.goweii.android.anole.databinding.ActivityMainBinding
-import per.goweii.android.anole.databinding.DialogWindowChoiceBinding
-import per.goweii.android.anole.databinding.ItemWindowChoiceBinding
-import per.goweii.anole.AnoleBuilder
-import per.goweii.anole.ability.*
+import per.goweii.android.anole.databinding.*
+import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.BackForwardIconAbility
 import per.goweii.anole.ability.impl.PageInfoAbility
-import per.goweii.anole.view.AnoleView
-import java.util.*
-import kotlin.collections.HashMap
+import per.goweii.anole.view.KernelView
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        private const val KEY_PAGE_URLS = "page_urls"
+    }
+
     private lateinit var binding: ActivityMainBinding
-    private var anoleView: AnoleView? = null
+    private var showHome = true
+    private var kernelView: KernelView? = null
+
+    private val bookmarkAdapter = BookmarkAdapter()
 
     private lateinit var backForwardIconAbility: BackForwardIconAbility
     private lateinit var pageInfoAbility: PageInfoAbility
@@ -60,12 +59,18 @@ class MainActivity : AppCompatActivity() {
                 refreshTopWeb()
             }
         })
-        createWeb()
         binding.ivBack.setOnClickListener {
-            anoleView?.goBackOrForward(-1)
+            kernelView?.goBackOrForward(-1)
         }
         binding.ivForward.setOnClickListener {
-            anoleView?.goBackOrForward(1)
+            kernelView?.goBackOrForward(1)
+        }
+        binding.ivMenu.setOnClickListener {
+            showMenuDialog()
+        }
+        binding.ivHome.setOnClickListener {
+            showHome = true
+            refreshTopWeb()
         }
         binding.ivWindows.setOnClickListener {
             if (binding.container.childCount == 0) {
@@ -82,9 +87,9 @@ class MainActivity : AppCompatActivity() {
             if (binding.etTitle.isFocused) {
                 val inputUrl = binding.etTitle.getUrl()
                 if (inputUrl.isNullOrEmpty()) {
-                    anoleView?.loadUrl(getSearchUrl(binding.etTitle.text.toString()))
+                    loadUrl(getSearchUrl(binding.etTitle.text.toString()))
                 } else {
-                    anoleView?.loadUrl(inputUrl)
+                    loadUrl(inputUrl)
                 }
                 hideIme()
             }
@@ -92,9 +97,9 @@ class MainActivity : AppCompatActivity() {
         binding.etTitle.setOnFocusChangeListener { _, b ->
             binding.ivEnterOrSearch.setImageResource(R.drawable.ic_enter)
             if (b) {
-                binding.etTitle.setText(anoleView?.url)
+                binding.etTitle.setText(kernelView?.url)
             } else {
-                binding.etTitle.setText(anoleView?.title)
+                binding.etTitle.setText(kernelView?.title)
             }
         }
         binding.etTitle.doAfterTextChanged {
@@ -126,38 +131,123 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        binding.rvBookmark.apply {
+            layoutManager = GridLayoutManager(context, 4)
+            adapter = bookmarkAdapter
+            bookmarkAdapter.onClickItem = {
+                createWeb(it.url)
+            }
+            bookmarkAdapter.onLongClickItem = {
+                removeBookmark(it)
+            }
+        }
+        loadBookmarks()
+        if (savedInstanceState != null) {
+            val pageUrls = savedInstanceState.getStringArrayList(KEY_PAGE_URLS)
+            if (!pageUrls.isNullOrEmpty()) {
+                pageUrls.forEach {
+                    createWeb(it)
+                }
+            }
+        }
+        refreshTopWeb()
+        intent?.let { parseIntentToOpenUrl(it) }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { parseIntentToOpenUrl(it) }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val pageUrls = arrayListOf<String>()
+        binding.container.children.map {
+            it as KernelView
+            it.url
+        }.filter {
+            !it.isNullOrBlank()
+        }.forEach {
+            pageUrls.add(it!!)
+        }
+        outState.putStringArrayList(KEY_PAGE_URLS, pageUrls)
+    }
+
+    private fun parseIntentToOpenUrl(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            intent.data?.let {
+                if ("http" == it.scheme || "https" == it.scheme) {
+                    createWeb(it.toString())
+                }
+            }
+        }
+    }
+
+    private fun loadBookmarks() {
+        val bookmarks = BookmarkHelper.getInstance(this).get()
+        bookmarkAdapter.setData(bookmarks)
+    }
+
+    private fun addOrUpdateBookmark(url: String, title: String, logo: Bitmap?) {
+        var bookmark = BookmarkHelper.getInstance(this).update(url, title, logo)
+        if (bookmark != null) {
+            bookmarkAdapter.updateData(bookmark)
+        } else {
+            bookmark = BookmarkHelper.getInstance(this).add(url, title, logo)
+            bookmarkAdapter.addData(bookmark)
+        }
+    }
+
+    private fun removeBookmark(bookmark: Bookmark) {
+        if (BookmarkHelper.getInstance(this).remove(bookmark.url) != null) {
+            bookmarkAdapter.removeData(bookmark)
+        }
     }
 
     private fun closeAllWeb() {
         binding.container.children.map {
-            it as AnoleView
+            it as KernelView
         }.also {
             binding.container.removeAllViews()
-            it.forEach { anoleView ->
-                closeWeb(anoleView)
+            it.forEach { kernelView ->
+                closeWeb(kernelView)
             }
         }
         refreshTopWeb()
     }
 
-    private fun closeWeb(anoleView: AnoleView) {
-        val parent = anoleView.parent
+    private fun closeCurrWeb() {
+        binding.container.children.lastOrNull()?.let {
+            closeWeb(it as KernelView)
+        }
+    }
+
+    private fun closeWeb(kernelView: KernelView) {
+        val parent = kernelView.parent
         if (parent != null) {
             parent as ViewGroup
-            parent.removeView(anoleView)
+            parent.removeView(kernelView)
         }
-        anoleView.destroy()
+        kernelView.destroy()
         refreshTopWeb()
     }
 
-    private fun createWeb(): AnoleView {
-        val anoleView = AnoleBuilder.with(this)
+    private fun showWeb(kernelView: KernelView) {
+        kernelView.bringToFront()
+        showHome = false
+        refreshTopWeb()
+    }
+
+    private fun createWeb(url: String = getHomeUrl()): KernelView {
+        showHome = false
+        val kernelView = WebFactory.with(this)
             .applyDefaultConfig()
             .attachTo(binding.container)
-            .get(this)
-        anoleView.loadUrl(getHomeUrl())
+            .bindToLifecycle(this)
+            .get()
+        kernelView.loadUrl(url)
         refreshTopWeb()
-        return anoleView
+        return kernelView
     }
 
     private fun setCurrTitle(title: String?) {
@@ -184,35 +274,48 @@ class MainActivity : AppCompatActivity() {
             binding.tvWindowsCount.text = "${binding.container.childCount}"
             binding.ivWindows.setImageResource(R.drawable.ic_windows)
         }
-        anoleView = null
+        kernelView = null
         setCurrTitle(null)
         setCurrLogo(null)
         for (i in 0 until binding.container.childCount) {
-            val anoleView = binding.container.getChildAt(i)
-            anoleView as AnoleView
+            val kernelView = binding.container.getChildAt(i) as KernelView
+            kernelView.visibility = View.GONE
+            kernelView.webClient.removeAbility(backForwardIconAbility)
+            kernelView.webClient.removeAbility(pageInfoAbility)
             if (i == binding.container.childCount - 1) {
-                this.anoleView = anoleView
-                anoleView.visibility = View.VISIBLE
-                anoleView.client.addAbility(backForwardIconAbility)
-                anoleView.client.addAbility(pageInfoAbility)
-            } else {
-                anoleView.visibility = View.GONE
-                anoleView.client.removeAbility(backForwardIconAbility)
-                anoleView.client.removeAbility(pageInfoAbility)
+                if (!showHome) {
+                    this.kernelView = kernelView
+                    kernelView.visibility = View.VISIBLE
+                    if (!kernelView.webClient.containsAbility(backForwardIconAbility)) {
+                        kernelView.webClient.addAbility(backForwardIconAbility)
+                    }
+                    if (!kernelView.webClient.containsAbility(pageInfoAbility)) {
+                        kernelView.webClient.addAbility(pageInfoAbility)
+                    }
+                }
             }
         }
     }
 
+    private fun loadUrl(url: String) {
+        kernelView?.loadUrl(url) ?: createWeb(url)
+    }
+
     private fun getHomeUrl(): String {
-        return "https://cn.bing.com"
+        return "https://www.baidu.com"
     }
 
     private fun getSearchUrl(str: String): String {
-        return "https://cn.bing.com/search?q=$str"
+        return "https://www.baidu.com/s?wd=$str"
     }
 
     override fun onBackPressed() {
-        if (anoleView?.handleBackPressed() == true) {
+        if (kernelView?.canGoBack == true) {
+            kernelView?.goBack()
+            return
+        }
+        if (binding.container.childCount > 0) {
+            closeCurrWeb()
             return
         }
         super.onBackPressed()
@@ -244,43 +347,79 @@ class MainActivity : AppCompatActivity() {
             if ("http" == uri.scheme || "https" == uri.scheme) {
                 return input
             }
-            if (!uri.host.isNullOrBlank()) {
-                return "https://$input"
-            }
         } catch (e: Exception) {
         }
         return null
     }
 
+    private fun showMenuDialog() {
+        BottomSheetDialog(this).apply {
+            val list = arrayListOf<MenuAction>()
+            list.add(MenuAction("收藏", R.drawable.ic_bookmark) {
+                dismiss()
+                val kernelView = kernelView ?: return@MenuAction
+                val title = kernelView.title ?: return@MenuAction
+                val url = kernelView.url ?: return@MenuAction
+                val logo = kernelView.favicon
+                addOrUpdateBookmark(url, title, logo)
+            })
+            list.add(MenuAction("刷新", R.drawable.ic_reload) {
+                dismiss()
+                kernelView?.reload()
+            })
+            list.add(MenuAction("扫码", R.drawable.ic_scan) {
+                dismiss()
+                startActivity(Intent(this@MainActivity, ScanActivity::class.java))
+            })
+            list.add(MenuAction("退出", R.drawable.ic_finish) {
+                dismiss()
+                finish()
+            })
+            val binding = DialogMenuBinding.inflate(layoutInflater)
+            binding.rvMenu.apply {
+                layoutManager = GridLayoutManager(context, 4, GridLayoutManager.VERTICAL, false)
+                adapter = MenuAdapter(list)
+            }
+            binding.ivClose.setOnClickListener {
+                dismiss()
+            }
+            setContentView(
+                binding.root, ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }.show()
+    }
+
     private fun showWindowChoiceDialog() {
         BottomSheetDialog(this).apply {
             val list = binding.container.children.map {
-                it as AnoleView
+                it as KernelView
             }.toList().asReversed().toMutableList()
             val binding = DialogWindowChoiceBinding.inflate(layoutInflater)
             val adapter = WindowChoiceAdapter(list).apply {
                 onChoice = { p ->
-                    val anoleView = list[p]
+                    val kernelView = list[p]
                     list.add(list.removeAt(p))
                     notifyItemMoved(p, list.lastIndex)
                     binding.rvWindows.smoothScrollToPosition(0)
-                    anoleView.bringToFront()
-                    refreshTopWeb()
+                    showWeb(kernelView)
                     dismiss()
                 }
                 onDelete = { p ->
-                    val anoleView = list.removeAt(p)
+                    val kernelView = list.removeAt(p)
                     notifyItemRemoved(p)
                     binding.tvWindowsCount.text = "${list.size}"
-                    closeWeb(anoleView)
+                    closeWeb(kernelView)
                 }
             }
             binding.rvWindows.layoutManager = LinearLayoutManager(context)
             binding.rvWindows.adapter = adapter
             binding.tvWindowsCount.text = "${list.size}"
             binding.ivAdd.setOnClickListener {
-                val anoleView = createWeb()
-                list.add(0, anoleView)
+                val kernelView = createWeb()
+                list.add(0, kernelView)
                 adapter.notifyItemInserted(0)
                 binding.tvWindowsCount.text = "${list.size}"
                 binding.rvWindows.smoothScrollToPosition(0)
@@ -302,93 +441,6 @@ class MainActivity : AppCompatActivity() {
             setOnDismissListener {
                 adapter.removeAllPageInfoAbilities()
             }
-            show()
-        }
+        }.show()
     }
-}
-
-private class WindowChoiceAdapter(
-    private val list: MutableList<AnoleView>
-) : RecyclerView.Adapter<WindowChoiceAdapter.Holder>() {
-    var onChoice: ((Int) -> Unit)? = null
-    var onDelete: ((Int) -> Unit)? = null
-
-    private val pageInfoAbilities = HashMap<AnoleView, PageInfoAbility>()
-
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        return Holder(
-            ItemWindowChoiceBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-    }
-
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        val anoleView = list[position]
-        holder.bind(anoleView)
-        var pageInfoAbility = pageInfoAbilities[anoleView]
-        if (pageInfoAbility == null) {
-            pageInfoAbility = PageInfoAbility(onReceivedPageTitle = {
-                notifyItemByPageInfoAbility(this)
-            }, onReceivedPageIcon = {
-                notifyItemByPageInfoAbility(this)
-            })
-            pageInfoAbilities[anoleView] = pageInfoAbility
-        }
-        if (!anoleView.client.containsAbility(pageInfoAbility)) {
-            anoleView.client.addAbility(pageInfoAbility)
-        }
-    }
-
-    private fun notifyItemByPageInfoAbility(pageInfoAbility: PageInfoAbility) {
-        pageInfoAbilities.entries.forEach {
-            if (it.value == pageInfoAbility) {
-                val index = list.indexOf(it.key)
-                if (index != -1) {
-                    try {
-                        notifyItemChanged(index)
-                    } catch (e: Exception) {
-                        // ignore
-                    }
-                }
-            }
-        }
-    }
-
-    fun removeAllPageInfoAbilities() {
-        pageInfoAbilities.entries.forEach {
-            it.key.client.removeAbility(it.value)
-        }
-    }
-
-    inner class Holder(private val binding: ItemWindowChoiceBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            binding.root.setOnClickListener {
-                onChoice?.invoke(adapterPosition)
-            }
-            binding.ivDelete.setOnClickListener {
-                onDelete?.invoke(adapterPosition)
-            }
-        }
-
-        fun bind(anoleView: AnoleView) {
-            anoleView.favicon?.let {
-                binding.ivLogo.setImageBitmap(it)
-            } ?: binding.ivLogo.setImageResource(R.drawable.ic_browser)
-            binding.tvTitle.text = anoleView.title
-        }
-    }
-}
-
-
-inline fun log(tag: String = "Anole", context: () -> String?) {
-    Log.d(tag, context.invoke() ?: "null")
 }

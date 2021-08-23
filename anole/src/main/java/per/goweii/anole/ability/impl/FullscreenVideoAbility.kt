@@ -1,15 +1,16 @@
 package per.goweii.anole.ability.impl
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebChromeClient
 import android.widget.FrameLayout
 import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.utils.findActivity
 
 class FullscreenVideoAbility(
     private val activity: Activity? = null
@@ -18,13 +19,14 @@ class FullscreenVideoAbility(
     private var callback: WebChromeClient.CustomViewCallback? = null
     private var oldOrientation = 0
     private var oldIsFullscreen = false
+    private var oldIsKeepScreen = false
 
     override fun onShowCustomView(
-        view: View?,
+        customView: View?,
         callback: WebChromeClient.CustomViewCallback?
     ): Boolean {
         hide()
-        show(view, callback)
+        show(customView, callback)
         return true
     }
 
@@ -34,9 +36,13 @@ class FullscreenVideoAbility(
     }
 
     private fun show(view: View?, callback: WebChromeClient.CustomViewCallback?) {
-        view ?: return
-        val activity = this.activity ?: findActivityFromContext(view.context) ?: return
-        val decorView = activity.window?.decorView ?: return
+        val activity = this.activity ?: view?.findActivity()
+        if (activity?.window == null) {
+            callback?.onCustomViewHidden()
+            return
+        }
+        view!!.background = ColorDrawable(Color.BLACK)
+        val decorView = activity.window.decorView
         decorView as FrameLayout
         decorView.addView(
             view, decorView.childCount, FrameLayout.LayoutParams(
@@ -46,42 +52,37 @@ class FullscreenVideoAbility(
         )
         oldOrientation = activity.requestedOrientation
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        oldIsFullscreen = activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN != 0
+        activity.window.attributes.flags.let {
+            oldIsFullscreen = it and WindowManager.LayoutParams.FLAG_FULLSCREEN != 0
+            oldIsKeepScreen = it and WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON != 0
+        }
         if (!oldIsFullscreen) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }
+        if (!oldIsKeepScreen) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         this.view = view
         this.callback = callback
     }
 
     private fun hide() {
+        callback?.onCustomViewHidden()
         val view = this.view ?: return
         view.parent?.let { p ->
             p as ViewGroup
             p.removeView(view)
         }
-        callback?.onCustomViewHidden()
-        val activity = this.activity ?: findActivityFromContext(view.context) ?: return
-        activity.requestedOrientation = oldOrientation
-        if (!oldIsFullscreen) {
-            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        }
         this.view = null
         this.callback = null
-    }
-
-    private fun findActivityFromContext(context: Context): Activity? {
-        var activity: Activity? = null
-        if (context is Activity) {
-            activity = context
-        } else {
-            if (context is ContextWrapper) {
-                val baseContext = context.baseContext
-                if (baseContext is Activity) {
-                    activity = baseContext
-                }
-            }
+        val activity = this.activity ?: view.findActivity() ?: return
+        activity.requestedOrientation = oldOrientation
+        val window = activity.window ?: return
+        if (!oldIsFullscreen) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }
-        return activity
+        if (!oldIsKeepScreen) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
 }

@@ -3,7 +3,6 @@ package per.goweii.anole.ability.impl
 import android.graphics.Bitmap
 import android.os.Build
 import android.view.View
-import android.webkit.WebView
 import android.widget.ProgressBar
 import per.goweii.anole.ability.WebAbility
 
@@ -15,23 +14,23 @@ class ProgressAbility(
 
     private var dismissRunnable: Runnable? = null
 
-    override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?): Boolean {
+    override fun onPageStarted(webView: View, url: String?, favicon: Bitmap?): Boolean {
         update(0)
-        return super.onPageStarted(view, url, favicon)
+        return super.onPageStarted(webView, url, favicon)
     }
 
-    override fun onPageFinished(view: WebView, url: String?): Boolean {
+    override fun onPageFinished(webView: View, url: String?): Boolean {
         update(100)
-        return super.onPageFinished(view, url)
+        return super.onPageFinished(webView, url)
     }
 
-    override fun onProgressChanged(view: WebView, newProgress: Int): Boolean {
+    override fun onProgressChanged(webView: View, newProgress: Int): Boolean {
         val p = when {
             newProgress >= 80 -> 100
             else -> newProgress
         }
         update(p)
-        return super.onProgressChanged(view, newProgress)
+        return super.onProgressChanged(webView, newProgress)
     }
 
     private fun update(p: Int) {

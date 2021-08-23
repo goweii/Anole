@@ -1,11 +1,14 @@
-package per.goweii.anole.ability.impl
+package per.goweii.anole.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
-class ResultApi {
+class ResultUtils {
     companion object {
         fun startActivityResult(
             activity: Activity,
@@ -25,7 +28,9 @@ class ResultApi {
                         onActivityResult.invoke(resultCode, data)
                     }
                 }
-                f.startActivityForResult(intent, requestCode)
+                f.doOnAttached {
+                    startActivityForResult(intent, requestCode)
+                }
             } else {
                 val tag = ResultFragment::class.java.name
                 val fm = activity.fragmentManager
@@ -38,18 +43,27 @@ class ResultApi {
                         onActivityResult.invoke(resultCode, data)
                     }
                 }
-                f.startActivityForResult(intent, requestCode)
+                f.doOnAttached {
+                    startActivityForResult(intent, requestCode)
+                }
             }
         }
 
-        fun getPermissionsResult(
+        fun requestPermissionsResult(
             activity: Activity,
+            permissions: Array<out String>,
+            requestCode: Int,
             onRequestPermissionsResult: (
-                requestCode: Int,
                 permissions: Array<out String>,
                 grantResults: IntArray
             ) -> Unit
         ) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                onRequestPermissionsResult.invoke(permissions, permissions.map {
+                    PackageManager.PERMISSION_GRANTED
+                }.toIntArray())
+                return
+            }
             if (activity is AppCompatActivity) {
                 val tag = ResultFragmentX::class.java.name
                 val fm = activity.supportFragmentManager
@@ -57,7 +71,14 @@ class ResultApi {
                     ?: ResultFragmentX().also {
                         fm.beginTransaction().add(it, tag).commit()
                     }
-                f.onRequestPermissionsResult = onRequestPermissionsResult
+                f.onRequestPermissionsResult = { reqCode, permissionResults, grantResults ->
+                    if (reqCode == requestCode) {
+                        onRequestPermissionsResult.invoke(permissionResults, grantResults)
+                    }
+                }
+                f.doOnAttached {
+                    requestPermissions(permissions, requestCode)
+                }
             } else {
                 val tag = ResultFragment::class.java.name
                 val fm = activity.fragmentManager
@@ -65,13 +86,21 @@ class ResultApi {
                     ?: ResultFragment().also {
                         fm.beginTransaction().add(it, tag).commit()
                     }
-                f.onRequestPermissionsResult = onRequestPermissionsResult
+                f.onRequestPermissionsResult = { reqCode, permissionResults, grantResults ->
+                    if (reqCode == requestCode) {
+                        onRequestPermissionsResult.invoke(permissionResults, grantResults)
+                    }
+                }
+                f.doOnAttached {
+                    requestPermissions(permissions, requestCode)
+                }
             }
         }
     }
 }
 
 class ResultFragmentX : Fragment() {
+    private var onAttached: (Fragment.() -> Unit)? = null
     internal var onActivityResult: ((
         requestCode: Int,
         resultCode: Int,
@@ -82,6 +111,18 @@ class ResultFragmentX : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) -> Unit)? = null
+
+    fun doOnAttached(onAttached: (Fragment.() -> Unit)) {
+        this.onAttached = onAttached
+        if (this.isAdded) {
+            onAttached.invoke(this)
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onAttached?.invoke(this)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -99,6 +140,7 @@ class ResultFragmentX : Fragment() {
 }
 
 class ResultFragment : android.app.Fragment() {
+    private var onAttached: (android.app.Fragment.() -> Unit)? = null
     internal var onActivityResult: ((
         requestCode: Int,
         resultCode: Int,
@@ -109,6 +151,18 @@ class ResultFragment : android.app.Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) -> Unit)? = null
+
+    fun doOnAttached(onAttached: (android.app.Fragment.() -> Unit)) {
+        this.onAttached = onAttached
+        if (this.isAdded) {
+            onAttached.invoke(this)
+        }
+    }
+
+    override fun onAttach(activity: Activity?) {
+        super.onAttach(activity)
+        onAttached?.invoke(this)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

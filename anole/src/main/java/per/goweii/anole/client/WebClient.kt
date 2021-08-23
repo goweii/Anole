@@ -7,11 +7,11 @@ import android.os.Message
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
-import android.webkit.WebChromeClient
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.view.AnoleView
+import per.goweii.anole.kernel.DownloadListener
+import per.goweii.anole.kernel.WebKernel
 
-class WebClient(private val anoleView: AnoleView) : DownloadListener {
+class WebClient(private val kernel: WebKernel) : DownloadListener {
     private val abilities = arrayListOf<WebAbility>()
 
     fun containsAbility(client: WebAbility): Boolean {
@@ -20,21 +20,21 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
 
     fun addAbility(client: WebAbility) {
         abilities.add(client)
-        client.onAttachToWebView(anoleView)
+        client.onAttachToKernel(kernel)
     }
 
     fun removeAbility(client: WebAbility) {
-        client.onDetachFromWebView(anoleView)
+        client.onDetachFromKernel(kernel)
         abilities.remove(client)
     }
 
     fun clearAbilities() {
-        abilities.forEach { it.onDetachFromWebView(anoleView) }
+        abilities.forEach { it.onDetachFromKernel(kernel) }
         abilities.clear()
     }
 
     internal fun shouldInterceptRequest(
-        view: WebView,
+        webView: View,
         reqUri: Uri,
         reqHeaders: Map<String, String>?,
         reqMethod: String?,
@@ -42,7 +42,7 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     ): WebResourceResponse? {
         abilities.forEach { client ->
             client.shouldInterceptRequest(
-                view, reqUri, reqHeaders, reqMethod, userAgent
+                webView, reqUri, reqHeaders, reqMethod, userAgent
             )?.let { resp ->
                 return resp
             }
@@ -51,23 +51,23 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun shouldOverrideUrlLoading(
-        view: WebView,
+        webView: View,
         reqUri: Uri,
         reqHeaders: Map<String, String>?,
         reqMethod: String?,
         userAgent: String?
     ): Boolean {
         abilities.forEach { client ->
-            if (client.shouldOverrideUrlLoading(view, reqUri, reqHeaders, reqMethod, userAgent)) {
+            if (client.shouldOverrideUrlLoading(webView, reqUri, reqHeaders, reqMethod, userAgent)) {
                 return true
             }
         }
         return false
     }
 
-    internal fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean {
+    internal fun shouldOverrideKeyEvent(webView: View, event: KeyEvent): Boolean {
         abilities.forEach { client ->
-            if (client.shouldOverrideKeyEvent(view, event)) {
+            if (client.shouldOverrideKeyEvent(webView, event)) {
                 return true
             }
         }
@@ -75,66 +75,66 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onSafeBrowsingHit(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         threatType: Int,
         callback: SafeBrowsingResponse?
     ) {
         abilities.forEach { client ->
-            if (client.onSafeBrowsingHit(view, request, threatType, callback)) {
+            if (client.onSafeBrowsingHit(webView, request, threatType, callback)) {
                 return
             }
         }
     }
 
-    internal fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
+    internal fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean) {
         abilities.forEach { client ->
-            if (client.doUpdateVisitedHistory(view, url, isReload)) {
+            if (client.doUpdateVisitedHistory(webView, url, isReload)) {
                 return
             }
         }
     }
 
     internal fun onReceivedError(
-        view: WebView,
+        webView: View,
         errorCode: Int,
         description: String?,
         failingUrl: String?
     ) {
         abilities.forEach { client ->
-            if (client.onReceivedError(view, errorCode, description, failingUrl)) {
+            if (client.onReceivedError(webView, errorCode, description, failingUrl)) {
                 return
             }
         }
     }
 
     internal fun onReceivedError(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
         abilities.forEach { client ->
-            if (client.onReceivedError(view, request, error)) {
+            if (client.onReceivedError(webView, request, error)) {
                 return
             }
         }
     }
 
     internal fun onReceivedHttpError(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
         abilities.forEach { client ->
-            if (client.onReceivedHttpError(view, request, errorResponse)) {
+            if (client.onReceivedHttpError(webView, request, errorResponse)) {
                 return
             }
         }
     }
 
-    internal fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean {
+    internal fun onRenderProcessGone(webView: View, detail: RenderProcessGoneDetail?): Boolean {
         abilities.forEach { client ->
-            if (client.onRenderProcessGone(view, detail)) {
+            if (client.onRenderProcessGone(webView, detail)) {
                 return true
             }
         }
@@ -142,107 +142,107 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onReceivedLoginRequest(
-        view: WebView,
+        webView: View,
         realm: String?,
         account: String?,
         args: String?
     ) {
         abilities.forEach { client ->
-            if (client.onReceivedLoginRequest(view, realm, account, args)) {
+            if (client.onReceivedLoginRequest(webView, realm, account, args)) {
                 return
             }
         }
     }
 
-    internal fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
+    internal fun onPageStarted(webView: View, url: String?, favicon: Bitmap?) {
         abilities.forEach { client ->
-            if (client.onPageStarted(view, url, favicon)) {
+            if (client.onPageStarted(webView, url, favicon)) {
                 return
             }
         }
     }
 
-    internal fun onPageFinished(view: WebView, url: String?) {
+    internal fun onPageFinished(webView: View, url: String?) {
         abilities.forEach { client ->
-            if (client.onPageFinished(view, url)) {
+            if (client.onPageFinished(webView, url)) {
                 return
             }
         }
     }
 
-    internal fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
+    internal fun onScaleChanged(webView: View, oldScale: Float, newScale: Float) {
     }
 
-    internal fun onPageCommitVisible(view: WebView, url: String?) {
+    internal fun onPageCommitVisible(webView: View, url: String?) {
     }
 
-    internal fun onUnhandledKeyEvent(view: WebView, event: KeyEvent?) {
+    internal fun onUnhandledKeyEvent(webView: View, event: KeyEvent?) {
         abilities.forEach { client ->
-            if (client.onUnhandledKeyEvent(view, event)) {
+            if (client.onUnhandledKeyEvent(webView, event)) {
                 return
             }
         }
     }
 
-    internal fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest?) {
+    internal fun onReceivedClientCertRequest(webView: View, request: ClientCertRequest?) {
         abilities.forEach { client ->
-            if (client.onReceivedClientCertRequest(view, request)) {
+            if (client.onReceivedClientCertRequest(webView, request)) {
                 return
             }
         }
     }
 
     internal fun onReceivedHttpAuthRequest(
-        view: WebView,
+        webView: View,
         handler: HttpAuthHandler?,
         host: String?,
         realm: String?
     ) {
         abilities.forEach { client ->
-            if (client.onReceivedHttpAuthRequest(view, handler, host, realm)) {
+            if (client.onReceivedHttpAuthRequest(webView, handler, host, realm)) {
                 return
             }
         }
     }
 
-    internal fun onReceivedSslError(view: WebView, handler: SslErrorHandler?, error: SslError?) {
+    internal fun onReceivedSslError(webView: View, handler: SslErrorHandler?, error: SslError?) {
         abilities.forEach { client ->
-            if (client.onReceivedSslError(view, handler, error)) {
+            if (client.onReceivedSslError(webView, handler, error)) {
                 return
             }
         }
     }
 
-    internal fun onTooManyRedirects(view: WebView, cancelMsg: Message?, continueMsg: Message?) {
+    internal fun onTooManyRedirects(webView: View, cancelMsg: Message?, continueMsg: Message?) {
     }
 
-    internal fun onFormResubmission(view: WebView, dontResend: Message?, resend: Message?) {
+    internal fun onFormResubmission(webView: View, dontResend: Message?, resend: Message?) {
     }
 
-    internal fun onLoadResource(view: WebView, url: String?) {
+    internal fun onLoadResource(webView: View, url: String?) {
         abilities.forEach { client ->
-            if (client.onLoadResource(view, url)) {
+            if (client.onLoadResource(webView, url)) {
                 return
             }
         }
     }
 
-    internal fun onRequestFocus(view: WebView) {
+    internal fun onRequestFocus(webView: View) {
         abilities.forEach { client ->
-            if (client.onRequestFocus(view)) {
+            if (client.onRequestFocus(kernel)) {
                 return
             }
         }
     }
 
     internal fun onJsAlert(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
     ): Boolean {
         abilities.forEach { client ->
-            if (client.onJsAlert(view, url, message, result)) {
+            if (client.onJsAlert(webView, url, message, result)) {
                 return true
             }
         }
@@ -250,14 +250,14 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onJsPrompt(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         defaultValue: String?,
         result: JsPromptResult?
     ): Boolean {
         abilities.forEach { client ->
-            if (client.onJsPrompt(view, url, message, defaultValue, result)) {
+            if (client.onJsPrompt(webView, url, message, defaultValue, result)) {
                 return true
             }
         }
@@ -265,13 +265,13 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onJsConfirm(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
     ): Boolean {
         abilities.forEach { client ->
-            if (client.onJsConfirm(view, url, message, result)) {
+            if (client.onJsConfirm(webView, url, message, result)) {
                 return true
             }
         }
@@ -279,13 +279,13 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onJsBeforeUnload(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
     ): Boolean {
         abilities.forEach { client ->
-            if (client.onJsBeforeUnload(view, url, message, result)) {
+            if (client.onJsBeforeUnload(webView, url, message, result)) {
                 return true
             }
         }
@@ -301,9 +301,12 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
         return false
     }
 
-    internal fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
+    internal fun onShowCustomView(
+        customView: View?,
+        callback: WebChromeClient.CustomViewCallback?
+    ) {
         abilities.forEach { client ->
-            if (client.onShowCustomView(view, callback)) {
+            if (client.onShowCustomView(customView, callback)) {
                 return
             }
         }
@@ -318,22 +321,22 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onCreateWindow(
-        view: WebView,
+        webView: View,
         isDialog: Boolean,
         isUserGesture: Boolean,
         resultMsg: Message
     ): Boolean {
         abilities.forEach { client ->
-            if (client.onCreateWindow(view, isDialog, isUserGesture, resultMsg)) {
+            if (client.onCreateWindow(webView, isDialog, isUserGesture, resultMsg)) {
                 return true
             }
         }
         return false
     }
 
-    internal fun onCloseWindow(window: WebView) {
+    internal fun onCloseWindow(webView: View) {
         abilities.forEach { client ->
-            if (client.onCloseWindow(window)) {
+            if (client.onCloseWindow(webView)) {
                 return
             }
         }
@@ -386,7 +389,7 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
     }
 
     internal fun onShowFileChooser(
-        webView: WebView,
+        webView: View,
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?
     ): Boolean {
@@ -398,33 +401,33 @@ class WebClient(private val anoleView: AnoleView) : DownloadListener {
         return false
     }
 
-    internal fun onReceivedTouchIconUrl(view: WebView, url: String?, precomposed: Boolean) {
+    internal fun onReceivedTouchIconUrl(webView: View, url: String?, precomposed: Boolean) {
         abilities.forEach { client ->
-            if (client.onReceivedTouchIconUrl(view, url, precomposed)) {
+            if (client.onReceivedTouchIconUrl(webView, url, precomposed)) {
                 return
             }
         }
     }
 
-    internal fun onReceivedIcon(view: WebView, icon: Bitmap?) {
+    internal fun onReceivedIcon(webView: View, icon: Bitmap?) {
         abilities.forEach { client ->
-            if (client.onReceivedIcon(view, icon)) {
+            if (client.onReceivedIcon(webView, icon)) {
                 return
             }
         }
     }
 
-    internal fun onReceivedTitle(view: WebView, title: String?) {
+    internal fun onReceivedTitle(webView: View, title: String?) {
         abilities.forEach { client ->
-            if (client.onReceivedTitle(view, title)) {
+            if (client.onReceivedTitle(webView, title)) {
                 return
             }
         }
     }
 
-    internal fun onProgressChanged(view: WebView, newProgress: Int) {
+    internal fun onProgressChanged(webView: View, newProgress: Int) {
         abilities.forEach { client ->
-            if (client.onProgressChanged(view, newProgress)) {
+            if (client.onProgressChanged(webView, newProgress)) {
                 return
             }
         }

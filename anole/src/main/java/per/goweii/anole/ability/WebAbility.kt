@@ -7,35 +7,36 @@ import android.os.Message
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
-import per.goweii.anole.view.AnoleView
+import per.goweii.anole.kernel.WebKernel
 
 open class WebAbility {
 
-    open fun onAttachToWebView(anoleView: AnoleView) {}
+    open fun onAttachToKernel(kernel: WebKernel) {}
 
-    open fun onDetachFromWebView(anoleView: AnoleView) {}
+    open fun onDetachFromKernel(kernel: WebKernel) {}
 
     open fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean = false
 
     open fun onShowCustomView(
-        view: View?,
+        customView: View?,
         callback: WebChromeClient.CustomViewCallback?
     ): Boolean = false
 
     open fun onHideCustomView(): Boolean = false
 
     open fun onShowFileChooser(
-        webView: WebView,
+        webView: View,
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?
     ): Boolean = false
 
     open fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean = false
 
-    open fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean): Boolean = false
+    open fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean): Boolean =
+        false
 
     open fun shouldInterceptRequest(
-        view: WebView,
+        webView: View,
         reqUri: Uri,
         reqHeaders: Map<String, String>?,
         reqMethod: String?,
@@ -43,14 +44,14 @@ open class WebAbility {
     ): WebResourceResponse? = null
 
     open fun onJsAlert(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
     ): Boolean = false
 
     open fun onJsPrompt(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         defaultValue: String?,
@@ -58,14 +59,14 @@ open class WebAbility {
     ): Boolean = false
 
     open fun onJsConfirm(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
     ): Boolean = false
 
     open fun onJsBeforeUnload(
-        view: WebView,
+        webView: View,
         url: String?,
         message: String?,
         result: JsResult?
@@ -73,25 +74,25 @@ open class WebAbility {
 
     open fun onJsTimeout(): Boolean = false
 
-    open fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean = false
+    open fun shouldOverrideKeyEvent(webView: View, event: KeyEvent): Boolean = false
 
-    open fun onUnhandledKeyEvent(view: WebView, event: KeyEvent?): Boolean = false
+    open fun onUnhandledKeyEvent(webView: View, event: KeyEvent?): Boolean = false
 
-    open fun onLoadResource(view: WebView, url: String?): Boolean = false
+    open fun onLoadResource(webView: View, url: String?): Boolean = false
 
     open fun shouldOverrideUrlLoading(
-        view: WebView,
+        webView: View,
         reqUri: Uri,
         reqHeaders: Map<String, String>?,
         reqMethod: String?,
         userAgent: String?
     ): Boolean = false
 
-    open fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?): Boolean = false
+    open fun onPageStarted(webView: View, url: String?, favicon: Bitmap?): Boolean = false
 
-    open fun onPageFinished(view: WebView, url: String?): Boolean = false
+    open fun onPageFinished(webView: View, url: String?): Boolean = false
 
-    open fun onProgressChanged(view: WebView, newProgress: Int): Boolean = false
+    open fun onProgressChanged(webView: View, newProgress: Int): Boolean = false
 
     open fun onGeolocationPermissionsShowPrompt(
         origin: String?,
@@ -105,61 +106,65 @@ open class WebAbility {
     open fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean = false
 
     open fun onReceivedError(
-        view: WebView,
+        webView: View,
         errorCode: Int,
         description: String?,
         failingUrl: String?
     ): Boolean = false
 
     open fun onReceivedError(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         error: WebResourceError?
     ): Boolean = false
 
     open fun onReceivedHttpError(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ): Boolean = false
 
-    open fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean =
+    open fun onRenderProcessGone(webView: View, detail: RenderProcessGoneDetail?): Boolean =
         false
 
     open fun onReceivedSslError(
-        view: WebView,
+        webView: View,
         handler: SslErrorHandler?,
         error: SslError?
     ): Boolean = false
 
-    open fun onReceivedTouchIconUrl(view: WebView, url: String?, precomposed: Boolean): Boolean =
+    open fun onReceivedTouchIconUrl(
+        webView: View,
+        url: String?,
+        precomposed: Boolean
+    ): Boolean =
         false
 
-    open fun onReceivedIcon(view: WebView, icon: Bitmap?): Boolean = false
+    open fun onReceivedIcon(webView: View, icon: Bitmap?): Boolean = false
 
-    open fun onReceivedTitle(view: WebView, title: String?): Boolean = false
+    open fun onReceivedTitle(webView: View, title: String?): Boolean = false
 
-    open fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest?): Boolean =
+    open fun onReceivedClientCertRequest(webView: View, request: ClientCertRequest?): Boolean =
         false
 
     open fun onReceivedLoginRequest(
-        view: WebView,
+        webView: View,
         realm: String?,
         account: String?,
         args: String?
     ): Boolean = false
 
     open fun onReceivedHttpAuthRequest(
-        view: WebView,
+        webView: View,
         handler: HttpAuthHandler?,
         host: String?,
         realm: String?
     ): Boolean = false
 
-    open fun onRequestFocus(view: WebView): Boolean = false
+    open fun onRequestFocus(kernel: WebKernel): Boolean = false
 
     open fun onSafeBrowsingHit(
-        view: WebView,
+        webView: View,
         request: WebResourceRequest?,
         threatType: Int,
         callback: SafeBrowsingResponse?
@@ -185,13 +190,13 @@ open class WebAbility {
     open fun getDefaultVideoPoster(): Bitmap? = null
 
     open fun onCreateWindow(
-        view: WebView,
+        webView: View,
         isDialog: Boolean,
         isUserGesture: Boolean,
         resultMsg: Message
     ): Boolean = false
 
-    open fun onCloseWindow(window: WebView): Boolean = false
+    open fun onCloseWindow(webView: View): Boolean = false
 
     open fun onDownloadStart(
         url: String?,

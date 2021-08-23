@@ -17,6 +17,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
         google()
         jcenter()
     }

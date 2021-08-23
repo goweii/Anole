@@ -7,82 +7,23 @@ import android.os.Build
 import android.os.Message
 import android.print.PrintDocumentAdapter
 import android.util.AttributeSet
-import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebView
-import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
-import per.goweii.anole.client.WebClient
 import per.goweii.anole.kernel.*
+import per.goweii.anole.view.KernelView
 
-class SystemWebView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), WebKernel {
-
-    private val webView: WebView = WebView(context)
+class SystemKernelView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : KernelView(context, attrs, defStyleAttr) {
+    override val webView: WebView = NestedWebView(context)
 
     init {
         addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        setDownloadListener(webClient)
+        val bridgeWebClient = BridgeWebClient(webClient)
+        webView.webViewClient = SystemWebViewClient(bridgeWebClient)
+        webView.webChromeClient = SystemWebChromeClient(bridgeWebClient)
     }
-
-    override fun addView(child: View?) {
-        if (webView != child) return
-        super.addView(child)
-    }
-
-    override fun addView(child: View?, index: Int) {
-        if (webView != child) return
-        super.addView(child, index)
-    }
-
-    override fun addView(child: View?, params: ViewGroup.LayoutParams?) {
-        if (webView != child) return
-        super.addView(child, params)
-    }
-
-    override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
-        if (webView != child) return
-        super.addView(child, index, params)
-    }
-
-    override fun addView(child: View?, width: Int, height: Int) {
-        if (webView != child) return
-        super.addView(child, width, height)
-    }
-
-    override fun addViewInLayout(
-        child: View?,
-        index: Int,
-        params: ViewGroup.LayoutParams?
-    ): Boolean {
-        if (webView != child) return false
-        return super.addViewInLayout(child, index, params)
-    }
-
-    override fun addViewInLayout(
-        child: View?,
-        index: Int,
-        params: ViewGroup.LayoutParams?,
-        preventRequestLayout: Boolean
-    ): Boolean {
-        if (webView != child) return false
-        return super.addViewInLayout(child, index, params, preventRequestLayout)
-    }
-
-    override val kernelView: View get() = this
-
-    override var webClient: WebClient? = null
-        set(value) {
-            if (webClient == value) return
-            field = value
-            val mixedWebClient = value?.let { BridgeWebClient(it) }
-            mixedWebClient?.let {
-                webView.webViewClient = SystemWebViewClient(mixedWebClient)
-                webView.webChromeClient = SystemWebChromeClient(mixedWebClient)
-            }
-        }
 
     override val hitTestResult: HitTestResult
         get() {
@@ -91,6 +32,33 @@ class SystemWebView @JvmOverloads constructor(
         }
 
     override val settings: WebSettings = SystemWetSettings(webView.settings)
+
+    override val canGoBack: Boolean
+        get() = webView.canGoBack()
+
+    override val canGoForward: Boolean
+        get() = webView.canGoForward()
+
+    override val url: String?
+        get() = webView.url
+
+    override val originalUrl: String?
+        get() = webView.originalUrl
+
+    override val title: String?
+        get() = webView.title
+
+    override val favicon: Bitmap?
+        get() = webView.favicon
+
+    override val progress: Int
+        get() = webView.progress
+
+    override val contentHeight: Int
+        get() = webView.contentHeight
+
+    override val isPrivateBrowsingEnabled: Boolean
+        get() = webView.isPrivateBrowsingEnabled
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String?, String?>) {
         webView.loadUrl(url, additionalHttpHeaders)
@@ -147,16 +115,8 @@ class SystemWebView @JvmOverloads constructor(
         webView.reload()
     }
 
-    override fun canGoBack(): Boolean {
-        return webView.canGoBack()
-    }
-
     override fun goBack() {
         webView.goBack()
-    }
-
-    override fun canGoForward(): Boolean {
-        return webView.canGoForward()
     }
 
     override fun goForward() {
@@ -169,10 +129,6 @@ class SystemWebView @JvmOverloads constructor(
 
     override fun goBackOrForward(steps: Int) {
         webView.goBackOrForward(steps)
-    }
-
-    override fun isPrivateBrowsingEnabled(): Boolean {
-        return webView.isPrivateBrowsingEnabled
     }
 
     override fun pageUp(top: Boolean): Boolean {
@@ -216,30 +172,6 @@ class SystemWebView @JvmOverloads constructor(
         webView.requestImageRef(msg)
     }
 
-    override fun getUrl(): String? {
-        return webView.url
-    }
-
-    override fun getOriginalUrl(): String? {
-        return webView.originalUrl
-    }
-
-    override fun getTitle(): String? {
-        return webView.title
-    }
-
-    override fun getFavicon(): Bitmap? {
-        return webView.favicon
-    }
-
-    override fun getProgress(): Int {
-        return webView.progress
-    }
-
-    override fun getContentHeight(): Int {
-        return webView.contentHeight
-    }
-
     override fun pauseTimers() {
         webView.pauseTimers()
     }
@@ -254,6 +186,12 @@ class SystemWebView @JvmOverloads constructor(
 
     override fun onResume() {
         webView.onResume()
+    }
+
+    override fun destroy() {
+        webView.removeAllViews()
+        webView.clearView()
+        webView.destroy()
     }
 
     override fun freeMemory() {
@@ -309,8 +247,12 @@ class SystemWebView @JvmOverloads constructor(
     }
 
     override fun setFindListener(listener: FindListener?) {
-        webView.setFindListener { i, i2, b ->
-            listener?.onFindResultReceived(i, i2, b)
+        if (listener == null) {
+            webView.setFindListener(null)
+        } else {
+            webView.setFindListener { activeMatchOrdinal, numberOfMatches, isDoneCounting ->
+                listener.onFindResultReceived(activeMatchOrdinal, numberOfMatches, isDoneCounting)
+            }
         }
     }
 
@@ -327,8 +269,18 @@ class SystemWebView @JvmOverloads constructor(
     }
 
     override fun setDownloadListener(listener: DownloadListener?) {
-        webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-            listener?.onDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+        if (listener == null) {
+            webView.setDownloadListener(null)
+        } else {
+            webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+                listener.onDownloadStart(
+                    url,
+                    userAgent,
+                    contentDisposition,
+                    mimetype,
+                    contentLength
+                )
+            }
         }
     }
 

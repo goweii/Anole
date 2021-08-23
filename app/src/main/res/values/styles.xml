@@ -1,11 +1,23 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Scan">
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowAnimationStyle">@style/BottomAnimAnim</item>
+    </style>
+
+    <style name="BottomAnimAnim" parent="@android:style/Animation.Activity">
+        <item name="android:activityCloseExitAnimation">@anim/bottom_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/no_anim</item>
+        <item name="android:activityOpenExitAnimation">@anim/no_anim</item>
+        <item name="android:activityOpenEnterAnimation">@anim/bottom_enter</item>
     </style>
 
 </resources>

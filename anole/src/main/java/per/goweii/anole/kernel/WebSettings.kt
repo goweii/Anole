@@ -32,7 +32,7 @@ interface WebSettings {
     var blockNetworkLoads: Boolean
     var geolocationDatabasePath: String?
     var geolocationEnabled: Boolean
-    var setAppCacheEnabled: Boolean
+    var appCacheEnabled: Boolean
     var appCachePath: String?
     var appCacheMaxSize: Long
     var domStorageEnabled: Boolean
@@ -49,6 +49,13 @@ interface WebSettings {
     var renderPriority: RenderPriority?
     var cacheMode: CacheMode?
     var forceDark: ForceDark?
+    var mixedContentMode: MixedContentMode?
+
+    enum class MixedContentMode {
+        MIXED_CONTENT_ALWAYS_ALLOW,
+        MIXED_CONTENT_NEVER_ALLOW,
+        MIXED_CONTENT_COMPATIBILITY_MODE
+    }
 
     enum class LayoutAlgorithm {
         NORMAL,
