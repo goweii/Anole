@@ -103,9 +103,6 @@ class SystemWebViewClient(
     }
 
     override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean {
-        if (bridgeWebClient.onRenderProcessGone(view, detail)) {
-            return true
-        }
         return super.onRenderProcessGone(view, detail)
     }
 

@@ -190,14 +190,6 @@ class SystemWebChromeClient(
                 totalQuota,
                 quotaUpdater
         )
-        bridgeWebClient.onExceededDatabaseQuota(
-                url,
-                databaseIdentifier,
-                quota,
-                estimatedDatabaseSize,
-                totalQuota,
-                quotaUpdater
-        )
     }
 
     override fun onReceivedTitle(view: WebView, title: String?) {
@@ -211,7 +203,6 @@ class SystemWebChromeClient(
             quotaUpdater: WebStorage.QuotaUpdater?
     ) {
         super.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
-        bridgeWebClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
     }
 
     override fun onProgressChanged(view: WebView, newProgress: Int) {

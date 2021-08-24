@@ -5,10 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.view.View
-import android.webkit.ValueCallback
-import android.webkit.WebChromeClient
 import per.goweii.anole.Constants
+import per.goweii.anole.ability.FileChooserParams
 import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.kernel.ValueCallback
 import per.goweii.anole.utils.ResultUtils
 import per.goweii.anole.utils.findActivity
 
@@ -22,7 +22,7 @@ class FileChooseAbility(
     override fun onShowFileChooser(
         webView: View,
         filePathCallback: ValueCallback<Array<Uri>>?,
-        fileChooserParams: WebChromeClient.FileChooserParams?
+        fileChooserParams: FileChooserParams?
     ): Boolean {
         val activity = activity ?: webView.findActivity()
         if (activity != null && filePathCallback != null && fileChooserParams != null) {
@@ -36,12 +36,12 @@ class FileChooseAbility(
 
     private fun chooseFiles(
         activity: Activity,
-        fileChooserParams: WebChromeClient.FileChooserParams
+        fileChooserParams: FileChooserParams
     ): Boolean {
         return try {
-            val intent = createChooserIntent(fileChooserParams)
+            val intent = createChooserIntent(fileChooserParams) ?: return false
             ResultUtils.startActivityResult(activity, intent, reqCode) { resultCode, data ->
-                receiveChooseResult(resultCode, data)
+                receiveChooseResult(fileChooserParams, resultCode, data)
             }
             true
         } catch (e: Exception) {
@@ -50,8 +50,8 @@ class FileChooseAbility(
     }
 
     private fun createChooserIntent(
-        fileChooserParams: WebChromeClient.FileChooserParams
-    ): Intent {
+        fileChooserParams: FileChooserParams
+    ): Intent? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             fileChooserParams.createIntent()
         } else {
@@ -63,10 +63,14 @@ class FileChooseAbility(
         }
     }
 
-    private fun receiveChooseResult(resultCode: Int, data: Intent?) {
+    private fun receiveChooseResult(
+        fileChooserParams: FileChooserParams,
+        resultCode: Int,
+        data: Intent?
+    ) {
         var uris: Array<Uri>? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            uris = WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+            uris = fileChooserParams.parseResult(resultCode, data)
         }
         mFilePathCallback?.onReceiveValue(uris ?: emptyArray())
         mFilePathCallback = null

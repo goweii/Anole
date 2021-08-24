@@ -6,7 +6,7 @@ import android.net.http.SslError
 import android.os.Message
 import android.view.KeyEvent
 import android.view.View
-import android.webkit.*
+import per.goweii.anole.kernel.ValueCallback
 import per.goweii.anole.kernel.WebKernel
 
 open class WebAbility {
@@ -19,7 +19,7 @@ open class WebAbility {
 
     open fun onShowCustomView(
         customView: View?,
-        callback: WebChromeClient.CustomViewCallback?
+        callback: CustomViewCallback?
     ): Boolean = false
 
     open fun onHideCustomView(): Boolean = false
@@ -27,7 +27,7 @@ open class WebAbility {
     open fun onShowFileChooser(
         webView: View,
         filePathCallback: ValueCallback<Array<Uri>>?,
-        fileChooserParams: WebChromeClient.FileChooserParams?
+        fileChooserParams: FileChooserParams?
     ): Boolean = false
 
     open fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean = false
@@ -124,9 +124,6 @@ open class WebAbility {
         errorResponse: WebResourceResponse?
     ): Boolean = false
 
-    open fun onRenderProcessGone(webView: View, detail: RenderProcessGoneDetail?): Boolean =
-        false
-
     open fun onReceivedSslError(
         webView: View,
         handler: SslErrorHandler?,
@@ -168,21 +165,6 @@ open class WebAbility {
         request: WebResourceRequest?,
         threatType: Int,
         callback: SafeBrowsingResponse?
-    ): Boolean = false
-
-    open fun onExceededDatabaseQuota(
-        url: String?,
-        databaseIdentifier: String?,
-        quota: Long,
-        estimatedDatabaseSize: Long,
-        totalQuota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
-    ): Boolean = false
-
-    open fun onReachedMaxAppCacheSize(
-        requiredStorage: Long,
-        quota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
     ): Boolean = false
 
     open fun getVideoLoadingProgressView(): View? = null

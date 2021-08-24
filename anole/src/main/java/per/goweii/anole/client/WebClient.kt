@@ -6,26 +6,26 @@ import android.net.http.SslError
 import android.os.Message
 import android.view.KeyEvent
 import android.view.View
-import android.webkit.*
-import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.ability.*
 import per.goweii.anole.kernel.DownloadListener
+import per.goweii.anole.kernel.ValueCallback
 import per.goweii.anole.kernel.WebKernel
 
 class WebClient(private val kernel: WebKernel) : DownloadListener {
     private val abilities = arrayListOf<WebAbility>()
 
-    fun containsAbility(client: WebAbility): Boolean {
-        return abilities.contains(client)
+    fun containsAbility(ability: WebAbility): Boolean {
+        return abilities.contains(ability)
     }
 
-    fun addAbility(client: WebAbility) {
-        abilities.add(client)
-        client.onAttachToKernel(kernel)
+    fun addAbility(ability: WebAbility) {
+        abilities.add(ability)
+        ability.onAttachToKernel(kernel)
     }
 
-    fun removeAbility(client: WebAbility) {
-        client.onDetachFromKernel(kernel)
-        abilities.remove(client)
+    fun removeAbility(ability: WebAbility) {
+        ability.onDetachFromKernel(kernel)
+        abilities.remove(ability)
     }
 
     fun clearAbilities() {
@@ -40,8 +40,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         reqMethod: String?,
         userAgent: String?
     ): WebResourceResponse? {
-        abilities.forEach { client ->
-            client.shouldInterceptRequest(
+        abilities.forEach { ability ->
+            ability.shouldInterceptRequest(
                 webView, reqUri, reqHeaders, reqMethod, userAgent
             )?.let { resp ->
                 return resp
@@ -57,8 +57,15 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         reqMethod: String?,
         userAgent: String?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.shouldOverrideUrlLoading(webView, reqUri, reqHeaders, reqMethod, userAgent)) {
+        abilities.forEach { ability ->
+            if (ability.shouldOverrideUrlLoading(
+                    webView,
+                    reqUri,
+                    reqHeaders,
+                    reqMethod,
+                    userAgent
+                )
+            ) {
                 return true
             }
         }
@@ -66,8 +73,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun shouldOverrideKeyEvent(webView: View, event: KeyEvent): Boolean {
-        abilities.forEach { client ->
-            if (client.shouldOverrideKeyEvent(webView, event)) {
+        abilities.forEach { ability ->
+            if (ability.shouldOverrideKeyEvent(webView, event)) {
                 return true
             }
         }
@@ -80,16 +87,16 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         threatType: Int,
         callback: SafeBrowsingResponse?
     ) {
-        abilities.forEach { client ->
-            if (client.onSafeBrowsingHit(webView, request, threatType, callback)) {
+        abilities.forEach { ability ->
+            if (ability.onSafeBrowsingHit(webView, request, threatType, callback)) {
                 return
             }
         }
     }
 
     internal fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean) {
-        abilities.forEach { client ->
-            if (client.doUpdateVisitedHistory(webView, url, isReload)) {
+        abilities.forEach { ability ->
+            if (ability.doUpdateVisitedHistory(webView, url, isReload)) {
                 return
             }
         }
@@ -101,8 +108,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         description: String?,
         failingUrl: String?
     ) {
-        abilities.forEach { client ->
-            if (client.onReceivedError(webView, errorCode, description, failingUrl)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedError(webView, errorCode, description, failingUrl)) {
                 return
             }
         }
@@ -113,8 +120,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
-        abilities.forEach { client ->
-            if (client.onReceivedError(webView, request, error)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedError(webView, request, error)) {
                 return
             }
         }
@@ -125,20 +132,11 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
-        abilities.forEach { client ->
-            if (client.onReceivedHttpError(webView, request, errorResponse)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedHttpError(webView, request, errorResponse)) {
                 return
             }
         }
-    }
-
-    internal fun onRenderProcessGone(webView: View, detail: RenderProcessGoneDetail?): Boolean {
-        abilities.forEach { client ->
-            if (client.onRenderProcessGone(webView, detail)) {
-                return true
-            }
-        }
-        return false
     }
 
     internal fun onReceivedLoginRequest(
@@ -147,24 +145,24 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         account: String?,
         args: String?
     ) {
-        abilities.forEach { client ->
-            if (client.onReceivedLoginRequest(webView, realm, account, args)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedLoginRequest(webView, realm, account, args)) {
                 return
             }
         }
     }
 
     internal fun onPageStarted(webView: View, url: String?, favicon: Bitmap?) {
-        abilities.forEach { client ->
-            if (client.onPageStarted(webView, url, favicon)) {
+        abilities.forEach { ability ->
+            if (ability.onPageStarted(webView, url, favicon)) {
                 return
             }
         }
     }
 
     internal fun onPageFinished(webView: View, url: String?) {
-        abilities.forEach { client ->
-            if (client.onPageFinished(webView, url)) {
+        abilities.forEach { ability ->
+            if (ability.onPageFinished(webView, url)) {
                 return
             }
         }
@@ -177,16 +175,16 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onUnhandledKeyEvent(webView: View, event: KeyEvent?) {
-        abilities.forEach { client ->
-            if (client.onUnhandledKeyEvent(webView, event)) {
+        abilities.forEach { ability ->
+            if (ability.onUnhandledKeyEvent(webView, event)) {
                 return
             }
         }
     }
 
     internal fun onReceivedClientCertRequest(webView: View, request: ClientCertRequest?) {
-        abilities.forEach { client ->
-            if (client.onReceivedClientCertRequest(webView, request)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedClientCertRequest(webView, request)) {
                 return
             }
         }
@@ -198,16 +196,16 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         host: String?,
         realm: String?
     ) {
-        abilities.forEach { client ->
-            if (client.onReceivedHttpAuthRequest(webView, handler, host, realm)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedHttpAuthRequest(webView, handler, host, realm)) {
                 return
             }
         }
     }
 
     internal fun onReceivedSslError(webView: View, handler: SslErrorHandler?, error: SslError?) {
-        abilities.forEach { client ->
-            if (client.onReceivedSslError(webView, handler, error)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedSslError(webView, handler, error)) {
                 return
             }
         }
@@ -220,16 +218,16 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onLoadResource(webView: View, url: String?) {
-        abilities.forEach { client ->
-            if (client.onLoadResource(webView, url)) {
+        abilities.forEach { ability ->
+            if (ability.onLoadResource(webView, url)) {
                 return
             }
         }
     }
 
     internal fun onRequestFocus(webView: View) {
-        abilities.forEach { client ->
-            if (client.onRequestFocus(kernel)) {
+        abilities.forEach { ability ->
+            if (ability.onRequestFocus(kernel)) {
                 return
             }
         }
@@ -241,8 +239,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         message: String?,
         result: JsResult?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onJsAlert(webView, url, message, result)) {
+        abilities.forEach { ability ->
+            if (ability.onJsAlert(webView, url, message, result)) {
                 return true
             }
         }
@@ -256,8 +254,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         defaultValue: String?,
         result: JsPromptResult?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onJsPrompt(webView, url, message, defaultValue, result)) {
+        abilities.forEach { ability ->
+            if (ability.onJsPrompt(webView, url, message, defaultValue, result)) {
                 return true
             }
         }
@@ -270,8 +268,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         message: String?,
         result: JsResult?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onJsConfirm(webView, url, message, result)) {
+        abilities.forEach { ability ->
+            if (ability.onJsConfirm(webView, url, message, result)) {
                 return true
             }
         }
@@ -284,8 +282,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         message: String?,
         result: JsResult?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onJsBeforeUnload(webView, url, message, result)) {
+        abilities.forEach { ability ->
+            if (ability.onJsBeforeUnload(webView, url, message, result)) {
                 return true
             }
         }
@@ -293,8 +291,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onJsTimeout(): Boolean {
-        abilities.forEach { client ->
-            if (client.onJsTimeout()) {
+        abilities.forEach { ability ->
+            if (ability.onJsTimeout()) {
                 return true
             }
         }
@@ -303,18 +301,18 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
 
     internal fun onShowCustomView(
         customView: View?,
-        callback: WebChromeClient.CustomViewCallback?
+        callback: CustomViewCallback?
     ) {
-        abilities.forEach { client ->
-            if (client.onShowCustomView(customView, callback)) {
+        abilities.forEach { ability ->
+            if (ability.onShowCustomView(customView, callback)) {
                 return
             }
         }
     }
 
     internal fun onHideCustomView() {
-        abilities.forEach { client ->
-            if (client.onHideCustomView()) {
+        abilities.forEach { ability ->
+            if (ability.onHideCustomView()) {
                 return
             }
         }
@@ -326,8 +324,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         isUserGesture: Boolean,
         resultMsg: Message
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onCreateWindow(webView, isDialog, isUserGesture, resultMsg)) {
+        abilities.forEach { ability ->
+            if (ability.onCreateWindow(webView, isDialog, isUserGesture, resultMsg)) {
                 return true
             }
         }
@@ -335,8 +333,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onCloseWindow(webView: View) {
-        abilities.forEach { client ->
-            if (client.onCloseWindow(webView)) {
+        abilities.forEach { ability ->
+            if (ability.onCloseWindow(webView)) {
                 return
             }
         }
@@ -346,24 +344,24 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        abilities.forEach { client ->
-            if (client.onGeolocationPermissionsShowPrompt(origin, callback)) {
+        abilities.forEach { ability ->
+            if (ability.onGeolocationPermissionsShowPrompt(origin, callback)) {
                 return
             }
         }
     }
 
     internal fun onGeolocationPermissionsHidePrompt() {
-        abilities.forEach { client ->
-            if (client.onGeolocationPermissionsHidePrompt()) {
+        abilities.forEach { ability ->
+            if (ability.onGeolocationPermissionsHidePrompt()) {
                 return
             }
         }
     }
 
     internal fun onPermissionRequest(request: PermissionRequest?): Boolean {
-        abilities.forEach { client ->
-            if (client.onPermissionRequest(request)) {
+        abilities.forEach { ability ->
+            if (ability.onPermissionRequest(request)) {
                 return true
             }
         }
@@ -371,8 +369,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean {
-        abilities.forEach { client ->
-            if (client.onPermissionRequestCanceled(request)) {
+        abilities.forEach { ability ->
+            if (ability.onPermissionRequestCanceled(request)) {
                 return true
             }
         }
@@ -380,8 +378,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        abilities.forEach { client ->
-            if (client.onConsoleMessage(consoleMessage)) {
+        abilities.forEach { ability ->
+            if (ability.onConsoleMessage(consoleMessage)) {
                 return true
             }
         }
@@ -391,10 +389,10 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     internal fun onShowFileChooser(
         webView: View,
         filePathCallback: ValueCallback<Array<Uri>>?,
-        fileChooserParams: WebChromeClient.FileChooserParams?
+        fileChooserParams: FileChooserParams?
     ): Boolean {
-        abilities.forEach { client ->
-            if (client.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
+        abilities.forEach { ability ->
+            if (ability.onShowFileChooser(webView, filePathCallback, fileChooserParams)) {
                 return true
             }
         }
@@ -402,83 +400,48 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun onReceivedTouchIconUrl(webView: View, url: String?, precomposed: Boolean) {
-        abilities.forEach { client ->
-            if (client.onReceivedTouchIconUrl(webView, url, precomposed)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedTouchIconUrl(webView, url, precomposed)) {
                 return
             }
         }
     }
 
     internal fun onReceivedIcon(webView: View, icon: Bitmap?) {
-        abilities.forEach { client ->
-            if (client.onReceivedIcon(webView, icon)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedIcon(webView, icon)) {
                 return
             }
         }
     }
 
     internal fun onReceivedTitle(webView: View, title: String?) {
-        abilities.forEach { client ->
-            if (client.onReceivedTitle(webView, title)) {
+        abilities.forEach { ability ->
+            if (ability.onReceivedTitle(webView, title)) {
                 return
             }
         }
     }
 
     internal fun onProgressChanged(webView: View, newProgress: Int) {
-        abilities.forEach { client ->
-            if (client.onProgressChanged(webView, newProgress)) {
-                return
-            }
-        }
-    }
-
-    internal fun onExceededDatabaseQuota(
-        url: String?,
-        databaseIdentifier: String?,
-        quota: Long,
-        estimatedDatabaseSize: Long,
-        totalQuota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
-    ) {
-        abilities.forEach { client ->
-            if (client.onExceededDatabaseQuota(
-                    url,
-                    databaseIdentifier,
-                    quota,
-                    estimatedDatabaseSize,
-                    totalQuota,
-                    quotaUpdater
-                )
-            ) {
-                return
-            }
-        }
-    }
-
-    internal fun onReachedMaxAppCacheSize(
-        requiredStorage: Long,
-        quota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
-    ) {
-        abilities.forEach { client ->
-            if (client.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)) {
+        abilities.forEach { ability ->
+            if (ability.onProgressChanged(webView, newProgress)) {
                 return
             }
         }
     }
 
     internal fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
-        abilities.forEach { client ->
-            if (client.getVisitedHistory(callback)) {
+        abilities.forEach { ability ->
+            if (ability.getVisitedHistory(callback)) {
                 return
             }
         }
     }
 
     internal fun getVideoLoadingProgressView(): View? {
-        abilities.forEach { client ->
-            client.getVideoLoadingProgressView()?.let { view ->
+        abilities.forEach { ability ->
+            ability.getVideoLoadingProgressView()?.let { view ->
                 return view
             }
         }
@@ -486,8 +449,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     }
 
     internal fun getDefaultVideoPoster(): Bitmap? {
-        abilities.forEach { client ->
-            client.getDefaultVideoPoster()?.let { bitmap ->
+        abilities.forEach { ability ->
+            ability.getDefaultVideoPoster()?.let { bitmap ->
                 return bitmap
             }
         }
@@ -501,8 +464,8 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         mimetype: String?,
         contentLength: Long
     ) {
-        abilities.forEach { client ->
-            if (client.onDownloadStart(
+        abilities.forEach { ability ->
+            if (ability.onDownloadStart(
                     url,
                     userAgent,
                     contentDisposition,

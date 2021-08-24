@@ -7,12 +7,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.webkit.GeolocationPermissions
-import android.webkit.PermissionRequest
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import per.goweii.anole.Constants
 import per.goweii.anole.R
+import per.goweii.anole.ability.GeolocationPermissions
+import per.goweii.anole.ability.PermissionRequest
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.ResultUtils
@@ -20,7 +20,7 @@ import per.goweii.anole.utils.findActivity
 
 class PermissionAbility(
     private val onRequestPermissions: (Context.(
-        origin: Uri?,
+        origin: Uri,
         permissions: Array<String>,
         callback: (granted: Array<String>?) -> Unit
     ) -> Dialog) = { _, permissions, callback ->

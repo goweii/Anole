@@ -7,7 +7,6 @@ import android.os.Message
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
-import android.webkit.WebChromeClient
 import per.goweii.anole.client.WebClient
 
 class BridgeWebClient(
@@ -20,13 +19,8 @@ class BridgeWebClient(
         reqMethod: String?,
         userAgent: String?
     ): WebResourceResponse? {
-        return webClient.shouldInterceptRequest(
-            view,
-            reqUri,
-            reqHeaders,
-            reqMethod,
-            userAgent
-        )
+        return webClient.shouldInterceptRequest(view, reqUri, reqHeaders, reqMethod, userAgent)
+            ?.toWebkitWebResourceResponse()
     }
 
     fun shouldOverrideUrlLoading(
@@ -36,13 +30,7 @@ class BridgeWebClient(
         reqMethod: String?,
         userAgent: String?
     ): Boolean {
-        return webClient.shouldOverrideUrlLoading(
-            view,
-            reqUri,
-            reqHeaders,
-            reqMethod,
-            userAgent
-        )
+        return webClient.shouldOverrideUrlLoading(view, reqUri, reqHeaders, reqMethod, userAgent)
     }
 
     fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean {
@@ -55,7 +43,12 @@ class BridgeWebClient(
         threatType: Int,
         callback: SafeBrowsingResponse?
     ) {
-        webClient.onSafeBrowsingHit(view, request, threatType, callback)
+        webClient.onSafeBrowsingHit(
+            view,
+            request?.toLibraryWebResourceRequest(),
+            threatType,
+            callback?.toLibrarySafeBrowsingResponse()
+        )
     }
 
     fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
@@ -76,7 +69,11 @@ class BridgeWebClient(
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
-        webClient.onReceivedError(view, request, error)
+        webClient.onReceivedError(
+            view,
+            request?.toLibraryWebResourceRequest(),
+            error?.toWebkitWebResourceError()
+        )
     }
 
     fun onReceivedHttpError(
@@ -84,11 +81,11 @@ class BridgeWebClient(
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
-        webClient.onReceivedHttpError(view, request, errorResponse)
-    }
-
-    fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail?): Boolean {
-        return webClient.onRenderProcessGone(view, detail)
+        webClient.onReceivedHttpError(
+            view,
+            request?.toLibraryWebResourceRequest(),
+            errorResponse?.toLibraryWebResourceResponse()
+        )
     }
 
     fun onReceivedLoginRequest(
@@ -121,7 +118,10 @@ class BridgeWebClient(
     }
 
     fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest?) {
-        webClient.onReceivedClientCertRequest(view, request)
+        webClient.onReceivedClientCertRequest(
+            view,
+            request?.toLibraryClientCertRequest()
+        )
     }
 
     fun onReceivedHttpAuthRequest(
@@ -130,11 +130,20 @@ class BridgeWebClient(
         host: String?,
         realm: String?
     ) {
-        webClient.onReceivedHttpAuthRequest(view, handler, host, realm)
+        webClient.onReceivedHttpAuthRequest(
+            view,
+            handler?.toLibraryHttpAuthHandler(),
+            host,
+            realm
+        )
     }
 
     fun onReceivedSslError(view: WebView, handler: SslErrorHandler?, error: SslError?) {
-        webClient.onReceivedSslError(view, handler, error)
+        webClient.onReceivedSslError(
+            view,
+            handler?.toLibrarySslErrorHandler(),
+            error
+        )
     }
 
     fun onTooManyRedirects(view: WebView, cancelMsg: Message?, continueMsg: Message?) {
@@ -159,7 +168,12 @@ class BridgeWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return webClient.onJsAlert(view, url, message, result)
+        return webClient.onJsAlert(
+            view,
+            url,
+            message,
+            result?.toLibraryJsResult()
+        )
     }
 
     fun onJsPrompt(
@@ -169,7 +183,13 @@ class BridgeWebClient(
         defaultValue: String?,
         result: JsPromptResult?
     ): Boolean {
-        return webClient.onJsPrompt(view, url, message, defaultValue, result)
+        return webClient.onJsPrompt(
+            view,
+            url,
+            message,
+            defaultValue,
+            result?.toLibraryJsPromptResult()
+        )
     }
 
     fun onJsConfirm(
@@ -178,7 +198,12 @@ class BridgeWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return webClient.onJsConfirm(view, url, message, result)
+        return webClient.onJsConfirm(
+            view,
+            url,
+            message,
+            result?.toLibraryJsResult()
+        )
     }
 
     fun onJsBeforeUnload(
@@ -187,7 +212,12 @@ class BridgeWebClient(
         message: String?,
         result: JsResult?
     ): Boolean {
-        return webClient.onJsBeforeUnload(view, url, message, result)
+        return webClient.onJsBeforeUnload(
+            view,
+            url,
+            message,
+            result?.toLibraryJsResult()
+        )
     }
 
     fun onJsTimeout(): Boolean {
@@ -195,7 +225,10 @@ class BridgeWebClient(
     }
 
     fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
-        webClient.onShowCustomView(view, callback)
+        webClient.onShowCustomView(
+            view,
+            callback?.toLibraryCustomViewCallback()
+        )
     }
 
     fun onHideCustomView() {
@@ -219,7 +252,10 @@ class BridgeWebClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        webClient.onGeolocationPermissionsShowPrompt(origin, callback)
+        webClient.onGeolocationPermissionsShowPrompt(
+            origin,
+            callback?.toLibraryGeolocationPermissionsCallback()
+        )
     }
 
     fun onGeolocationPermissionsHidePrompt() {
@@ -227,15 +263,21 @@ class BridgeWebClient(
     }
 
     fun onPermissionRequest(request: PermissionRequest?): Boolean {
-        return webClient.onPermissionRequest(request)
+        return webClient.onPermissionRequest(
+            request?.toLibraryPermissionRequest()
+        )
     }
 
     fun onPermissionRequestCanceled(request: PermissionRequest?): Boolean {
-        return webClient.onPermissionRequestCanceled(request)
+        return webClient.onPermissionRequestCanceled(
+            request?.toLibraryPermissionRequest()
+        )
     }
 
     fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        return webClient.onConsoleMessage(consoleMessage)
+        return webClient.onConsoleMessage(
+            consoleMessage?.toLibraryConsoleMessage()
+        )
     }
 
     fun onShowFileChooser(
@@ -243,7 +285,11 @@ class BridgeWebClient(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?
     ): Boolean {
-        return webClient.onShowFileChooser(webView, filePathCallback, fileChooserParams)
+        return webClient.onShowFileChooser(
+            webView,
+            filePathCallback?.toLibraryValueCallback(),
+            fileChooserParams?.toLibraryFileChooserParams()
+        )
     }
 
     fun onReceivedTouchIconUrl(view: WebView, url: String?, precomposed: Boolean) {
@@ -262,34 +308,8 @@ class BridgeWebClient(
         webClient.onProgressChanged(view, newProgress)
     }
 
-    fun onExceededDatabaseQuota(
-        url: String?,
-        databaseIdentifier: String?,
-        quota: Long,
-        estimatedDatabaseSize: Long,
-        totalQuota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
-    ) {
-        webClient.onExceededDatabaseQuota(
-            url,
-            databaseIdentifier,
-            quota,
-            estimatedDatabaseSize,
-            totalQuota,
-            quotaUpdater
-        )
-    }
-
-    fun onReachedMaxAppCacheSize(
-        requiredStorage: Long,
-        quota: Long,
-        quotaUpdater: WebStorage.QuotaUpdater?
-    ) {
-        webClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater)
-    }
-
     fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
-        webClient.getVisitedHistory(callback)
+        webClient.getVisitedHistory(callback?.toLibraryValueCallback())
     }
 
     fun getVideoLoadingProgressView(): View? {

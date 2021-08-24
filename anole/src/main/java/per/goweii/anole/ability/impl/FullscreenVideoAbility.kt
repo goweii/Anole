@@ -7,8 +7,8 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.webkit.WebChromeClient
 import android.widget.FrameLayout
+import per.goweii.anole.ability.CustomViewCallback
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.utils.findActivity
 
@@ -16,14 +16,14 @@ class FullscreenVideoAbility(
     private val activity: Activity? = null
 ) : WebAbility() {
     private var view: View? = null
-    private var callback: WebChromeClient.CustomViewCallback? = null
+    private var callback: CustomViewCallback? = null
     private var oldOrientation = 0
     private var oldIsFullscreen = false
     private var oldIsKeepScreen = false
 
     override fun onShowCustomView(
         customView: View?,
-        callback: WebChromeClient.CustomViewCallback?
+        callback: CustomViewCallback?
     ): Boolean {
         hide()
         show(customView, callback)
@@ -35,7 +35,7 @@ class FullscreenVideoAbility(
         return true
     }
 
-    private fun show(view: View?, callback: WebChromeClient.CustomViewCallback?) {
+    private fun show(view: View?, callback: CustomViewCallback?) {
         val activity = this.activity ?: view?.findActivity()
         if (activity?.window == null) {
             callback?.onCustomViewHidden()
