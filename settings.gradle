@@ -1,3 +1,4 @@
 rootProject.name='Anole'
-include ':app'
-include ':anole'
+include ':simple'
+include ':anole-kernel'
+include ':anole-kernel-system'

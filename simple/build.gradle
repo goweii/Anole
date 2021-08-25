@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId "per.goweii.android.anole"
+        minSdkVersion 21
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility rootProject.ext.sourceCompatibility
+        targetCompatibility rootProject.ext.targetCompatibility
+    }
+    kotlinOptions {
+        jvmTarget = rootProject.ext.jvmTarget
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each {
+            def buildType = variant.buildType.name
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+            it.outputFileName = "anole-${buildType}-${versionName}-${versionCode}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib"
+    implementation "androidx.core:core-ktx:$androidx_core_ktx"
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+
+    implementation project(':anole-kernel')
+    implementation project(':anole-kernel-system')
+
+    implementation "androidx.constraintlayout:constraintlayout:2.1.0"
+    implementation "com.google.android.material:material:1.4.0"
+
+    implementation "per.goweii.codex:core:1.0.0"
+    implementation "per.goweii.codex:processor-zxing:1.0.0"
+    implementation "per.goweii.codex:decorator-finder-wechat:1.0.0"
+    implementation "per.goweii.codex:decorator-frozen:1.0.0"
+    implementation "per.goweii.codex:decorator-gesture:1.0.0"
+    implementation "per.goweii.codex:decorator-vibrate:1.0.0"
+}
