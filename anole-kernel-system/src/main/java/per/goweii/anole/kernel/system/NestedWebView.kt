@@ -2,30 +2,28 @@ package per.goweii.anole.kernel.system
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.*
-import android.view.accessibility.AccessibilityEvent
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.View
+import android.view.ViewConfiguration
 import android.view.animation.AnimationUtils
 import android.webkit.WebView
 import android.widget.OverScroller
-import android.widget.ScrollView
 import androidx.core.view.*
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import androidx.core.view.accessibility.AccessibilityRecordCompat
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-open class NestedWebView @JvmOverloads constructor(
+class NestedWebView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.webViewStyle
 ) : WebView(context, attrs, defStyleAttr), NestedScrollingChild2, NestedScrollingParent {
-    private val mParentHelper: NestedScrollingParentHelper
-    private val mChildHelper: NestedScrollingChildHelper
-    private val mScroller: OverScroller
+    private val mParentHelper: NestedScrollingParentHelper = NestedScrollingParentHelper(this)
+    private val mChildHelper: NestedScrollingChildHelper = NestedScrollingChildHelper(this)
+    private val mScroller: OverScroller = OverScroller(context)
     private var mVelocityTracker: VelocityTracker? = null
 
     private val mVerticalScrollFactor by lazy {
@@ -34,15 +32,16 @@ open class NestedWebView @JvmOverloads constructor(
         outValue.getDimension(context.resources.displayMetrics)
     }
 
+    private val mTouchSlop: Int
+    private val mMinimumVelocity: Int
+    private val mMaximumVelocity: Int
+
     private val mScrollOffset = IntArray(2)
     private val mScrollConsumed = IntArray(2)
     private var mActivePointerId = INVALID_POINTER
     private var mLastScrollerY = 0
     private var mLastMotionY = 0
-    private var mTouchSlop = 0
     private var mNestedYOffset = 0
-    private var mMinimumVelocity = 0
-    private var mMaximumVelocity = 0
     private var mIsBeingDragged = false
     private var mLastScroll: Long = 0
 
@@ -50,15 +49,11 @@ open class NestedWebView @JvmOverloads constructor(
 
     init {
         overScrollMode = OVER_SCROLL_NEVER
-        mScroller = OverScroller(context)
         val configuration = ViewConfiguration.get(context)
         mTouchSlop = configuration.scaledTouchSlop
         mMinimumVelocity = configuration.scaledMinimumFlingVelocity
         mMaximumVelocity = configuration.scaledMaximumFlingVelocity
-        mChildHelper = NestedScrollingChildHelper(this)
-        mParentHelper = NestedScrollingParentHelper(this)
         isNestedScrollingEnabled = true
-        ViewCompat.setAccessibilityDelegate(this, ACCESSIBILITY_DELEGATE)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -124,9 +119,7 @@ open class NestedWebView @JvmOverloads constructor(
                     }
                     val y = ev.getY(pointerIndex).toInt()
                     val yDiff = abs(y - mLastMotionY)
-                    if (yDiff > mTouchSlop
-                        && nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL == 0
-                    ) {
+                    if (yDiff > mTouchSlop && nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL == 0) {
                         mIsBeingDragged = true
                         mLastMotionY = y
                         initVelocityTrackerIfNotExists()
@@ -191,7 +184,10 @@ open class NestedWebView @JvmOverloads constructor(
                     val y = ev.getY(activePointerIndex).toInt()
                     var deltaY = mLastMotionY - y
                     if (dispatchNestedPreScroll(
-                            0, deltaY, mScrollConsumed, mScrollOffset,
+                            0,
+                            deltaY,
+                            mScrollConsumed,
+                            mScrollOffset,
                             ViewCompat.TYPE_TOUCH
                         )
                     ) {
@@ -595,96 +591,15 @@ open class NestedWebView @JvmOverloads constructor(
 
     private fun flingWithNestedDispatch(velocityY: Int) {
         val scrollY = scrollY
-        val canFling = ((scrollY > 0 || velocityY > 0)
-                && (scrollY < scrollRange || velocityY < 0))
+        val canFling = ((scrollY > 0 || velocityY > 0) && (scrollY < scrollRange || velocityY < 0))
         if (!dispatchNestedPreFling(0f, velocityY.toFloat())) {
             dispatchNestedFling(0f, velocityY.toFloat(), canFling)
             fling(velocityY)
         }
     }
 
-    private class AccessibilityDelegate : AccessibilityDelegateCompat() {
-        override fun performAccessibilityAction(
-            host: View,
-            action: Int,
-            arguments: Bundle
-        ): Boolean {
-            if (super.performAccessibilityAction(host, action, arguments)) {
-                return true
-            }
-            val nsvHost = host as NestedWebView
-            if (!nsvHost.isEnabled) {
-                return false
-            }
-            when (action) {
-                AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
-                    run {
-                        val viewportHeight = (nsvHost.height - nsvHost.paddingBottom
-                                - nsvHost.paddingTop)
-                        val targetScrollY = min(
-                            nsvHost.scrollY + viewportHeight,
-                            nsvHost.scrollRange
-                        )
-                        if (targetScrollY != nsvHost.scrollY) {
-                            nsvHost.smoothScrollTo(0, targetScrollY)
-                            return true
-                        }
-                    }
-                    return false
-                }
-                AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
-                    run {
-                        val viewportHeight = (nsvHost.height - nsvHost.paddingBottom
-                                - nsvHost.paddingTop)
-                        val targetScrollY = max(nsvHost.scrollY - viewportHeight, 0)
-                        if (targetScrollY != nsvHost.scrollY) {
-                            nsvHost.smoothScrollTo(0, targetScrollY)
-                            return true
-                        }
-                    }
-                    return false
-                }
-            }
-            return false
-        }
-
-        override fun onInitializeAccessibilityNodeInfo(
-            host: View,
-            info: AccessibilityNodeInfoCompat
-        ) {
-            super.onInitializeAccessibilityNodeInfo(host, info)
-            val nsvHost = host as NestedWebView
-            info.className = ScrollView::class.java.name
-            if (nsvHost.isEnabled) {
-                val scrollRange = nsvHost.scrollRange
-                if (scrollRange > 0) {
-                    info.isScrollable = true
-                    if (nsvHost.scrollY > 0) {
-                        info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)
-                    }
-                    if (nsvHost.scrollY < scrollRange) {
-                        info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
-                    }
-                }
-            }
-        }
-
-        override fun onInitializeAccessibilityEvent(host: View, event: AccessibilityEvent) {
-            super.onInitializeAccessibilityEvent(host, event)
-            val nsvHost = host as NestedWebView
-            event.className = ScrollView::class.java.name
-            val scrollable = nsvHost.scrollRange > 0
-            event.isScrollable = scrollable
-            event.scrollX = nsvHost.scrollX
-            event.scrollY = nsvHost.scrollY
-            AccessibilityRecordCompat.setMaxScrollX(event, nsvHost.scrollX)
-            AccessibilityRecordCompat.setMaxScrollY(event, nsvHost.scrollRange)
-        }
-    }
-
     companion object {
         private const val INVALID_POINTER = -1
         private const val ANIMATED_SCROLL_GAP = 250
-        private val ACCESSIBILITY_DELEGATE = AccessibilityDelegate()
     }
 }

@@ -5,16 +5,16 @@ import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.WebKernel
 
 class BackForwardIconAbility(
-    private val backView: View?,
-    private val forwardView: View?
+    private val canGoBack: ((Boolean) -> Unit)?,
+    private val canGoForward: ((Boolean) -> Unit)?
 ) : WebAbility() {
     private var kernel: WebKernel? = null
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)
         this.kernel = kernel
-        backView?.changeEnable(kernel.canGoBackOrForward(-1))
-        forwardView?.changeEnable(kernel.canGoBackOrForward(1))
+        canGoBack?.invoke(kernel.canGoBack)
+        canGoForward?.invoke(kernel.canGoForward)
     }
 
     override fun onDetachFromKernel(kernel: WebKernel) {
@@ -27,18 +27,8 @@ class BackForwardIconAbility(
         url: String,
         isReload: Boolean
     ): Boolean {
-        backView?.changeEnable(kernel?.canGoBack ?: false)
-        forwardView?.changeEnable(kernel?.canGoForward ?: false)
+        canGoBack?.invoke(kernel?.canGoBack ?: false)
+        canGoForward?.invoke(kernel?.canGoForward ?: false)
         return super.doUpdateVisitedHistory(webView, url, isReload)
-    }
-
-    private fun View.changeEnable(enable: Boolean) {
-        if (enable) {
-            alpha = 1F
-            isEnabled = true
-        } else {
-            alpha = 0.5F
-            isEnabled = false
-        }
     }
 }

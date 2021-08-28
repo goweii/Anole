@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_edittext_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="?attr/dimenButtonSizeDefault"
+        android:layout_height="?attr/dimenButtonSizeDefault"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_browser" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_text"
+        android:layout_width="0dp"
+        android:layout_height="?attr/dimenButtonSizeDefault"
+        android:layout_weight="1"
+        android:background="#00000000"
+        android:hint="@string/url_input_hint"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="?attr/colorOnSurface"
+        android:textColorHint="?attr/colorEditTextHint" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_action"
+        android:layout_width="?attr/dimenButtonSizeDefault"
+        android:layout_height="?attr/dimenButtonSizeDefault"
+        android:padding="12dp"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

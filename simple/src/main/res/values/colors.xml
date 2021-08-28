@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <attr name="colorSurface" format="color" />
+    <attr name="colorDivider" format="color" />
+    <attr name="colorBackground" format="color" />
+    <attr name="colorEditTextBackground" format="color" />
+    <attr name="colorIconBackground" format="color" />
+    <attr name="colorOnSurface" format="color" />
+    <attr name="colorEditTextHint" format="color" />
+    <attr name="colorShadow" format="color" />
+
+    <color name="colorPrimary">#4D68FF</color>
+    <color name="colorPrimaryDark">#3F51B5</color>
+    <color name="colorAccent">#009688</color>
+
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorDivider">#0D000000</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorIconBackground">#1A000000</color>
+    <color name="colorEditTextBackground">#0F000000</color>
+    <color name="colorOnSurface">#CC000000</color>
+    <color name="colorEditTextHint">#66000000</color>
+    <color name="colorShadow">#33000000</color>
 </resources>

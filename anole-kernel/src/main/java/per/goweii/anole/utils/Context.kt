@@ -6,18 +6,19 @@ import android.content.ContextWrapper
 import android.view.View
 
 internal fun Context.findActivity(): Activity? {
-    if (this is Activity) {
-        return this
+    var context: Context = this
+    while (true) {
+        if (context is Activity) return context
+        if (this !is ContextWrapper) return null
+        if (baseContext === context) return null
+        context = baseContext
     }
-    if (this is ContextWrapper) {
-        val baseContext = this.baseContext
-        if (baseContext is Activity) {
-            return baseContext
-        }
-    }
-    return null
 }
 
 internal fun View.findActivity(): Activity? {
-    return context?.findActivity()
+    context?.findActivity()?.let { return it }
+    if (rootView != this) {
+        return rootView.context?.findActivity()
+    }
+    return null
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -46,12 +47,19 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib"
     implementation "androidx.core:core-ktx:$androidx_core_ktx"
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    implementation "androidx.navigation:navigation-fragment-ktx:$androidx_navigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$androidx_navigation"
 
     implementation project(':anole-kernel')
     implementation project(':anole-kernel-system')
 
     implementation "androidx.constraintlayout:constraintlayout:2.1.0"
     implementation "com.google.android.material:material:1.4.0"
+
+    implementation "io.coil-kt:coil:1.3.2"
+
+    implementation "per.goweii.layer:layer-design-material:1.0.0"
+    implementation "per.goweii.layer:layer-design-cupertino:1.0.0"
 
     implementation "per.goweii.codex:core:1.0.0"
     implementation "per.goweii.codex:processor-zxing:1.0.0"

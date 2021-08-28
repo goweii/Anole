@@ -32,8 +32,8 @@ class AppOpenAbility(
             .create()
     }
 ) : WebAbility() {
-    private var mainHandler: Handler? = null
     private var context: Context? = null
+    private var mainHandler: Handler? = null
     private var openAppDialog: Dialog? = null
 
     override fun onAttachToKernel(kernel: WebKernel) {

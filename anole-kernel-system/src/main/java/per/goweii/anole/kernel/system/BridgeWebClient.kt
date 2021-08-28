@@ -20,7 +20,7 @@ class BridgeWebClient(
         userAgent: String?
     ): WebResourceResponse? {
         return webClient.shouldInterceptRequest(view, reqUri, reqHeaders, reqMethod, userAgent)
-            ?.toWebkitWebResourceResponse()
+            ?.toSystemWebResourceResponse()
     }
 
     fun shouldOverrideUrlLoading(
@@ -72,7 +72,7 @@ class BridgeWebClient(
         webClient.onReceivedError(
             view,
             request?.toLibraryWebResourceRequest(),
-            error?.toWebkitWebResourceError()
+            error?.toSystemWebResourceError()
         )
     }
 

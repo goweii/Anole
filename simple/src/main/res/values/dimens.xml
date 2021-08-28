@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="dimenMarginDefault" format="dimension" />
+    <dimen name="dimenMarginDefault">16dp</dimen>
+    <attr name="dimenMarginHalf" format="dimension" />
+    <dimen name="dimenMarginHalf">8dp</dimen>
+    <attr name="dimenCornerRadiusDefault" format="dimension" />
+    <dimen name="dimenCornerRadiusDefault">12dp</dimen>
+    <attr name="dimenButtonSizeDefault" format="dimension" />
+    <dimen name="dimenButtonSizeDefault">44dp</dimen>
+</resources>

@@ -4,130 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".main.MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:fitsSystemWindows="true"
-            app:elevation="0dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/titleBar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
-                android:background="@color/colorPrimary"
+                android:background="?attr/colorSurface"
                 android:orientation="horizontal"
-                android:paddingLeft="16dp"
-                android:paddingRight="10dp"
+                android:paddingStart="?attr/dimenMarginHalf"
+                android:paddingTop="?attr/dimenMarginHalf"
+                android:paddingEnd="?attr/dimenMarginHalf"
+                android:paddingBottom="?attr/dimenMarginHalf"
                 app:layout_scrollFlags="scroll|snap|enterAlways">
 
-                <ImageView
-                    android:id="@+id/iv_logo"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_browser"
-                    tools:ignore="ContentDescription" />
-
-                <EditText
-                    android:id="@+id/et_title"
+                <ProgressBar
+                    android:id="@+id/pb"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
-                    android:background="#00000000"
-                    android:ellipsize="end"
-                    android:hint="请输入网址或搜索内容"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFFFF"
-                    android:textColorHint="#AAFFFFFF" />
+                    android:layout_height="0dp"
+                    android:layout_alignStart="@+id/url_input_view"
+                    android:layout_alignTop="@+id/url_input_view"
+                    android:layout_alignEnd="@+id/url_input_view"
+                    android:layout_alignBottom="@+id/url_input_view"
+                    android:alpha="0.3"
+                    android:max="100"
+                    android:progressDrawable="@drawable/progress_bar"
+                    tools:progress="5" />
 
-                <ImageView
-                    android:id="@+id/iv_enter_or_search"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_gravity="center_vertical"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_enter"
-                    tools:ignore="ContentDescription" />
+                <per.goweii.android.anole.widget.UrlInputView
+                    android:id="@+id/url_input_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <FrameLayout
-            android:id="@+id/content"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorPrimaryDark">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:paddingTop="150dp"
-                    android:paddingBottom="150dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_logo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="50dp"
-                        android:gravity="center"
-                        android:text="@string/app_name"
-                        android:textColor="#ffffff"
-                        android:textSize="50sp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_bookmark"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        tools:listitem="@layout/item_bookmark"
-                        android:nestedScrollingEnabled="false"
-                        android:overScrollMode="never"
-                        tools:layoutManager="GridLayoutManager"
-                        tools:spanCount="4"
-                        tools:itemCount="20"/>
-
-                </LinearLayout>
-
-            </androidx.core.widget.NestedScrollView>
-
-            <FrameLayout
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </FrameLayout>
+            app:defaultNavHost="true"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:navGraph="@navigation/nav_graph" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="?attr/colorSurface"
+            android:elevation="10dp"
             android:orientation="horizontal"
-            app:layout_anchor="@+id/content"
+            app:layout_anchor="@+id/nav_host_fragment"
             app:layout_anchorGravity="bottom"
-            app:layout_behavior="per.goweii.android.anole.FooterBehaviorDependAppBar">
+            app:layout_behavior="per.goweii.android.anole.main.FooterBehaviorDependAppBar">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_back"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -137,7 +81,7 @@
                 android:src="@drawable/ic_back"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_forward"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -147,35 +91,7 @@
                 android:src="@drawable/ic_forward"
                 tools:ignore="ContentDescription" />
 
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/iv_windows"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackground"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_windows"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:id="@+id/tv_windows_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:alpha="0.7"
-                    android:text="12"
-                    android:textColor="#ffffff"
-                    android:textSize="11dp"
-                    android:textStyle="bold"
-                    android:typeface="sans" />
-
-            </FrameLayout>
-
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_menu"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -185,7 +101,41 @@
                 android:src="@drawable/ic_menu"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
+            <RelativeLayout
+                android:id="@+id/rl_windows"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:layout_weight="1">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_windows"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_windows"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/tv_windows_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/iv_windows"
+                    android:layout_alignBottom="@+id/iv_windows"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="-1dp"
+                    android:layout_marginBottom="-1dp"
+                    android:background="?attr/colorSurface"
+                    android:includeFontPadding="false"
+                    android:text="@string/add_window"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:typeface="monospace" />
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_home"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
