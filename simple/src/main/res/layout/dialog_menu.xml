@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<per.goweii.layer.visualeffectview.RoundedShadowLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="?attr/colorSurface"
-    android:orientation="vertical">
+    android:layout_marginStart="?attr/dimenShadowOffsetY"
+    android:layout_marginEnd="?attr/dimenShadowOffsetY"
+    app:roundedCornerRadius="?attr/dimenCornerRadiusDefault"
+    app:shadowColor="?attr/colorShadow"
+    app:shadowOffsetY="?attr/dimenShadowOffsetY"
+    app:shadowRadius="?attr/dimenShadowRadius"
+    app:shadowSolidColor="?attr/colorSurface">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_menu"
+        android:id="@+id/dialog_menu_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:paddingLeft="10dp"
         android:paddingTop="20dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
+        tools:ignore="SpeakableTextPresentCheck"
         tools:itemCount="3"
         tools:layoutManager="GridLayoutManager"
         tools:listitem="@layout/item_menu"
         tools:spanCount='3' />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:alpha="0.1"
-        android:background="?attr/colorOnSurface" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_close"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/selectableItemBackground"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_close"
-        app:tint="?attr/colorOnSurface" />
-
-</LinearLayout>
+</per.goweii.layer.visualeffectview.RoundedShadowLayout>

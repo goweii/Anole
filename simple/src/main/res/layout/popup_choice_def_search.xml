@@ -11,8 +11,8 @@
     app:popupArrowWidth="20dp"
     app:popupCornerRadius="?attr/dimenCornerRadiusDefault"
     app:shadowColor="?attr/colorShadow"
-    app:shadowOffsetY="5dp"
-    app:shadowRadius="10dp"
+    app:shadowOffsetY="?attr/dimenShadowOffsetY"
+    app:shadowRadius="?attr/dimenShadowRadius"
     app:shadowSolidColor="?attr/colorSurface">
 
     <per.goweii.layer.core.widget.MaxSizeFrameLayout

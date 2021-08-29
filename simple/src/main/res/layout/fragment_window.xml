@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:id="@+id/titleBar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/colorSurface"
+            android:orientation="horizontal"
+            android:paddingStart="?attr/dimenMarginHalf"
+            android:paddingTop="?attr/dimenMarginHalf"
+            android:paddingEnd="?attr/dimenMarginHalf"
+            android:paddingBottom="?attr/dimenMarginHalf"
+            app:layout_scrollFlags="scroll|snap|enterAlways">
+
+            <ProgressBar
+                android:id="@+id/pb"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_alignStart="@+id/url_input_view"
+                android:layout_alignTop="@+id/url_input_view"
+                android:layout_alignEnd="@+id/url_input_view"
+                android:layout_alignBottom="@+id/url_input_view"
+                android:alpha="0.3"
+                android:max="100"
+                android:progressDrawable="@drawable/progress_bar"
+                tools:progress="5" />
+
+            <per.goweii.android.anole.widget.UrlInputView
+                android:id="@+id/url_input_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        android:elevation="10dp"
+        android:orientation="horizontal"
+        app:layout_anchor="@+id/fragment_container_view"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="per.goweii.android.anole.main.FooterBehaviorDependAppBar">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_forward"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_forward"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_menu"
+            tools:ignore="ContentDescription" />
+
+        <RelativeLayout
+            android:id="@+id/rl_windows"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_windows"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_windows"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_windows_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/iv_windows"
+                android:layout_alignBottom="@+id/iv_windows"
+                android:layout_gravity="center"
+                android:layout_marginEnd="-1dp"
+                android:layout_marginBottom="-1dp"
+                android:background="?attr/colorSurface"
+                android:includeFontPadding="false"
+                android:text="@string/add_window"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_home"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

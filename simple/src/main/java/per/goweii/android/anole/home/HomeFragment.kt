@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
-import per.goweii.android.anole.main.MainViewModel
-import per.goweii.android.anole.utils.activityViewModelsByAndroid
+import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
+import per.goweii.android.anole.window.WindowFragment
+import per.goweii.android.anole.window.WindowViewModel
 
 class HomeFragment : Fragment() {
-    private val mainViewModel: MainViewModel by activityViewModelsByAndroid()
+    private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val viewModel: HomeViewModel by viewModelsByAndroid()
-
     private lateinit var binding: FragmentHomeBinding
 
     private var bookmarkAdapter: BookmarkAdapter? = null
@@ -24,24 +24,25 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        if (!this::binding.isInitialized) {
+            binding = FragmentHomeBinding.inflate(inflater, container, false)
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bookmarkAdapter = BookmarkAdapter()
-
     }
 
     override fun onResume() {
         super.onResume()
-        mainViewModel.progressLiveData.postValue(-1)
-        mainViewModel.goBackEnableLiveData.postValue(false)
-        mainViewModel.goForwardEnableLiveData.postValue(false)
-        mainViewModel.currUrlLiveData.postValue(null)
-        mainViewModel.currTitleLiveData.postValue(null)
-        mainViewModel.currIconLiveData.postValue(null)
+        this.windowViewModel.progressLiveData.postValue(-1)
+        this.windowViewModel.goBackEnableLiveData.postValue(false)
+        this.windowViewModel.goForwardEnableLiveData.postValue(false)
+        this.windowViewModel.currUrlLiveData.postValue(null)
+        this.windowViewModel.currTitleLiveData.postValue(null)
+        this.windowViewModel.currIconLiveData.postValue(null)
     }
 
     private fun addOrUpdateBookmark(url: String, title: String, logo: Bitmap?) {

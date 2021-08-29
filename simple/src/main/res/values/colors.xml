@@ -20,5 +20,5 @@
     <color name="colorEditTextBackground">#0F000000</color>
     <color name="colorOnSurface">#CC000000</color>
     <color name="colorEditTextHint">#66000000</color>
-    <color name="colorShadow">#33000000</color>
+    <color name="colorShadow">#0D000000</color>
 </resources>

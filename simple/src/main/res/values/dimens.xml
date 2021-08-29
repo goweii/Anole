@@ -8,4 +8,8 @@
     <dimen name="dimenCornerRadiusDefault">12dp</dimen>
     <attr name="dimenButtonSizeDefault" format="dimension" />
     <dimen name="dimenButtonSizeDefault">44dp</dimen>
+    <attr name="dimenShadowRadius" format="dimension" />
+    <dimen name="dimenShadowRadius">12dp</dimen>
+    <attr name="dimenShadowOffsetY" format="dimension" />
+    <dimen name="dimenShadowOffsetY">6dp</dimen>
 </resources>

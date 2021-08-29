@@ -2,15 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/nav_graph_window"
     app:startDestination="@id/homeFragment">
-    <action
-        android:id="@+id/action_webFragment"
-        app:destination="@id/webFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="per.goweii.android.anole.home.HomeFragment"
@@ -31,6 +24,7 @@
         tools:layout="@layout/fragment_web">
         <argument
             android:name="initialUrl"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <action
@@ -41,4 +35,11 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </fragment>
+    <action
+        android:id="@+id/action_global_webFragment"
+        app:destination="@id/webFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@animator/nav_default_pop_exit_anim" />
 </navigation>
