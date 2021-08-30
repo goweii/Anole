@@ -12,4 +12,6 @@
     <dimen name="dimenShadowRadius">12dp</dimen>
     <attr name="dimenShadowOffsetY" format="dimension" />
     <dimen name="dimenShadowOffsetY">6dp</dimen>
+    <attr name="dimenElevation1" format="dimension" />
+    <dimen name="dimenElevation1">1dp</dimen>
 </resources>

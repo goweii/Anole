@@ -50,23 +50,23 @@ class BookmarkHelper(context: Context) {
     }
 
     fun add(url: String, title: String, logo: Bitmap?): Bookmark {
-        val bookmark = Bookmark(url, title, logo)
-        bookmarks.add(bookmark)
-        save()
-        return bookmark
+        return add(Bookmark(url, title, logo))
     }
 
-    fun update(url: String, title: String, logo: Bitmap?): Bookmark? {
-        val bookmark = find(url)
-        if (bookmark != null) {
-            bookmark.title = title
-            if (logo != null) {
-                bookmark.logo = logo
+    fun add(bookmark: Bookmark): Bookmark {
+        val oldBookmark = find(bookmark.url)
+        return if (oldBookmark != null) {
+            oldBookmark.title = bookmark.title
+            if (bookmark.logo != null) {
+                oldBookmark.logo = bookmark.logo!!
             }
             save()
-            return bookmark
+            oldBookmark
+        } else {
+            bookmarks.add(bookmark)
+            save()
+            bookmark
         }
-        return null
     }
 
     fun find(url: String): Bookmark? {

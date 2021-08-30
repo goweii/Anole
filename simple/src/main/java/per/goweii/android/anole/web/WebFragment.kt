@@ -8,11 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.daimajia.swipe.SwipeLayout
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.FragmentWebBinding
+import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
@@ -48,6 +48,7 @@ class WebFragment : Fragment() {
     fun setTouchable(touchable: Boolean) {
         if (::binding.isInitialized) {
             binding.webContainer.touchable = touchable
+            binding.swipeLayout.draggable = !touchable
         }
     }
 
@@ -138,31 +139,15 @@ class WebFragment : Fragment() {
     }
 
     private fun initSwipeDismiss() {
-        binding.swipeLayout.addSwipeListener(object : SwipeLayout.SwipeListener {
-            override fun onStartOpen(layout: SwipeLayout?) {
+        binding.swipeLayout.onDismiss = {
+            allWebViewModel.onRemoveWebFragment(this@WebFragment)
+        }
+        binding.swipeLayout.onCollect = {
+            if (!kernelView.url.isNullOrBlank() && !kernelView.title.isNullOrBlank()) {
+                windowViewModel.addOrUpdateBookmark(
+                    Bookmark(kernelView.url!!, kernelView.title!!, kernelView.favicon)
+                )
             }
-
-            override fun onOpen(layout: SwipeLayout?) {
-                allWebViewModel.onRemoveWebFragment(this@WebFragment)
-            }
-
-            override fun onStartClose(layout: SwipeLayout?) {
-            }
-
-            override fun onClose(layout: SwipeLayout?) {
-            }
-
-            override fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int) {
-                binding.webContainer.alpha =
-                    if (topOffset >= 0) {
-                        1F
-                    } else {
-                        1F - (-topOffset.toFloat()) / binding.webContainer.height.toFloat()
-                    }
-            }
-
-            override fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float) {
-            }
-        })
+        }
     }
 }

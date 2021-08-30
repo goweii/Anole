@@ -1,11 +1,14 @@
 package per.goweii.android.anole.home
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import per.goweii.android.anole.databinding.FragmentHomeBinding
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
@@ -33,6 +36,30 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bookmarkAdapter = BookmarkAdapter()
+        binding.rvBookmark.layoutManager = GridLayoutManager(requireContext(), 4)
+        binding.rvBookmark.adapter = bookmarkAdapter
+        bookmarkAdapter?.onClickItem = {
+            windowViewModel.loadUrlOnNewWindow(it.url)
+        }
+        bookmarkAdapter?.onLongClickItem = {
+            windowViewModel.removeBookmark(it.url)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.bookmarkLiveData.collect {
+                bookmarkAdapter?.setData(it)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            windowViewModel.addOrUpdateBookmarkSharedFlow.collect {
+                addOrUpdateBookmark(it)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            windowViewModel.removeBookmarkSharedFlow.collect {
+                removeBookmark(it)
+            }
+        }
     }
 
     override fun onResume() {
@@ -45,19 +72,20 @@ class HomeFragment : Fragment() {
         this.windowViewModel.currIconLiveData.postValue(null)
     }
 
-    private fun addOrUpdateBookmark(url: String, title: String, logo: Bitmap?) {
-        var bookmark = BookmarkHelper.getInstance(requireContext()).update(url, title, logo)
-        if (bookmark != null) {
+    private fun addOrUpdateBookmark(bookmark: Bookmark) {
+        val oldBookmark = BookmarkHelper.getInstance(requireContext()).add(bookmark)
+        if (oldBookmark !== bookmark) {
             bookmarkAdapter?.updateData(bookmark)
         } else {
-            bookmark = BookmarkHelper.getInstance(requireContext()).add(url, title, logo)
             bookmarkAdapter?.addData(bookmark)
         }
     }
 
-    private fun removeBookmark(bookmark: Bookmark) {
-        if (BookmarkHelper.getInstance(requireContext()).remove(bookmark.url) != null) {
-            bookmarkAdapter?.removeData(bookmark)
+    private fun removeBookmark(url: String?) {
+        url ?: return
+        val oldBookmark = BookmarkHelper.getInstance(requireContext()).remove(url)
+        if (oldBookmark != null) {
+            bookmarkAdapter?.removeData(oldBookmark)
         }
     }
 }

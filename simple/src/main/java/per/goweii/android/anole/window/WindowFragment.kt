@@ -16,6 +16,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
@@ -126,7 +128,7 @@ class WindowFragment : Fragment() {
         }
         binding.urlInputView.apply {
             onDefSearch = { showChoiceDefSearchPopup(it) }
-            onCollect = { viewModel.reload() }
+            onCollect = { viewModel.addOrUpdateBookmark(it) }
             onEnter = { viewModel.loadUrl(it) }
             onSearch = { searchKeyword(it) }
         }
@@ -146,6 +148,11 @@ class WindowFragment : Fragment() {
                 allWebFragment.createNewWeb(args.initialUrl)
             } else {
                 showHomeFragment()
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadUrlOnNewWindowSharedFlow.collect {
+                loadUrlOnNewWeb(it)
             }
         }
     }
@@ -175,6 +182,11 @@ class WindowFragment : Fragment() {
             setMaxLifecycle(homeFragment, Lifecycle.State.STARTED)
             setMaxLifecycle(allWebFragment, Lifecycle.State.RESUMED)
         }
+    }
+
+    private fun loadUrlOnNewWeb(url: String?) {
+        showAllWebFragment()
+        allWebFragment.createNewWeb(url ?: getString(R.string.initial_url))
     }
 
     private fun showChoiceDefSearchPopup(ivIcon: ImageView) {

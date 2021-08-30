@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import coil.load
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.LayoutUrlInputBinding
+import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
 
@@ -38,7 +39,7 @@ class UrlInputView @JvmOverloads constructor(
 
     var onEnter: ((url: String) -> Unit)? = null
     var onSearch: ((key: String) -> Unit)? = null
-    var onCollect: ((url: String) -> Unit)? = null
+    var onCollect: ((bookmark: Bookmark) -> Unit)? = null
     var onDefSearch: ((ImageView) -> Unit)? = null
 
     init {
@@ -79,7 +80,7 @@ class UrlInputView @JvmOverloads constructor(
                 etText.text = null
             } else {
                 if (!url.isNullOrBlank()) {
-                    onCollect?.invoke(url!!)
+                    onCollect?.invoke(Bookmark(url!!, title ?: "", icon))
                 }
             }
         }

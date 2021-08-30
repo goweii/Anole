@@ -10,6 +10,7 @@ import per.goweii.android.anole.R
 
 class WebPageTransformer(
     @FloatRange(from = 0.0, to = 1.0) val scale: Float,
+    private val elevation: Float,
     private val gap: Float,
     private val cornerRadius: Float
 ) : ViewPager2.PageTransformer {
@@ -44,7 +45,7 @@ class WebPageTransformer(
             }
         }
         view.invalidateOutline()
-        view.elevation = (gap / 2F) * faction
+        view.elevation = elevation * faction
 
         val scale = 1F - (1F - scale) * faction
         page.pivotX = page.width / 2F

@@ -41,6 +41,7 @@ class AllWebFragment : Fragment() {
         binding.vpAllWeb.isUserInputEnabled = false
         transformer = WebPageTransformer(
             0.6F,
+            requireContext().resources.getDimension(R.dimen.dimenElevation1),
             requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
             requireContext().resources.getDimension(R.dimen.dimenCornerRadiusDefault)
         )
@@ -55,7 +56,6 @@ class AllWebFragment : Fragment() {
                 exitChoiceMode()
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onRemoveSharedFlow.collect {
                 adapter.removeWeb(it)

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import per.goweii.android.anole.home.Bookmark
 
 class WindowViewModel(application: Application) : AndroidViewModel(application) {
     val windowCountLiveData = MutableLiveData(0)
@@ -24,6 +25,20 @@ class WindowViewModel(application: Application) : AndroidViewModel(application) 
     val loadUrlSharedFlow: SharedFlow<String?> = _loadUrlSharedFlow
     private val _reloadSharedFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
     val reloadSharedFlow: SharedFlow<Boolean> = _reloadSharedFlow
+    private val _addOrUpdateBookmarkSharedFlow: MutableSharedFlow<Bookmark> = MutableSharedFlow()
+    val addOrUpdateBookmarkSharedFlow: SharedFlow<Bookmark> = _addOrUpdateBookmarkSharedFlow
+    private val _removeBookmarkSharedFlow: MutableSharedFlow<String?> = MutableSharedFlow()
+    val removeBookmarkSharedFlow: SharedFlow<String?> = _removeBookmarkSharedFlow
+    private val _loadUrlOnNewWindowSharedFlow: MutableSharedFlow<String?> = MutableSharedFlow()
+    val loadUrlOnNewWindowSharedFlow: SharedFlow<String?> = _loadUrlOnNewWindowSharedFlow
+
+    fun addOrUpdateBookmark(bookmark: Bookmark) {
+        viewModelScope.launch { _addOrUpdateBookmarkSharedFlow.emit(bookmark) }
+    }
+
+    fun removeBookmark(url: String) {
+        viewModelScope.launch { _removeBookmarkSharedFlow.emit(url) }
+    }
 
     fun getBackOrForward(step: Int) {
         viewModelScope.launch { _goBackOrForwardSharedFlow.emit(step) }
@@ -31,6 +46,10 @@ class WindowViewModel(application: Application) : AndroidViewModel(application) 
 
     fun loadUrl(url: String?) {
         viewModelScope.launch { _loadUrlSharedFlow.emit(url) }
+    }
+
+    fun loadUrlOnNewWindow(url: String?) {
+        viewModelScope.launch { _loadUrlOnNewWindowSharedFlow.emit(url) }
     }
 
     fun reload() {
