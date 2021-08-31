@@ -40,6 +40,7 @@ class AllWebFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.vpAllWeb.isUserInputEnabled = false
         transformer = WebPageTransformer(
+            binding.vpAllWeb,
             0.6F,
             requireContext().resources.getDimension(R.dimen.dimenElevation1),
             requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
@@ -90,9 +91,6 @@ class AllWebFragment : Fragment() {
 
     fun enterChoiceMode() {
         ValueAnimator.ofFloat(transformer.faction, 1F).apply {
-            doOnStart {
-                adapter.setWebTouchable(false)
-            }
             doOnEnd {
                 binding.vpAllWeb.isUserInputEnabled = true
             }
@@ -107,9 +105,6 @@ class AllWebFragment : Fragment() {
         ValueAnimator.ofFloat(transformer.faction, 0F).apply {
             doOnStart {
                 binding.vpAllWeb.isUserInputEnabled = false
-            }
-            doOnEnd {
-                adapter.setWebTouchable(true)
             }
             addUpdateListener {
                 transformer.faction = it.animatedValue as Float

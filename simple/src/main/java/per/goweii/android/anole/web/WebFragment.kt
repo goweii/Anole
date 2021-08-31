@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.FragmentWebBinding
 import per.goweii.android.anole.home.Bookmark
+import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
@@ -44,13 +45,6 @@ class WebFragment : Fragment() {
     private lateinit var backForwardIconAbility: BackForwardIconAbility
     private lateinit var pageInfoAbility: PageInfoAbility
     private lateinit var progressAbility: ProgressAbility
-
-    fun setTouchable(touchable: Boolean) {
-        if (::binding.isInitialized) {
-            binding.webContainer.touchable = touchable
-            binding.swipeLayout.draggable = !touchable
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -143,10 +137,19 @@ class WebFragment : Fragment() {
             allWebViewModel.onRemoveWebFragment(this@WebFragment)
         }
         binding.swipeLayout.onCollect = {
-            if (!kernelView.url.isNullOrBlank() && !kernelView.title.isNullOrBlank()) {
-                windowViewModel.addOrUpdateBookmark(
-                    Bookmark(kernelView.url!!, kernelView.title!!, kernelView.favicon)
-                )
+            if (!kernelView.url.isNullOrBlank()) {
+                val url = kernelView.url!!
+                if (BookmarkManager.getInstance(requireContext()).find(url) != null) {
+                    windowViewModel.removeBookmark(url)
+                } else {
+                    windowViewModel.addOrUpdateBookmark(
+                        Bookmark(
+                            url,
+                            kernelView.title,
+                            kernelView.favicon
+                        )
+                    )
+                }
             }
         }
     }

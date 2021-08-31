@@ -59,11 +59,15 @@ class BookmarkAdapter : RecyclerView.Adapter<BookmarkAdapter.Holder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.root.setOnClickListener {
-                onClickItem?.invoke(list[adapterPosition])
+            binding.ivLogo.setOnClickListener {
+                list.getOrNull(adapterPosition)?.let {
+                    onClickItem?.invoke(it)
+                }
             }
-            binding.root.setOnLongClickListener {
-                onLongClickItem?.invoke(list[adapterPosition])
+            binding.ivLogo.setOnLongClickListener {
+                list.getOrNull(adapterPosition)?.let {
+                    onLongClickItem?.invoke(it)
+                }
                 return@setOnLongClickListener true
             }
         }

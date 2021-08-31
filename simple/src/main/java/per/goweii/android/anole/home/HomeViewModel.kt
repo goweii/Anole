@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val bookmarkLiveData = flow {
-        val list = BookmarkHelper.getInstance(getApplication()).get()
+        val list = BookmarkManager.getInstance(getApplication()).get()
         emit(list)
     }
 }

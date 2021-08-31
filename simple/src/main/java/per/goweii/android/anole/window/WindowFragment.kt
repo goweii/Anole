@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.FragmentWindowBinding
+import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.home.HomeFragment
 import per.goweii.android.anole.main.ChoiceDefSearchAdapter
 import per.goweii.android.anole.main.MenuAction
@@ -64,6 +65,7 @@ class WindowFragment : Fragment() {
             } else {
                 binding.tvWindowsCount.text = getString(R.string.add_window)
                 showHomeFragment()
+                allWebFragment.exitChoiceMode()
             }
         }
         viewModel.goBackEnableLiveData.observe(viewLifecycleOwner) {
@@ -76,6 +78,13 @@ class WindowFragment : Fragment() {
         }
         viewModel.currUrlLiveData.observe(viewLifecycleOwner) {
             binding.urlInputView.setUrl(it)
+            if (it == null) {
+                binding.urlInputView.setCollected(false)
+            } else {
+                binding.urlInputView.setCollected(
+                    BookmarkManager.getInstance(requireContext()).find(it) != null
+                )
+            }
         }
         viewModel.currTitleLiveData.observe(viewLifecycleOwner) {
             binding.urlInputView.setTitle(it)
@@ -106,6 +115,7 @@ class WindowFragment : Fragment() {
         }
         binding.ivHome.setOnClickListener {
             showHomeFragment()
+            allWebFragment.exitChoiceMode()
         }
         binding.rlWindows.setOnClickListener {
             val windowCount = (viewModel.windowCountLiveData.value ?: 0).coerceAtLeast(0)
@@ -129,6 +139,7 @@ class WindowFragment : Fragment() {
         binding.urlInputView.apply {
             onDefSearch = { showChoiceDefSearchPopup(it) }
             onCollect = { viewModel.addOrUpdateBookmark(it) }
+            onUnCollect = { viewModel.removeBookmark(it) }
             onEnter = { viewModel.loadUrl(it) }
             onSearch = { searchKeyword(it) }
         }
@@ -148,11 +159,28 @@ class WindowFragment : Fragment() {
                 allWebFragment.createNewWeb(args.initialUrl)
             } else {
                 showHomeFragment()
+                allWebFragment.exitChoiceMode()
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadUrlOnNewWindowSharedFlow.collect {
                 loadUrlOnNewWeb(it)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.addOrUpdateBookmarkSharedFlow.collect { bookmark ->
+                binding.urlInputView.url?.let { url ->
+                    if (bookmark.url == url) {
+                        binding.urlInputView.setCollected(true)
+                    }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.removeBookmarkSharedFlow.collect {
+                if (binding.urlInputView.url == it) {
+                    binding.urlInputView.setCollected(false)
+                }
             }
         }
     }

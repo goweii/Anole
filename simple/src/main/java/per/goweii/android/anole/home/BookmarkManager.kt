@@ -3,18 +3,18 @@ package per.goweii.android.anole.home
 import android.content.Context
 import android.graphics.Bitmap
 
-class BookmarkHelper(context: Context) {
+class BookmarkManager(context: Context) {
     companion object {
         private const val SP_BOOKMARK = "bookmark"
         private const val SP_BOOKMARK_NAME = "bookmarks"
 
         @Volatile
-        private var sInstance: BookmarkHelper? = null
+        private var sInstance: BookmarkManager? = null
 
         @Synchronized
-        fun getInstance(context: Context): BookmarkHelper {
+        fun getInstance(context: Context): BookmarkManager {
             if (sInstance == null) {
-                sInstance = BookmarkHelper(context.applicationContext)
+                sInstance = BookmarkManager(context.applicationContext)
             }
             return sInstance!!
         }

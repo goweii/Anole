@@ -2,13 +2,17 @@ package per.goweii.android.anole.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
+import kotlin.math.PI
+import kotlin.math.atan
 
 class SwipeActionLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -23,6 +27,8 @@ class SwipeActionLayout @JvmOverloads constructor(
                 }
             }
         }
+
+    private var collecting = false
 
     var onDismiss: (() -> Unit)? = null
     var onCollect: (() -> Unit)? = null
@@ -82,10 +88,7 @@ class SwipeActionLayout @JvmOverloads constructor(
         }
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
-            return top.coerceIn(
-                getChildMinTop(child),
-                getChildMaxTop(child)
-            )
+            return top.coerceIn(getChildMinTop(child), getChildMaxTop(child))
         }
 
         override fun onViewPositionChanged(
@@ -96,14 +99,41 @@ class SwipeActionLayout @JvmOverloads constructor(
             dy: Int
         ) {
             super.onViewPositionChanged(changedView, left, top, dx, dy)
-            if (changedView.top >= getChildOriginalTop(changedView)) {
+            val newTop = changedView.top
+            val minTop = getChildMinTop(changedView)
+            val maxTop = getChildMaxTop(changedView)
+            val oriTop = getChildOriginalTop(changedView)
+            if (newTop >= oriTop) {
+                val curMove = newTop.toFloat() - oriTop.toFloat()
+                val maxMove = maxTop.toFloat() - oriTop.toFloat()
+                val f = atan((curMove / maxMove) * (PI / 2F)) / (PI / 2F)
+                val realMove = (maxMove * f).toInt() + oriTop
+                changedView.translationY = (realMove - newTop).toFloat()
+                if (f > 0.5F) {
+                    if (!collecting) {
+                        collecting = true
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                        } else {
+                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        }
+                        onCollect?.invoke()
+                    }
+                } else {
+                    collecting = false
+                }
+            } else {
+                changedView.translationY = 0F
+                collecting = false
+            }
+            if (newTop >= oriTop) {
                 changedView.alpha = 1F
             } else {
-                val range = getChildOriginalTop(changedView) - getChildMinTop(changedView)
-                val change = getChildOriginalTop(changedView) - changedView.top
+                val range = oriTop - minTop
+                val change = oriTop - changedView.top
                 changedView.alpha = 1F - (change.toFloat() / range.toFloat())
             }
-            if (changedView.top <= getChildMinTop(changedView)) {
+            if (newTop <= minTop) {
                 onDismiss?.invoke()
             }
         }
@@ -131,7 +161,6 @@ class SwipeActionLayout @JvmOverloads constructor(
                         getChildOriginalTop(releasedChild)
                     )
                     ViewCompat.postInvalidateOnAnimation(this@SwipeActionLayout)
-                    onCollect?.invoke()
                 }
                 else -> {
                     viewDragHelper.settleCapturedViewAt(

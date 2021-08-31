@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream
 
 data class Bookmark(
     val url: String,
-    var title: String,
+    var title: String?,
     var logo: Bitmap?
 ) {
     fun toJson(): String? {

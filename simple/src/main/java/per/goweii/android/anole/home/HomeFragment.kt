@@ -73,7 +73,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun addOrUpdateBookmark(bookmark: Bookmark) {
-        val oldBookmark = BookmarkHelper.getInstance(requireContext()).add(bookmark)
+        val oldBookmark = BookmarkManager.getInstance(requireContext()).add(bookmark)
         if (oldBookmark !== bookmark) {
             bookmarkAdapter?.updateData(bookmark)
         } else {
@@ -83,7 +83,7 @@ class HomeFragment : Fragment() {
 
     private fun removeBookmark(url: String?) {
         url ?: return
-        val oldBookmark = BookmarkHelper.getInstance(requireContext()).remove(url)
+        val oldBookmark = BookmarkManager.getInstance(requireContext()).remove(url)
         if (oldBookmark != null) {
             bookmarkAdapter?.removeData(oldBookmark)
         }

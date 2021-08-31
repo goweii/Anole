@@ -10,12 +10,6 @@ class AllWebAdapter(fragment: AllWebFragment) : FragmentStateAdapter(fragment) {
         return webFragments.indexOf(webFragment)
     }
 
-    fun setWebTouchable(touchable: Boolean) {
-        webFragments.forEach {
-            it.setTouchable(touchable)
-        }
-    }
-
     fun addWeb(webFragment: WebFragment) {
         webFragments.add(webFragment)
         notifyItemInserted(webFragments.lastIndex)

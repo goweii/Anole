@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="AllowBackup,UnusedAttribute">
+        tools:ignore="AllowBackup,DataExtractionRules,UnusedAttribute">
 
         <activity
             android:name=".main.MainActivity"

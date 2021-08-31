@@ -12,6 +12,7 @@
         <item name="colorEditTextHint">@color/colorEditTextHint</item>
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorShadow">@color/colorShadow</item>
+        <item name="colorSurfaceAbove">@color/colorSurfaceAbove</item>
         <item name="dimenShadowOffsetY">@dimen/dimenShadowOffsetY</item>
         <item name="dimenShadowRadius">@dimen/dimenShadowRadius</item>
         <item name="dimenMarginDefault">@dimen/dimenMarginDefault</item>
@@ -19,6 +20,8 @@
         <item name="dimenCornerRadiusDefault">@dimen/dimenCornerRadiusDefault</item>
         <item name="dimenButtonSizeDefault">@dimen/dimenButtonSizeDefault</item>
         <item name="dimenElevation1">@dimen/dimenElevation1</item>
+        <item name="dimenIconButtonSizeDefault">@dimen/dimenIconButtonSizeDefault</item>
+        <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>
         <item name="android:statusBarColor">@color/colorSurface</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>

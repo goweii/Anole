@@ -33,13 +33,19 @@ class UrlInputView @JvmOverloads constructor(
 
     private val currText: String? get() = etText.text?.toString()
 
-    private var icon: Bitmap? = null
-    private var url: String? = null
-    private var title: String? = null
+    var icon: Bitmap? = null
+        private set
+    var url: String? = null
+        private set
+    var title: String? = null
+        private set
+    var collected: Boolean = false
+        private set
 
     var onEnter: ((url: String) -> Unit)? = null
     var onSearch: ((key: String) -> Unit)? = null
     var onCollect: ((bookmark: Bookmark) -> Unit)? = null
+    var onUnCollect: ((url: String) -> Unit)? = null
     var onDefSearch: ((ImageView) -> Unit)? = null
 
     init {
@@ -80,7 +86,11 @@ class UrlInputView @JvmOverloads constructor(
                 etText.text = null
             } else {
                 if (!url.isNullOrBlank()) {
-                    onCollect?.invoke(Bookmark(url!!, title ?: "", icon))
+                    if (it.isSelected) {
+                        onUnCollect?.invoke(url!!)
+                    } else {
+                        onCollect?.invoke(Bookmark(url!!, title, icon))
+                    }
                 }
             }
         }
@@ -99,6 +109,11 @@ class UrlInputView @JvmOverloads constructor(
     fun setUrl(url: String?) {
         this.url = url
         setText()
+    }
+
+    fun setCollected(collected: Boolean) {
+        this.collected = collected
+        setAction()
     }
 
     private fun setText() {
@@ -162,7 +177,8 @@ class UrlInputView @JvmOverloads constructor(
         } else {
             val url = Url.parse(url)
             if (url.maybeUrl) {
-                ivAction.setImageResource(R.drawable.ic_collect)
+                ivAction.setImageResource(R.drawable.selector_collect)
+                ivAction.isSelected = collected
             } else {
                 ivAction.setImageDrawable(null)
             }
