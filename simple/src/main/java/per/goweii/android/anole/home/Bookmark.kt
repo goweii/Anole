@@ -38,8 +38,8 @@ data class Bookmark(
             return try {
                 JSONObject(json).run {
                     val url = getString(KEY_URL)
-                    val title = getString(KEY_TITLE)
-                    val logo = getString(KEY_LOGO)
+                    val title = optString(KEY_TITLE)
+                    val logo = optString(KEY_LOGO)
                     Bookmark(url, title, decodeLogoFromBase64(logo))
                 }
             } catch (e: Exception) {
@@ -52,15 +52,15 @@ data class Bookmark(
             return try {
                 JSONObject().apply {
                     put(KEY_URL, obj.url)
-                    put(KEY_TITLE, obj.title)
-                    put(KEY_LOGO, encodeLogoToBase64(obj.logo))
+                    obj.title?.let { put(KEY_TITLE, it) }
+                    encodeLogoToBase64(obj.logo)?.let { put(KEY_LOGO, it) }
                 }.toString()
             } catch (e: Exception) {
                 null
             }
         }
 
-        fun encodeLogoToBase64(logo: Bitmap?): String? {
+        private fun encodeLogoToBase64(logo: Bitmap?): String? {
             logo ?: return null
             if (logo.isRecycled) return null
             return try {
@@ -74,7 +74,7 @@ data class Bookmark(
             }
         }
 
-        fun decodeLogoFromBase64(base64: String?): Bitmap? {
+        private fun decodeLogoFromBase64(base64: String?): Bitmap? {
             if (base64.isNullOrBlank()) return null
             return try {
                 Base64.decode(base64, Base64.DEFAULT).let {

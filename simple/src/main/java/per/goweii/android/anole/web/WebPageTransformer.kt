@@ -44,7 +44,7 @@ class WebPageTransformer(
 
 
         val swipeActionLayout = page.findViewById<SwipeActionLayout>(R.id.swipe_layout)
-        val touchableFrameLayout = page.findViewById<TouchableFrameLayout>(R.id.web_container)
+        val touchableFrameLayout = page.findViewById<TouchableFrameLayout>(R.id.touchable_layout)
         if (touchableFrameLayout.outlineProvider !== outlineProvider) {
             touchableFrameLayout.clipToOutline = true
             touchableFrameLayout.outlineProvider = outlineProvider

@@ -64,12 +64,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        this.windowViewModel.progressLiveData.postValue(-1)
         this.windowViewModel.goBackEnableLiveData.postValue(false)
         this.windowViewModel.goForwardEnableLiveData.postValue(false)
-        this.windowViewModel.currUrlLiveData.postValue(null)
-        this.windowViewModel.currTitleLiveData.postValue(null)
-        this.windowViewModel.currIconLiveData.postValue(null)
     }
 
     private fun addOrUpdateBookmark(bookmark: Bookmark) {

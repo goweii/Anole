@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="dimenMarginBig" format="dimension" />
+    <dimen name="dimenMarginBig">32dp</dimen>
     <attr name="dimenMarginDefault" format="dimension" />
     <dimen name="dimenMarginDefault">16dp</dimen>
     <attr name="dimenMarginHalf" format="dimension" />
     <dimen name="dimenMarginHalf">8dp</dimen>
     <attr name="dimenCornerRadiusDefault" format="dimension" />
     <dimen name="dimenCornerRadiusDefault">12dp</dimen>
+    <attr name="dimenCornerRadiusBig" format="dimension" />
+    <dimen name="dimenCornerRadiusBig">24dp</dimen>
     <attr name="dimenButtonSizeDefault" format="dimension" />
-    <dimen name="dimenButtonSizeDefault">44dp</dimen>
+    <dimen name="dimenButtonSizeDefault">48dp</dimen>
     <attr name="dimenIconButtonSizeDefault" format="dimension" />
     <dimen name="dimenIconButtonSizeDefault">56dp</dimen>
     <attr name="dimenIconButtonPaddingDefault" format="dimension" />

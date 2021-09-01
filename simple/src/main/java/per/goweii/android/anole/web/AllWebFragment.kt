@@ -44,7 +44,7 @@ class AllWebFragment : BaseFragment() {
             0.6F,
             requireContext().resources.getDimension(R.dimen.dimenElevation1),
             requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
-            requireContext().resources.getDimension(R.dimen.dimenCornerRadiusDefault)
+            requireContext().resources.getDimension(R.dimen.dimenCornerRadiusBig)
         )
         binding.vpAllWeb.setPageTransformer(transformer)
         adapter = AllWebAdapter(this)

@@ -12,9 +12,8 @@ import per.goweii.anole.BuildConfig
 import per.goweii.anole.WebInstanceBuilder
 import per.goweii.anole.kernel.WebSettings
 import per.goweii.anole.utils.currentProcessName
-import per.goweii.anole.view.KernelView
 
-open class SystemWebInstanceBuilder : WebInstanceBuilder {
+open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
     companion object {
         private var hasSetDataDirectorySuffix = false
     }
@@ -33,7 +32,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder {
         return null
     }
 
-    override fun build(context: Context): KernelView {
+    override fun build(context: Context): SystemKernelView {
         return SystemKernelView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(isWebContentsDebuggingEnabled())
@@ -52,7 +51,11 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder {
                 //CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
             }
             isLongClickable = true
-            background = ColorDrawable(Color.TRANSPARENT)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                background = ColorDrawable(Color.TRANSPARENT)
+            } else {
+                setBackgroundColor(Color.TRANSPARENT)
+            }
             overScrollMode = FrameLayout.OVER_SCROLL_NEVER
             //5.0以上开启混合模式加载
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

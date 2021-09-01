@@ -15,7 +15,7 @@ import per.goweii.anole.view.KernelView
 class SystemKernelView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : KernelView(context, attrs, defStyleAttr) {
-    override val webView: WebView = NestedWebView(context)
+    override val webView: WebView = WebView(context)
 
     init {
         addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))

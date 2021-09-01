@@ -1,66 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
-
-        <RelativeLayout
-            android:id="@+id/titleBar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?attr/colorSurface"
-            android:orientation="horizontal"
-            android:paddingStart="?attr/dimenMarginHalf"
-            android:paddingTop="?attr/dimenMarginHalf"
-            android:paddingEnd="?attr/dimenMarginHalf"
-            android:paddingBottom="?attr/dimenMarginHalf"
-            app:layout_scrollFlags="scroll|snap|enterAlways">
-
-            <ProgressBar
-                android:id="@+id/pb"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_alignStart="@+id/url_input_view"
-                android:layout_alignTop="@+id/url_input_view"
-                android:layout_alignEnd="@+id/url_input_view"
-                android:layout_alignBottom="@+id/url_input_view"
-                android:alpha="0.3"
-                android:max="100"
-                android:progressDrawable="@drawable/progress_bar"
-                tools:progress="5" />
-
-            <per.goweii.android.anole.widget.UrlInputView
-                android:id="@+id/url_input_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </RelativeLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorSurface"
-        android:elevation="10dp"
-        android:orientation="horizontal"
-        app:layout_anchor="@+id/fragment_container_view"
-        app:layout_anchorGravity="bottom"
-        app:layout_behavior="per.goweii.android.anole.main.FooterBehaviorDependAppBar">
+        android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_back"
@@ -138,4 +94,4 @@
 
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

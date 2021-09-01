@@ -14,9 +14,9 @@ import per.goweii.anole.view.KernelView
 @SuppressLint("SetJavaScriptEnabled")
 class WebFactory(private val kernelView: KernelView) {
     companion object {
-        private var instanceBuilder: WebInstanceBuilder? = null
+        private var instanceBuilder: WebInstanceBuilder<out KernelView>? = null
 
-        fun setInstanceBuilder(instanceBuilder: WebInstanceBuilder) {
+        fun setInstanceBuilder(instanceBuilder: WebInstanceBuilder<out KernelView>) {
             this.instanceBuilder = instanceBuilder
         }
 
