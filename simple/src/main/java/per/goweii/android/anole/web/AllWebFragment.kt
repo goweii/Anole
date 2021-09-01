@@ -7,18 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
+import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentAllWebBinding
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
 
-class AllWebFragment : Fragment() {
+class AllWebFragment : BaseFragment() {
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val viewModel by viewModelsByAndroid<AllWebViewModel>()
     private lateinit var binding: FragmentAllWebBinding

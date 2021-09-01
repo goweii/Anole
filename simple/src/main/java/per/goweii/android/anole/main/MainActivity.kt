@@ -2,13 +2,13 @@ package per.goweii.android.anole.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import per.goweii.android.anole.NavGraphMainDirections
+import per.goweii.android.anole.base.BaseActivity
 import per.goweii.android.anole.databinding.ActivityMainBinding
 import per.goweii.android.anole.utils.viewModelsByAndroid
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private val viewModel: MainViewModel by viewModelsByAndroid()
     private lateinit var binding: ActivityMainBinding
 

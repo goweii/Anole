@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
 
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment() {
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val viewModel: HomeViewModel by viewModelsByAndroid()
     private lateinit var binding: FragmentHomeBinding

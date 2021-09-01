@@ -1,12 +1,12 @@
 package per.goweii.android.anole.web
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import per.goweii.android.anole.base.BaseAndroidViewModel
 
-class AllWebViewModel(application: Application) : AndroidViewModel(application) {
+class AllWebViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val _onTouchSharedFlow = MutableSharedFlow<WebFragment>()
     val onTouchSharedFlow = _onTouchSharedFlow
     private val _onRemoveSharedFlow = MutableSharedFlow<WebFragment>()

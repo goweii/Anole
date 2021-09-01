@@ -1,6 +1,6 @@
 package per.goweii.android.anole.main
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import per.goweii.android.anole.base.BaseAndroidViewModel
 
-class MainViewModel(application: Application) : AndroidViewModel(application)
+class MainViewModel(application: Application) : BaseAndroidViewModel(application)

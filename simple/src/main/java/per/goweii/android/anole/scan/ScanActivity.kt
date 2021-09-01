@@ -7,14 +7,14 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import per.goweii.android.anole.base.BaseActivity
 import per.goweii.android.anole.databinding.ActivityScanBinding
 import per.goweii.android.anole.main.MainActivity
 import per.goweii.codex.processor.zxing.ZXingScanProcessor
 
 @SuppressLint("MissingPermission")
-class ScanActivity : AppCompatActivity() {
+class ScanActivity : BaseActivity() {
     companion object {
         private const val REQ_CODE_CAMERA = 1001
     }

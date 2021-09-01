@@ -7,8 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
+import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.home.HomeFragment
@@ -38,7 +40,7 @@ import per.goweii.layer.dialog.DialogLayer
 import per.goweii.layer.popup.PopupLayer
 import per.goweii.layer.visualeffectview.PopupShadowLayout
 
-class WindowFragment : Fragment() {
+class WindowFragment : BaseFragment() {
     private val viewModel: WindowViewModel by viewModelsByAndroid()
     private val args: WindowFragmentArgs by navArgs()
     private lateinit var binding: FragmentWindowBinding
@@ -123,11 +125,14 @@ class WindowFragment : Fragment() {
                 showAllWebFragment()
                 allWebFragment.createNewWeb(DefHome.getInstance(requireContext()).getDefHome())
             } else {
-                showAllWebFragment()
-                if (allWebFragment.isChoiceMode) {
-                    allWebFragment.exitChoiceMode()
+                if (!allWebFragment.isVisible) {
+                    showAllWebFragment()
                 } else {
-                    allWebFragment.enterChoiceMode()
+                    if (allWebFragment.isChoiceMode) {
+                        allWebFragment.exitChoiceMode()
+                    } else {
+                        allWebFragment.enterChoiceMode()
+                    }
                 }
             }
         }
@@ -195,20 +200,30 @@ class WindowFragment : Fragment() {
     }
 
     private fun showHomeFragment() {
+        if (homeFragment.isVisible) return
         childFragmentManager.commit {
             hide(allWebFragment)
             show(homeFragment)
             setMaxLifecycle(allWebFragment, Lifecycle.State.STARTED)
             setMaxLifecycle(homeFragment, Lifecycle.State.RESUMED)
+            homeFragment.view?.doOnPreDraw {
+                val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.small_zoom_enter)
+                it.startAnimation(anim)
+            }
         }
     }
 
     private fun showAllWebFragment() {
+        if (allWebFragment.isVisible) return
         childFragmentManager.commit {
             hide(homeFragment)
             show(allWebFragment)
             setMaxLifecycle(homeFragment, Lifecycle.State.STARTED)
             setMaxLifecycle(allWebFragment, Lifecycle.State.RESUMED)
+            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.small_zoom_enter)
+            allWebFragment.view?.doOnPreDraw {
+                it.startAnimation(anim)
+            }
         }
     }
 

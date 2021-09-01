@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
+import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWebBinding
 import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
@@ -23,7 +23,7 @@ import per.goweii.anole.ability.impl.PageInfoAbility
 import per.goweii.anole.ability.impl.ProgressAbility
 import per.goweii.anole.view.KernelView
 
-class WebFragment : Fragment() {
+class WebFragment : BaseFragment() {
     companion object {
         private const val ARG_INITIAL_URL = "initial_url"
 
