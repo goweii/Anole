@@ -2,7 +2,6 @@ package per.goweii.anole.kernel
 
 import java.io.Serializable
 import java.util.*
-import kotlin.collections.ArrayList
 
 interface WebBackForwardList : Cloneable, Serializable {
     val currentItem: WebHistoryItem?
