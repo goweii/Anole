@@ -41,8 +41,6 @@ class WebPageTransformer(
         page.scaleX = scale
         page.scaleY = scale
         page.translationX = -(page.width - (page.width * scale) - gap) * position
-
-
         val swipeActionLayout = page.findViewById<SwipeActionLayout>(R.id.swipe_layout)
         val touchableFrameLayout = page.findViewById<TouchableFrameLayout>(R.id.touchable_layout)
         if (touchableFrameLayout.outlineProvider !== outlineProvider) {

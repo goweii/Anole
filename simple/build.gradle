@@ -67,7 +67,4 @@ dependencies {
     implementation "per.goweii.codex:decorator-frozen:1.0.0"
     implementation "per.goweii.codex:decorator-gesture:1.0.0"
     implementation "per.goweii.codex:decorator-vibrate:1.0.0"
-
-    implementation 'com.billy.android:smart-swipe:1.1.0'
-    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
 }

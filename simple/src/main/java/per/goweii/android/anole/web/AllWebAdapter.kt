@@ -35,6 +35,10 @@ class AllWebAdapter(fragment: AllWebFragment) : FragmentStateAdapter(fragment) {
         return System.identityHashCode(webFragments[position]).toLong()
     }
 
+    override fun containsItem(itemId: Long): Boolean {
+        return webFragments.find { System.identityHashCode(it).toLong() == itemId } != null
+    }
+
     override fun createFragment(position: Int): Fragment {
         return webFragments[position]
     }

@@ -32,24 +32,25 @@ class AllWebFragment : BaseFragment() {
     ): View {
         if (!::binding.isInitialized) {
             binding = FragmentAllWebBinding.inflate(inflater, container, false)
+            binding.vpAllWeb.isUserInputEnabled = false
+            binding.vpAllWeb.offscreenPageLimit = 1
+            binding.vpAllWeb.isSaveEnabled = false
+            transformer = WebPageTransformer(
+                binding.vpAllWeb,
+                0.6F,
+                requireContext().resources.getDimension(R.dimen.dimenElevation1),
+                requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
+                requireContext().resources.getDimension(R.dimen.dimenCornerRadiusBig)
+            )
+            binding.vpAllWeb.setPageTransformer(transformer)
+            adapter = AllWebAdapter(this)
+            binding.vpAllWeb.adapter = adapter
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.vpAllWeb.isUserInputEnabled = false
-        transformer = WebPageTransformer(
-            binding.vpAllWeb,
-            0.6F,
-            requireContext().resources.getDimension(R.dimen.dimenElevation1),
-            requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
-            requireContext().resources.getDimension(R.dimen.dimenCornerRadiusBig)
-        )
-        binding.vpAllWeb.setPageTransformer(transformer)
-        adapter = AllWebAdapter(this)
-        binding.vpAllWeb.adapter = adapter
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onTouchSharedFlow.collect {
                 val index = adapter.indexOf(it)

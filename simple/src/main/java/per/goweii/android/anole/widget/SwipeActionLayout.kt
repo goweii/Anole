@@ -23,7 +23,8 @@ class SwipeActionLayout @JvmOverloads constructor(
             field = value
             if (!value) {
                 viewDragHelper.capturedView?.let {
-                    viewDragHelper.settleCapturedViewAt(0, 0)
+                    viewDragHelper.smoothSlideViewTo(it, 0, getChildOriginalTop(it))
+                    ViewCompat.postInvalidateOnAnimation(this@SwipeActionLayout)
                 }
             }
         }

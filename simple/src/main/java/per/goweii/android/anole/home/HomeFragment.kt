@@ -5,14 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
+import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel
 
 class HomeFragment : BaseFragment() {
@@ -29,20 +33,29 @@ class HomeFragment : BaseFragment() {
     ): View {
         if (!this::binding.isInitialized) {
             binding = FragmentHomeBinding.inflate(inflater, container, false)
+            bookmarkAdapter = BookmarkAdapter()
+            binding.rvBookmark.layoutManager = GridLayoutManager(requireContext(), 4)
+            binding.rvBookmark.adapter = bookmarkAdapter
+            bookmarkAdapter?.onClickItem = {
+                windowViewModel.loadUrlOnNewWindow(it.url)
+            }
+            bookmarkAdapter?.onLongClickItem = {
+                windowViewModel.removeBookmark(it.url)
+            }
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bookmarkAdapter = BookmarkAdapter()
-        binding.rvBookmark.layoutManager = GridLayoutManager(requireContext(), 4)
-        binding.rvBookmark.adapter = bookmarkAdapter
-        bookmarkAdapter?.onClickItem = {
-            windowViewModel.loadUrlOnNewWindow(it.url)
-        }
-        bookmarkAdapter?.onLongClickItem = {
-            windowViewModel.removeBookmark(it.url)
+        binding.tvSearch.setOnClickListener {
+            binding.tvSearch.findNavController()
+                .navigate(
+                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                    FragmentNavigatorExtras(
+                        binding.tvSearch to getString(R.string.transition_name_search)
+                    )
+                )
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

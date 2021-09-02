@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/shape_edittext_bg"
+    android:transitionName="@string/transition_name_search"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 

@@ -2,11 +2,13 @@ package per.goweii.android.anole.web
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -57,6 +59,22 @@ class WebFragment : BaseFragment() {
     private lateinit var pageInfoAbility: PageInfoAbility
     private lateinit var progressAbility: ProgressAbility
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            if (kernelView.canGoBack) {
+                kernelView.goBack()
+            } else {
+                // 不要删除这个窗口
+                // allWebViewModel.onRemoveWebFragment(this@WebFragment)
+            }
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,66 +83,67 @@ class WebFragment : BaseFragment() {
         if (!this::binding.isInitialized) {
             binding = FragmentWebBinding.inflate(inflater, container, false)
             initSwipeDismiss()
+            kernelView = createWeb(
+                arguments?.getString(ARG_INITIAL_URL)
+                    ?: getString(R.string.initial_url)
+            )
+            binding.touchableLayout.onTouch = { _ ->
+                allWebViewModel.onTouchedWebFragment(this@WebFragment)
+            }
+            binding.urlInputView.apply {
+                onDefSearch = { showChoiceDefSearchPopup(it) }
+                onCollect = { windowViewModel.addOrUpdateBookmark(it) }
+                onUnCollect = { windowViewModel.removeBookmark(it) }
+                onEnter = { windowViewModel.loadUrl(it) }
+                onSearch = {
+                    windowViewModel.loadUrl(
+                        DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
+                    )
+                }
+            }
+            progressAbility = ProgressAbility(
+                onProgress = {
+                    if (binding.pb.max != 100) {
+                        binding.pb.max = 100
+                    }
+                    if (it in 0..100) {
+                        ObjectAnimator.ofInt(binding.pb, "progress", binding.pb.progress, it)
+                            .start()
+                        binding.pb.animate().alpha(1F).start()
+                    } else {
+                        binding.pb.progress = 0
+                        binding.pb.animate().alpha(0F).start()
+                    }
+                }
+            )
+            pageInfoAbility = PageInfoAbility(
+                onReceivedPageUrl = {
+                    binding.urlInputView.setUrl(it)
+                    if (it == null) {
+                        binding.urlInputView.setCollected(false)
+                    } else {
+                        binding.urlInputView.setCollected(
+                            BookmarkManager.getInstance(requireContext()).find(it) != null
+                        )
+                    }
+                },
+                onReceivedPageTitle = {
+                    binding.urlInputView.setTitle(it)
+                },
+                onReceivedPageIcon = {
+                    binding.urlInputView.setIcon(it)
+                }
+            )
+            backForwardIconAbility = BackForwardIconAbility(
+                canGoBack = { windowViewModel.goBackEnableLiveData.postValue(it) },
+                canGoForward = { windowViewModel.goForwardEnableLiveData.postValue(it) }
+            )
         }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        kernelView = createWeb(
-            arguments?.getString(ARG_INITIAL_URL)
-                ?: getString(R.string.initial_url)
-        )
-        binding.touchableLayout.onTouch = { _ ->
-            allWebViewModel.onTouchedWebFragment(this@WebFragment)
-        }
-        binding.urlInputView.apply {
-            onDefSearch = { showChoiceDefSearchPopup(it) }
-            onCollect = { windowViewModel.addOrUpdateBookmark(it) }
-            onUnCollect = { windowViewModel.removeBookmark(it) }
-            onEnter = { windowViewModel.loadUrl(it) }
-            onSearch = {
-                windowViewModel.loadUrl(
-                    DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
-                )
-            }
-        }
-        progressAbility = ProgressAbility(
-            onProgress = {
-                if (binding.pb.max != 100) {
-                    binding.pb.max = 100
-                }
-                if (it in 0..100) {
-                    ObjectAnimator.ofInt(binding.pb, "progress", binding.pb.progress, it).start()
-                    binding.pb.animate().alpha(1F).start()
-                } else {
-                    binding.pb.progress = 0
-                    binding.pb.animate().alpha(0F).start()
-                }
-            }
-        )
-        pageInfoAbility = PageInfoAbility(
-            onReceivedPageUrl = {
-                binding.urlInputView.setUrl(it)
-                if (it == null) {
-                    binding.urlInputView.setCollected(false)
-                } else {
-                    binding.urlInputView.setCollected(
-                        BookmarkManager.getInstance(requireContext()).find(it) != null
-                    )
-                }
-            },
-            onReceivedPageTitle = {
-                binding.urlInputView.setTitle(it)
-            },
-            onReceivedPageIcon = {
-                binding.urlInputView.setIcon(it)
-            }
-        )
-        backForwardIconAbility = BackForwardIconAbility(
-            canGoBack = { windowViewModel.goBackEnableLiveData.postValue(it) },
-            canGoForward = { windowViewModel.goForwardEnableLiveData.postValue(it) }
-        )
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.goBackOrForwardSharedFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
@@ -160,6 +179,7 @@ class WebFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        onBackPressedCallback.isEnabled = true
         kernelView.onResume()
         kernelView.settings.apply {
             javaScriptEnabled = true
@@ -177,6 +197,7 @@ class WebFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
+        onBackPressedCallback.isEnabled = false
         kernelView.webClient.removeAbility(backForwardIconAbility)
         kernelView.webClient.removeAbility(progressAbility)
         kernelView.webClient.removeAbility(pageInfoAbility)

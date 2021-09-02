@@ -32,6 +32,7 @@
         android:layout_marginEnd="?attr/dimenMarginBig"
         android:background="@drawable/shape_edittext_bg"
         android:gravity="center_vertical"
+        android:transitionName="@string/transition_name_search"
         android:paddingStart="?attr/dimenMarginDefault"
         android:paddingEnd="?attr/dimenMarginDefault"
         android:text="@string/search_hint"

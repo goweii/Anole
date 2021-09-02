@@ -3,4 +3,5 @@
     <string name="search_hint">搜索或输入网址</string>
     <string name="add_window">+</string>
     <string name="initial_url">about:blank</string>
+    <string name="transition_name_search">transition_search</string>
 </resources>

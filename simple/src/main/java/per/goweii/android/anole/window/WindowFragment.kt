@@ -23,7 +23,6 @@ import per.goweii.android.anole.main.MenuAction
 import per.goweii.android.anole.main.MenuAdapter
 import per.goweii.android.anole.scan.ScanActivity
 import per.goweii.android.anole.utils.DefHome
-import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.web.AllWebFragment
 import per.goweii.layer.core.anim.AnimStyle
@@ -32,7 +31,6 @@ import per.goweii.layer.dialog.DialogLayer
 
 class WindowFragment : BaseFragment() {
     private val viewModel: WindowViewModel by viewModelsByAndroid()
-    private val args: WindowFragmentArgs by navArgs()
     private lateinit var binding: FragmentWindowBinding
 
     private lateinit var homeFragment: HomeFragment
@@ -51,6 +49,7 @@ class WindowFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prepareFragments()
         viewModel.windowCountLiveData.observe(viewLifecycleOwner) {
             if (it > 0) {
                 binding.tvWindowsCount.text = it.toString()
@@ -103,17 +102,13 @@ class WindowFragment : BaseFragment() {
             allWebFragment.createNewWeb(DefHome.getInstance(requireContext()).getDefHome())
             return@setOnLongClickListener true
         }
-        homeFragment = childFragmentManager
-            .findFragmentByTag(HomeFragment::class.java.name) as HomeFragment?
-            ?: HomeFragment()
-        allWebFragment = childFragmentManager
-            .findFragmentByTag(AllWebFragment::class.java.name) as AllWebFragment?
-            ?: AllWebFragment()
-        childFragmentManager.commit {
-            add(R.id.fragment_container_view, homeFragment)
-            add(R.id.fragment_container_view, allWebFragment)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadUrlOnNewWindowSharedFlow.collect {
+                loadUrlOnNewWeb(it)
+            }
         }
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+            val args: WindowFragmentArgs by navArgs()
             if (!args.initialUrl.isNullOrBlank()) {
                 showAllWebFragment()
                 allWebFragment.createNewWeb(args.initialUrl)
@@ -122,20 +117,21 @@ class WindowFragment : BaseFragment() {
                 allWebFragment.exitChoiceMode()
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadUrlOnNewWindowSharedFlow.collect {
-                loadUrlOnNewWeb(it)
-            }
-        }
     }
 
-    private fun searchKeyword(keyword: String) {
-        showAllWebFragment()
-        allWebFragment.createNewWeb(
-            DefSearch.getInstance(requireContext())
-                .getDefSearch()
-                .getSearchUrl(keyword)
-        )
+    private fun prepareFragments() {
+        childFragmentManager.commit {
+            homeFragment = childFragmentManager
+                .findFragmentByTag(HomeFragment::class.java.name) as HomeFragment?
+                ?: HomeFragment().also {
+                    add(R.id.fragment_container_view, it, HomeFragment::class.java.name)
+                }
+            allWebFragment = childFragmentManager
+                .findFragmentByTag(AllWebFragment::class.java.name) as AllWebFragment?
+                ?: AllWebFragment().also {
+                    add(R.id.fragment_container_view, it, AllWebFragment::class.java.name)
+                }
+        }
     }
 
     private fun showHomeFragment() {
