@@ -18,8 +18,6 @@ class WindowViewModel(application: Application) : BaseAndroidViewModel(applicati
     val goBackOrForwardSharedFlow: SharedFlow<Int> = _goBackOrForwardSharedFlow
     private val _loadUrlSharedFlow: MutableSharedFlow<String?> = MutableSharedFlow()
     val loadUrlSharedFlow: SharedFlow<String?> = _loadUrlSharedFlow
-    private val _reloadSharedFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
-    val reloadSharedFlow: SharedFlow<Boolean> = _reloadSharedFlow
     private val _addOrUpdateBookmarkSharedFlow: MutableSharedFlow<Bookmark> = MutableSharedFlow()
     val addOrUpdateBookmarkSharedFlow: SharedFlow<Bookmark> = _addOrUpdateBookmarkSharedFlow
     private val _removeBookmarkSharedFlow: MutableSharedFlow<String?> = MutableSharedFlow()
@@ -45,13 +43,5 @@ class WindowViewModel(application: Application) : BaseAndroidViewModel(applicati
 
     fun loadUrlOnNewWindow(url: String?) {
         viewModelScope.launch { _loadUrlOnNewWindowSharedFlow.emit(url) }
-    }
-
-    fun reload() {
-        viewModelScope.launch { _reloadSharedFlow.emit(true) }
-    }
-
-    fun stopLoading() {
-        viewModelScope.launch { _reloadSharedFlow.emit(false) }
     }
 }

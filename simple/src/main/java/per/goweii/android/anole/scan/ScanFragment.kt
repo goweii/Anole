@@ -2,48 +2,60 @@ package per.goweii.android.anole.scan
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import per.goweii.android.anole.base.BaseActivity
-import per.goweii.android.anole.databinding.ActivityScanBinding
-import per.goweii.android.anole.main.MainActivity
+import androidx.navigation.fragment.findNavController
+import per.goweii.android.anole.base.BaseFragment
+import per.goweii.android.anole.databinding.FragmentScanBinding
+import per.goweii.android.anole.main.MainViewModel
+import per.goweii.android.anole.utils.DefSearch
+import per.goweii.android.anole.utils.Url
+import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.codex.processor.zxing.ZXingScanProcessor
 
 @SuppressLint("MissingPermission")
-class ScanActivity : BaseActivity() {
+class ScanFragment : BaseFragment() {
     companion object {
         private const val REQ_CODE_CAMERA = 1001
     }
 
-    private lateinit var binding: ActivityScanBinding
+    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
+    private lateinit var binding: FragmentScanBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityScanBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentScanBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.ivClose.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
         binding.codeScanner.apply {
             addProcessor(ZXingScanProcessor())
             addDecorator(binding.finderView)
             onFound {
-                startActivity(Intent(this@ScanActivity, MainActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(it.first().text)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                })
-                finish()
+                val text = it.first().text
+                val url = Url.parse(text).toUrl() ?: DefSearch.getInstance(requireContext())
+                    .getDefSearch().getSearchUrl(text)
+                mainViewModel.loadUrlFromSearch = url
+                findNavController().navigateUp()
             }
-            bindToLifecycle(this@ScanActivity)
+            bindToLifecycle(this@ScanFragment.viewLifecycleOwner)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
-                    this,
+                    requireActivity(),
                     Manifest.permission.CAMERA
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
@@ -67,7 +79,7 @@ class ScanActivity : BaseActivity() {
                 if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
                     binding.codeScanner.startScan()
                 } else {
-                    finish()
+                    findNavController().navigateUp()
                 }
             }
         }

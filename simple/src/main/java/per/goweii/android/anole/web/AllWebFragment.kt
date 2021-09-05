@@ -25,32 +25,37 @@ class AllWebFragment : BaseFragment() {
     private lateinit var adapter: AllWebAdapter
     private lateinit var transformer: WebPageTransformer
 
+    val isChoiceMode: Boolean
+        get() = binding.vpAllWeb.isUserInputEnabled
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if (!::binding.isInitialized) {
-            binding = FragmentAllWebBinding.inflate(inflater, container, false)
-            binding.vpAllWeb.isUserInputEnabled = false
-            binding.vpAllWeb.offscreenPageLimit = 1
-            binding.vpAllWeb.isSaveEnabled = false
-            transformer = WebPageTransformer(
-                binding.vpAllWeb,
-                0.6F,
-                requireContext().resources.getDimension(R.dimen.dimenElevation1),
-                requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
-                requireContext().resources.getDimension(R.dimen.dimenCornerRadiusBig)
-            )
-            binding.vpAllWeb.setPageTransformer(transformer)
-            adapter = AllWebAdapter(this)
-            binding.vpAllWeb.adapter = adapter
-        }
+        binding = FragmentAllWebBinding.inflate(inflater, container, false)
+        binding.vpAllWeb.isUserInputEnabled = false
+        binding.vpAllWeb.offscreenPageLimit = 1
+        binding.vpAllWeb.isSaveEnabled = false
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (!this::transformer.isInitialized) {
+            transformer = WebPageTransformer(
+                binding.vpAllWeb,
+                requireContext().resources.getFraction(R.fraction.web_page_scale, 1, 1),
+                requireContext().resources.getDimension(R.dimen.dimenElevation1),
+                requireContext().resources.getDimension(R.dimen.dimenMarginDefault),
+                requireContext().resources.getDimension(R.dimen.dimenCornerRadiusBig)
+            )
+        }
+        binding.vpAllWeb.setPageTransformer(transformer)
+        if (!this::adapter.isInitialized) {
+            adapter = AllWebAdapter(this)
+        }
+        binding.vpAllWeb.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onTouchSharedFlow.collect {
                 val index = adapter.indexOf(it)
@@ -68,6 +73,12 @@ class AllWebFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        binding.vpAllWeb.setPageTransformer(null)
+        binding.vpAllWeb.adapter = null
+        super.onDestroyView()
+    }
+
     fun createNewWeb(initialUrl: String?) {
         if (isDetached) return
         if (!isAdded) return
@@ -77,18 +88,6 @@ class AllWebFragment : BaseFragment() {
             postValue(adapter.itemCount)
         }
     }
-
-    fun closeCurrWeb() {
-        if (isDetached) return
-        if (!isAdded) return
-        adapter.removeWebAt(binding.vpAllWeb.currentItem)
-        windowViewModel.windowCountLiveData.apply {
-            postValue(adapter.itemCount)
-        }
-    }
-
-    val isChoiceMode: Boolean
-        get() = binding.vpAllWeb.isUserInputEnabled
 
     fun enterChoiceMode() {
         ValueAnimator.ofFloat(transformer.faction, 1F).apply {

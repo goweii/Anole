@@ -12,10 +12,13 @@ import androidx.transition.TransitionInflater
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentSearchBinding
+import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
+import per.goweii.android.anole.utils.activityViewModelsByAndroid
 
 class SearchFragment : BaseFragment() {
+    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
     private var binding: FragmentSearchBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,8 +78,7 @@ class SearchFragment : BaseFragment() {
         et.clearFocus()
         val url = Url.parse(text).toUrl()
             ?: DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(text)
-        findNavController().navigate(
-            SearchFragmentDirections.actionSearchFragmentToWindowFragment(url)
-        )
+        mainViewModel.loadUrlFromSearch = url
+        findNavController().navigateUp()
     }
 }

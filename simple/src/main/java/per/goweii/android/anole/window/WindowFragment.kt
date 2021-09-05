@@ -1,6 +1,5 @@
 package per.goweii.android.anole.window
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,27 +9,23 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
-import per.goweii.android.anole.main.MenuAction
-import per.goweii.android.anole.main.MenuAdapter
-import per.goweii.android.anole.scan.ScanActivity
+import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefHome
+import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.web.AllWebFragment
-import per.goweii.layer.core.anim.AnimStyle
-import per.goweii.layer.core.widget.SwipeLayout
-import per.goweii.layer.dialog.DialogLayer
 
 class WindowFragment : BaseFragment() {
-    private val viewModel: WindowViewModel by viewModelsByAndroid()
+    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
+    private val viewModel by viewModelsByAndroid<WindowViewModel>()
     private lateinit var binding: FragmentWindowBinding
 
     private lateinit var homeFragment: HomeFragment
@@ -41,9 +36,7 @@ class WindowFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if (!this::binding.isInitialized) {
-            binding = FragmentWindowBinding.inflate(inflater, container, false)
-        }
+        binding = FragmentWindowBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -134,6 +127,15 @@ class WindowFragment : BaseFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.loadUrlFromSearch?.let {
+            allWebFragment.createNewWeb(it)
+            showAllWebFragment()
+            mainViewModel.loadUrlFromSearch = null
+        }
+    }
+
     private fun showHomeFragment() {
         if (homeFragment.isVisible) return
         childFragmentManager.commit {
@@ -168,30 +170,9 @@ class WindowFragment : BaseFragment() {
     }
 
     private fun showMenuDialog() {
-        DialogLayer(requireActivity())
-            .setBackgroundDimDefault()
-            .setContentView(R.layout.dialog_menu)
-            .setContentAnimator(AnimStyle.BOTTOM)
-            .setSwipeDismiss(SwipeLayout.Direction.BOTTOM)
-            .addOnBindDataListener { layer ->
-                val rv = layer.requireView<RecyclerView>(R.id.dialog_menu_rv)
-                val list = arrayListOf<MenuAction>()
-                list.add(MenuAction("收藏", R.drawable.ic_bookmark) {
-                    layer.dismiss()
-                })
-                list.add(MenuAction("刷新", R.drawable.ic_reload) {
-                    layer.dismiss()
-                })
-                list.add(MenuAction("扫码", R.drawable.ic_scan) {
-                    layer.dismiss()
-                    startActivity(Intent(context, ScanActivity::class.java))
-                })
-                rv.apply {
-                    layoutManager = GridLayoutManager(context, 4, GridLayoutManager.VERTICAL, false)
-                    adapter = MenuAdapter(list)
-                }
-            }
-            .show()
+        findNavController().navigate(
+            WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
+        )
     }
 
 }

@@ -22,7 +22,9 @@ import per.goweii.android.anole.databinding.FragmentWebBinding
 import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.main.ChoiceDefSearchAdapter
+import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
+import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
@@ -49,11 +51,13 @@ class WebFragment : BaseFragment() {
         }
     }
 
+    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val allWebViewModel by parentViewModelsByAndroid<AllWebViewModel, AllWebFragment>()
 
-    private lateinit var binding: FragmentWebBinding
     private lateinit var kernelView: KernelView
+
+    private lateinit var binding: FragmentWebBinding
 
     private lateinit var backForwardIconAbility: BackForwardIconAbility
     private lateinit var pageInfoAbility: PageInfoAbility
@@ -75,70 +79,80 @@ class WebFragment : BaseFragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        kernelView = WebFactory.with(requireContext().applicationContext)
+            .applyDefaultConfig()
+            .get()
+        kernelView.loadUrl(
+            arguments?.getString(ARG_INITIAL_URL) ?: getString(R.string.initial_url)
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if (!this::binding.isInitialized) {
-            binding = FragmentWebBinding.inflate(inflater, container, false)
-            initSwipeDismiss()
-            kernelView = createWeb(
-                arguments?.getString(ARG_INITIAL_URL)
-                    ?: getString(R.string.initial_url)
+        binding = FragmentWebBinding.inflate(inflater, container, false)
+        initSwipeDismiss()
+        binding.webContainer.addView(
+            kernelView, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
-            binding.touchableLayout.onTouch = { _ ->
-                allWebViewModel.onTouchedWebFragment(this@WebFragment)
+        )
+        binding.touchableLayout.onTouch = { _ ->
+            allWebViewModel.onTouchedWebFragment(this@WebFragment)
+        }
+        binding.urlInputView.apply {
+            onDefSearch = { showChoiceDefSearchPopup(it) }
+            onCollect = { windowViewModel.addOrUpdateBookmark(it) }
+            onUnCollect = { windowViewModel.removeBookmark(it) }
+            onEnter = { windowViewModel.loadUrl(it) }
+            onSearch = {
+                windowViewModel.loadUrl(
+                    DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
+                )
             }
-            binding.urlInputView.apply {
-                onDefSearch = { showChoiceDefSearchPopup(it) }
-                onCollect = { windowViewModel.addOrUpdateBookmark(it) }
-                onUnCollect = { windowViewModel.removeBookmark(it) }
-                onEnter = { windowViewModel.loadUrl(it) }
-                onSearch = {
-                    windowViewModel.loadUrl(
-                        DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
+        }
+        progressAbility = ProgressAbility(
+            onProgress = {
+                if (binding.pb.max != 100) {
+                    binding.pb.max = 100
+                }
+                if (it in 0..100) {
+                    ObjectAnimator.ofInt(binding.pb, "progress", binding.pb.progress, it)
+                        .start()
+                    binding.pb.animate().alpha(1F).start()
+                } else {
+                    binding.pb.progress = 0
+                    binding.pb.animate().alpha(0F).start()
+                }
+            }
+        )
+        pageInfoAbility = PageInfoAbility(
+            onReceivedPageUrl = {
+                binding.urlInputView.setUrl(it)
+                if (it == null) {
+                    binding.urlInputView.setCollected(false)
+                } else {
+                    binding.urlInputView.setCollected(
+                        BookmarkManager.getInstance(requireContext()).find(it) != null
                     )
                 }
+            },
+            onReceivedPageTitle = {
+                binding.urlInputView.setTitle(it)
+            },
+            onReceivedPageIcon = {
+                binding.urlInputView.setIcon(it)
             }
-            progressAbility = ProgressAbility(
-                onProgress = {
-                    if (binding.pb.max != 100) {
-                        binding.pb.max = 100
-                    }
-                    if (it in 0..100) {
-                        ObjectAnimator.ofInt(binding.pb, "progress", binding.pb.progress, it)
-                            .start()
-                        binding.pb.animate().alpha(1F).start()
-                    } else {
-                        binding.pb.progress = 0
-                        binding.pb.animate().alpha(0F).start()
-                    }
-                }
-            )
-            pageInfoAbility = PageInfoAbility(
-                onReceivedPageUrl = {
-                    binding.urlInputView.setUrl(it)
-                    if (it == null) {
-                        binding.urlInputView.setCollected(false)
-                    } else {
-                        binding.urlInputView.setCollected(
-                            BookmarkManager.getInstance(requireContext()).find(it) != null
-                        )
-                    }
-                },
-                onReceivedPageTitle = {
-                    binding.urlInputView.setTitle(it)
-                },
-                onReceivedPageIcon = {
-                    binding.urlInputView.setIcon(it)
-                }
-            )
-            backForwardIconAbility = BackForwardIconAbility(
-                canGoBack = { windowViewModel.goBackEnableLiveData.postValue(it) },
-                canGoForward = { windowViewModel.goForwardEnableLiveData.postValue(it) }
-            )
-        }
+        )
+        backForwardIconAbility = BackForwardIconAbility(
+            canGoBack = { windowViewModel.goBackEnableLiveData.postValue(it) },
+            canGoForward = { windowViewModel.goForwardEnableLiveData.postValue(it) }
+        )
         return binding.root
     }
 
@@ -155,7 +169,7 @@ class WebFragment : BaseFragment() {
                 .collect { kernelView.loadUrl(it ?: getString(R.string.initial_url)) }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            windowViewModel.reloadSharedFlow
+            mainViewModel.reloadFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
                 .collect { kernelView.reload() }
         }
@@ -180,6 +194,7 @@ class WebFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         onBackPressedCallback.isEnabled = true
+        kernelView.resumeTimers()
         kernelView.onResume()
         kernelView.settings.apply {
             javaScriptEnabled = true
@@ -202,19 +217,20 @@ class WebFragment : BaseFragment() {
         kernelView.webClient.removeAbility(progressAbility)
         kernelView.webClient.removeAbility(pageInfoAbility)
         kernelView.onPause()
+        kernelView.pauseTimers()
         kernelView.settings.apply {
             javaScriptEnabled = false
         }
     }
 
-    private fun createWeb(url: String): KernelView {
-        val kernelView = WebFactory.with(requireContext())
-            .applyDefaultConfig()
-            .attachTo(binding.webContainer)
-            .bindToLifecycle(viewLifecycleOwner)
-            .get()
-        kernelView.loadUrl(url)
-        return kernelView
+    override fun onDestroyView() {
+        binding.webContainer.removeView(kernelView)
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        kernelView.destroy()
     }
 
     private fun initSwipeDismiss() {

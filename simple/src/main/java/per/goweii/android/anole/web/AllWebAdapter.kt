@@ -3,7 +3,8 @@ package per.goweii.android.anole.web
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class AllWebAdapter(fragment: AllWebFragment) : FragmentStateAdapter(fragment) {
+class AllWebAdapter(fragment: AllWebFragment) :
+    FragmentStateAdapter(fragment.childFragmentManager, fragment.lifecycle) {
     private val webFragments = arrayListOf<WebFragment>()
 
     fun indexOf(webFragment: WebFragment): Int {

@@ -2,6 +2,7 @@ package per.goweii.android.anole.main
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
 import per.goweii.android.anole.NavGraphMainDirections
 import per.goweii.android.anole.base.BaseActivity
@@ -16,6 +17,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         intent?.let { parseIntentToOpenUrl(it) }
     }
 

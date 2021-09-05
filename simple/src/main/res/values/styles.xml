@@ -1,6 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -13,6 +18,7 @@
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorShadow">@color/colorShadow</item>
         <item name="colorSurfaceAbove">@color/colorSurfaceAbove</item>
+
         <item name="dimenShadowOffsetY">@dimen/dimenShadowOffsetY</item>
         <item name="dimenShadowRadius">@dimen/dimenShadowRadius</item>
         <item name="dimenMarginBig">@dimen/dimenMarginBig</item>
@@ -24,22 +30,7 @@
         <item name="dimenElevation1">@dimen/dimenElevation1</item>
         <item name="dimenIconButtonSizeDefault">@dimen/dimenIconButtonSizeDefault</item>
         <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>
-        <item name="android:statusBarColor">@color/colorSurface</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-    </style>
 
-    <style name="AppTheme.Scan">
-        <item name="android:windowBackground">#000000</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowAnimationStyle">@style/AnimationBottomEnterBottomExit</item>
-    </style>
-
-    <style name="AnimationBottomEnterBottomExit" parent="@android:style/Animation.Activity">
-        <item name="android:activityCloseExitAnimation">@anim/bottom_exit</item>
-        <item name="android:activityCloseEnterAnimation">@anim/no_anim</item>
-        <item name="android:activityOpenExitAnimation">@anim/no_anim</item>
-        <item name="android:activityOpenEnterAnimation">@anim/bottom_enter</item>
     </style>
 
 </resources>
