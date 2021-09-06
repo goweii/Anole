@@ -9,9 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collect
@@ -23,10 +27,12 @@ import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.main.ChoiceDefSearchAdapter
 import per.goweii.android.anole.main.MainViewModel
+import per.goweii.android.anole.utils.DefHome
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
+import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel
 import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.BackForwardIconAbility
@@ -81,9 +87,7 @@ class WebFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        kernelView = WebFactory.with(requireContext().applicationContext)
-            .applyDefaultConfig()
-            .get()
+        kernelView = WebFactory.with(requireContext().applicationContext).get()
         kernelView.loadUrl(
             arguments?.getString(ARG_INITIAL_URL) ?: getString(R.string.initial_url)
         )
@@ -114,6 +118,35 @@ class WebFragment : BaseFragment() {
                 windowViewModel.loadUrl(
                     DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
                 )
+            }
+        }
+        binding.bottomNavView.apply {
+            ivBack.setOnClickListener {
+                if (kernelView.canGoBack) {
+                    kernelView.goBack()
+                }
+            }
+            ivForward.setOnClickListener {
+                if (kernelView.canGoForward) {
+                    kernelView.goForward()
+                }
+            }
+            ivMenu.setOnClickListener {
+                findNavController().navigate(
+                    WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
+                )
+            }
+            ivHome.setOnClickListener {
+                windowViewModel.showHome()
+            }
+            rlWindows.setOnClickListener {
+                windowViewModel.switchChoiceMode(null)
+            }
+            rlWindows.setOnLongClickListener {
+                windowViewModel.loadUrlOnNewWindow(
+                    DefHome.getInstance(requireContext()).getDefHome()
+                )
+                return@setOnLongClickListener true
             }
         }
         progressAbility = ProgressAbility(
@@ -150,14 +183,24 @@ class WebFragment : BaseFragment() {
             }
         )
         backForwardIconAbility = BackForwardIconAbility(
-            canGoBack = { windowViewModel.goBackEnableLiveData.postValue(it) },
-            canGoForward = { windowViewModel.goForwardEnableLiveData.postValue(it) }
+            canGoBack = {
+                binding.bottomNavView.ivBack.isEnabled = it
+                binding.bottomNavView.ivBack.animate().alpha(if (it) 1F else 0.6F).start()
+            },
+            canGoForward = {
+                binding.bottomNavView.ivForward.isEnabled = it
+                binding.bottomNavView.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
+            }
         )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.doOnAttach {
+            binding.vStatusBar.layoutParams.height = ViewCompat.getRootWindowInsets(view)
+                ?.getInsets(WindowInsetsCompat.Type.systemBars())?.top ?: 0
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.goBackOrForwardSharedFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
@@ -187,6 +230,14 @@ class WebFragment : BaseFragment() {
                 if (binding.urlInputView.url == it) {
                     binding.urlInputView.setCollected(false)
                 }
+            }
+        }
+        windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
+            if (it > 0) {
+                binding.bottomNavView.tvWindowsCount.text = it.toString()
+            } else {
+                binding.bottomNavView.tvWindowsCount.text = getString(R.string.add_window)
+                windowViewModel.showHome()
             }
         }
     }

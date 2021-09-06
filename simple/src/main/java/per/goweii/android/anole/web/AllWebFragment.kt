@@ -66,6 +66,7 @@ class AllWebFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onRemoveSharedFlow.collect {
                 adapter.removeWeb(it)
+                adapter.notifyDataSetChanged()
                 windowViewModel.windowCountLiveData.apply {
                     postValue(adapter.itemCount)
                 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.ability.impl.*
 import per.goweii.anole.utils.UserAgent
 import per.goweii.anole.view.KernelView
 
@@ -44,16 +43,6 @@ class WebFactory(private val kernelView: KernelView) {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
-    }
-
-    fun applyDefaultConfig() = apply {
-        registerAbility(FullscreenVideoAbility())
-        registerAbility(DownloadAbility())
-        registerAbility(AppOpenAbility())
-        registerAbility(FileChooseAbility())
-        registerAbility(ConsoleAbility())
-        registerAbility(PermissionAbility())
-        registerAbility(WindowAbility())
     }
 
     fun registerAbility(client: WebAbility) = apply {

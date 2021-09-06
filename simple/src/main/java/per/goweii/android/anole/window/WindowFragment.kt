@@ -9,7 +9,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -18,7 +17,6 @@ import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
 import per.goweii.android.anole.main.MainViewModel
-import per.goweii.android.anole.utils.DefHome
 import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.web.AllWebFragment
@@ -43,44 +41,13 @@ class WindowFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prepareFragments()
-        viewModel.windowCountLiveData.observe(viewLifecycleOwner) {
-            if (it > 0) {
-                binding.tvWindowsCount.text = it.toString()
-            } else {
-                binding.tvWindowsCount.text = getString(R.string.add_window)
-                showHomeFragment()
-                allWebFragment.exitChoiceMode()
-            }
-        }
-        viewModel.goBackEnableLiveData.observe(viewLifecycleOwner) {
-            binding.ivBack.isEnabled = it
-            binding.ivBack.animate().alpha(if (it) 1F else 0.6F).start()
-        }
-        viewModel.goForwardEnableLiveData.observe(viewLifecycleOwner) {
-            binding.ivForward.isEnabled = it
-            binding.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
-        }
-        binding.ivBack.setOnClickListener {
-            viewModel.getBackOrForward(-1)
-        }
-        binding.ivForward.setOnClickListener {
-            viewModel.getBackOrForward(1)
-        }
-        binding.ivMenu.setOnClickListener {
-            showMenuDialog()
-        }
-        binding.ivHome.setOnClickListener {
-            showHomeFragment()
-            allWebFragment.exitChoiceMode()
-        }
-        binding.rlWindows.setOnClickListener {
-            val windowCount = (viewModel.windowCountLiveData.value ?: 0).coerceAtLeast(0)
-            if (windowCount == 0) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.switchChoiceModeSharedFlow.collect {
                 showAllWebFragment()
-                allWebFragment.createNewWeb(DefHome.getInstance(requireContext()).getDefHome())
-            } else {
-                if (!allWebFragment.isVisible) {
-                    showAllWebFragment()
+                if (it == true) {
+                    allWebFragment.enterChoiceMode()
+                } else if (it == false) {
+                    allWebFragment.exitChoiceMode()
                 } else {
                     if (allWebFragment.isChoiceMode) {
                         allWebFragment.exitChoiceMode()
@@ -90,10 +57,19 @@ class WindowFragment : BaseFragment() {
                 }
             }
         }
-        binding.rlWindows.setOnLongClickListener {
-            showAllWebFragment()
-            allWebFragment.createNewWeb(DefHome.getInstance(requireContext()).getDefHome())
-            return@setOnLongClickListener true
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.showHomeModeSharedFlow.collect {
+                showHomeFragment()
+                allWebFragment.exitChoiceMode()
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.showWebModeSharedFlow.collect {
+                showAllWebFragment()
+                if (it) {
+                    allWebFragment.enterChoiceMode()
+                }
+            }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadUrlOnNewWindowSharedFlow.collect {
@@ -167,12 +143,6 @@ class WindowFragment : BaseFragment() {
     private fun loadUrlOnNewWeb(url: String?) {
         showAllWebFragment()
         allWebFragment.createNewWeb(url ?: getString(R.string.initial_url))
-    }
-
-    private fun showMenuDialog() {
-        findNavController().navigate(
-            WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
-        )
     }
 
 }

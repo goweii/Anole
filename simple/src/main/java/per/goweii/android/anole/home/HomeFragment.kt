@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
+import per.goweii.android.anole.utils.DefHome
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
@@ -57,6 +59,21 @@ class HomeFragment : BaseFragment() {
                     )
                 )
         }
+        binding.ivMenu.setOnClickListener {
+            findNavController().navigate(
+                WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
+            )
+        }
+        binding.rlWindows.setOnClickListener {
+            val count = windowViewModel.windowCountLiveData.value?.coerceAtLeast(0) ?: 0
+            if (count == 0) {
+                windowViewModel.loadUrlOnNewWindow(
+                    DefHome.getInstance(requireContext()).getDefHome()
+                )
+            } else {
+                windowViewModel.showWeb()
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.bookmarkLiveData.collect {
@@ -73,12 +90,13 @@ class HomeFragment : BaseFragment() {
                 removeBookmark(it)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        this.windowViewModel.goBackEnableLiveData.postValue(false)
-        this.windowViewModel.goForwardEnableLiveData.postValue(false)
+        windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
+            if (it > 0) {
+                binding.tvWindowsCount.text = it.toString()
+            } else {
+                binding.tvWindowsCount.text = getString(R.string.add_window)
+            }
+        }
     }
 
     private fun addOrUpdateBookmark(bookmark: Bookmark) {

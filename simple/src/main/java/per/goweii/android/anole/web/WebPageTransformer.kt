@@ -1,6 +1,7 @@
 package per.goweii.android.anole.web
 
 import android.graphics.Outline
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
@@ -35,6 +36,7 @@ class WebPageTransformer(
         }
 
     override fun transformPage(page: View, position: Float) {
+        Log.d("transformPage", "position=$position")
         val scale = 1F - (1F - scale) * faction
         page.pivotX = page.width / 2F
         page.pivotY = page.height / 2F

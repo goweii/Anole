@@ -33,9 +33,7 @@ class WindowAbility : WebAbility() {
         val kernelView = kernel.kernelView
         val parent = kernelView.parent ?: return false
         if (parent !is FrameLayout) return false
-        val webFactory = WebFactory.with(kernelView.context)
-            .applyDefaultConfig()
-            .attachTo(parent)
+        val webFactory = WebFactory.with(kernelView.context).attachTo(parent)
         if (kernelView is KernelView) {
             webFactory.bindToLifecycle(kernelView.bindingLifecycleOwner)
         }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -41,7 +42,12 @@ class FullscreenVideoAbility(
             callback?.onCustomViewHidden()
             return
         }
-        view!!.background = ColorDrawable(Color.BLACK)
+        view!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.background = ColorDrawable(Color.BLACK)
+        } else {
+            view.setBackgroundColor(Color.BLACK)
+        }
         val decorView = activity.window.decorView
         decorView as FrameLayout
         decorView.addView(

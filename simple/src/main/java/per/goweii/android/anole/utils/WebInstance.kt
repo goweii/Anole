@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.SparseArray
 import androidx.annotation.UiThread
 import per.goweii.anole.WebFactory
+import per.goweii.anole.ability.impl.*
 import per.goweii.anole.view.KernelView
 
 class WebInstance(private val application: Application) {
@@ -33,8 +34,14 @@ class WebInstance(private val application: Application) {
     }
 
     fun create(): KernelView {
-        return WebFactory.with(application)
-            .applyDefaultConfig()
-            .get()
+        return WebFactory.with(application).get().apply {
+            webClient.addAbility(FullscreenVideoAbility())
+            webClient.addAbility(DownloadAbility())
+            webClient.addAbility(AppOpenAbility())
+            webClient.addAbility(FileChooseAbility())
+            webClient.addAbility(ConsoleAbility())
+            webClient.addAbility(PermissionAbility())
+            webClient.addAbility(WindowAbility())
+        }
     }
 }

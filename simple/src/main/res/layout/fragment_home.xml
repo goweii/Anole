@@ -32,12 +32,12 @@
         android:layout_marginEnd="?attr/dimenMarginBig"
         android:background="@drawable/shape_edittext_bg"
         android:gravity="center_vertical"
-        android:transitionName="@string/transition_name_search"
         android:paddingStart="?attr/dimenMarginDefault"
         android:paddingEnd="?attr/dimenMarginDefault"
         android:text="@string/search_hint"
         android:textAppearance="?attr/textAppearanceBody1"
         android:textColor="?attr/colorEditTextHint"
+        android:transitionName="@string/transition_name_search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,5 +62,53 @@
         tools:layoutManager="GridLayoutManager"
         tools:listitem="@layout/item_bookmark"
         tools:spanCount="4" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_menu"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/selectableItemBackground"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rl_windows"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <RelativeLayout
+        android:id="@+id/rl_windows"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_menu">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_windows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_windows"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_windows_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/iv_windows"
+            android:layout_alignBottom="@+id/iv_windows"
+            android:layout_gravity="center"
+            android:layout_marginEnd="-1dp"
+            android:layout_marginBottom="-1dp"
+            android:background="?attr/colorSurface"
+            android:includeFontPadding="false"
+            android:text="@string/add_window"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            android:typeface="monospace" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
