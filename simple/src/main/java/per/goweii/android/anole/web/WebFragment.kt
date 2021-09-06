@@ -27,14 +27,10 @@ import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.main.ChoiceDefSearchAdapter
 import per.goweii.android.anole.main.MainViewModel
-import per.goweii.android.anole.utils.DefHome
-import per.goweii.android.anole.utils.DefSearch
-import per.goweii.android.anole.utils.activityViewModelsByAndroid
-import per.goweii.android.anole.utils.parentViewModelsByAndroid
+import per.goweii.android.anole.utils.*
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel
-import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.BackForwardIconAbility
 import per.goweii.anole.ability.impl.PageInfoAbility
 import per.goweii.anole.ability.impl.ProgressAbility
@@ -87,7 +83,7 @@ class WebFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        kernelView = WebFactory.with(requireContext().applicationContext).get()
+        kernelView = WebInstance.getInstance(requireContext()).create()
         kernelView.loadUrl(
             arguments?.getString(ARG_INITIAL_URL) ?: getString(R.string.initial_url)
         )

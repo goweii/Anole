@@ -6,6 +6,7 @@ import android.util.SparseArray
 import androidx.annotation.UiThread
 import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.*
+import per.goweii.anole.kernel.system.SystemWebInstanceBuilder
 import per.goweii.anole.view.KernelView
 
 class WebInstance(private val application: Application) {
@@ -22,6 +23,10 @@ class WebInstance(private val application: Application) {
     }
 
     private val kernels = SparseArray<KernelView>()
+
+    init {
+        WebFactory.setInstanceBuilder(SystemWebInstanceBuilder())
+    }
 
     fun get(kernelId: Int): KernelView {
         var kernelView = kernels.get(kernelId)
