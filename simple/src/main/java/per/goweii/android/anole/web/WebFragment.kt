@@ -15,6 +15,7 @@ import androidx.core.view.doOnAttach
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,12 +43,12 @@ import per.goweii.layer.visualeffectview.PopupShadowLayout
 
 class WebFragment : BaseFragment() {
     companion object {
-        private const val ARG_INITIAL_URL = "initial_url"
+        private const val ARG_INIT_CONFIG = "init_config"
 
-        fun newInstance(initialUrl: String?): WebFragment {
+        fun newInstance(initConfig: WebInitConfig): WebFragment {
             return WebFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_INITIAL_URL, initialUrl)
+                    putParcelable(ARG_INIT_CONFIG, initConfig)
                 }
             }
         }
@@ -57,6 +58,7 @@ class WebFragment : BaseFragment() {
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val allWebViewModel by parentViewModelsByAndroid<AllWebViewModel, AllWebFragment>()
 
+    private lateinit var initConfig: WebInitConfig
     private lateinit var kernelView: KernelView
 
     private lateinit var binding: FragmentWebBinding
@@ -83,10 +85,9 @@ class WebFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        kernelView = WebInstance.getInstance(requireContext()).create()
-        kernelView.loadUrl(
-            arguments?.getString(ARG_INITIAL_URL) ?: getString(R.string.initial_url)
-        )
+        initConfig = requireArguments().getParcelable(ARG_INIT_CONFIG)!!
+        kernelView = WebInstance.getInstance(requireContext()).get(initConfig.kernelId)
+        kernelView.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
     }
 
     override fun onCreateView(
@@ -103,18 +104,7 @@ class WebFragment : BaseFragment() {
             )
         )
         binding.touchableLayout.onTouch = { _ ->
-            allWebViewModel.onTouchedWebFragment(this@WebFragment)
-        }
-        binding.urlInputView.apply {
-            onDefSearch = { showChoiceDefSearchPopup(it) }
-            onCollect = { windowViewModel.addOrUpdateBookmark(it) }
-            onUnCollect = { windowViewModel.removeBookmark(it) }
-            onEnter = { windowViewModel.loadUrl(it) }
-            onSearch = {
-                windowViewModel.loadUrl(
-                    DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(it)
-                )
-            }
+            allWebViewModel.onTouchedWebFragment(initConfig)
         }
         binding.bottomNavView.apply {
             ivBack.setOnClickListener {
@@ -137,6 +127,17 @@ class WebFragment : BaseFragment() {
             }
             rlWindows.setOnClickListener {
                 windowViewModel.switchChoiceMode(null)
+            }
+            cvCount.setOnClickListener {
+                windowViewModel.switchChoiceMode(null)
+            }
+            tvTitle.setOnClickListener {
+                findNavController().navigate(
+                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                    FragmentNavigatorExtras(
+                        binding.bottomNavView.tvTitle to getString(R.string.transition_name_search)
+                    )
+                )
             }
             rlWindows.setOnLongClickListener {
                 windowViewModel.loadUrlOnNewWindow(
@@ -162,20 +163,16 @@ class WebFragment : BaseFragment() {
         )
         pageInfoAbility = PageInfoAbility(
             onReceivedPageUrl = {
-                binding.urlInputView.setUrl(it)
-                if (it == null) {
-                    binding.urlInputView.setCollected(false)
-                } else {
-                    binding.urlInputView.setCollected(
-                        BookmarkManager.getInstance(requireContext()).find(it) != null
-                    )
-                }
             },
             onReceivedPageTitle = {
-                binding.urlInputView.setTitle(it)
+                binding.bottomNavView.tvTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
             },
             onReceivedPageIcon = {
-                binding.urlInputView.setIcon(it)
+                if (it != null) {
+                    binding.bottomNavView.ivLogo.setImageBitmap(it)
+                } else {
+                    binding.bottomNavView.ivLogo.setImageResource(R.drawable.ic_browser)
+                }
             }
         )
         backForwardIconAbility = BackForwardIconAbility(
@@ -188,6 +185,14 @@ class WebFragment : BaseFragment() {
                 binding.bottomNavView.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
             }
         )
+        binding.webContainer.apply {
+            onDragUp = {
+                binding.bottomNavView.toInfoMode()
+            }
+            onDragDown = {
+                binding.bottomNavView.toActionMode()
+            }
+        }
         return binding.root
     }
 
@@ -214,25 +219,19 @@ class WebFragment : BaseFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.addOrUpdateBookmarkSharedFlow.collect { bookmark ->
-                binding.urlInputView.url?.let { url ->
-                    if (bookmark.url == url) {
-                        binding.urlInputView.setCollected(true)
-                    }
-                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.removeBookmarkSharedFlow.collect {
-                if (binding.urlInputView.url == it) {
-                    binding.urlInputView.setCollected(false)
-                }
             }
         }
         windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
             if (it > 0) {
                 binding.bottomNavView.tvWindowsCount.text = it.toString()
+                binding.bottomNavView.tvCount.text = it.toString()
             } else {
                 binding.bottomNavView.tvWindowsCount.text = getString(R.string.add_window)
+                binding.bottomNavView.tvCount.text = getString(R.string.add_window)
                 windowViewModel.showHome()
             }
         }
@@ -277,12 +276,13 @@ class WebFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        WebInstance.getInstance(requireContext()).remove(initConfig.kernelId)
         kernelView.destroy()
     }
 
     private fun initSwipeDismiss() {
         binding.swipeLayout.onDismiss = {
-            allWebViewModel.onRemoveWebFragment(this@WebFragment)
+            allWebViewModel.onRemoveWebFragment(initConfig)
         }
         binding.swipeLayout.onCollect = {
             if (!kernelView.url.isNullOrBlank()) {

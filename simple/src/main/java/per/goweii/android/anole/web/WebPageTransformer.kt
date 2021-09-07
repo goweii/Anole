@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.widget.FrameLayout
 import androidx.annotation.FloatRange
 import androidx.viewpager2.widget.ViewPager2
 import per.goweii.android.anole.R
@@ -18,13 +19,15 @@ class WebPageTransformer(
     private val gap: Float,
     private val cornerRadius: Float
 ) : ViewPager2.PageTransformer {
+    private var topMargin = 0
+    private var bottomMargin = 0
     private val outlineProvider = object : ViewOutlineProvider() {
         override fun getOutline(view: View, outline: Outline) {
             outline.setRoundRect(
                 0,
-                0,
+                (topMargin * faction).toInt(),
                 view.width,
-                view.height,
+                view.height - (bottomMargin * faction).toInt(),
                 cornerRadius * faction
             )
         }
@@ -44,7 +47,10 @@ class WebPageTransformer(
         page.scaleY = scale
         page.translationX = -(page.width - (page.width * scale) - gap) * position
         val swipeActionLayout = page.findViewById<SwipeActionLayout>(R.id.swipe_layout)
+        val webContainer = page.findViewById<FrameLayout>(R.id.web_container)
         val touchableFrameLayout = page.findViewById<TouchableFrameLayout>(R.id.touchable_layout)
+        topMargin = webContainer.top
+        bottomMargin = touchableFrameLayout.height - webContainer.bottom
         if (touchableFrameLayout.outlineProvider !== outlineProvider) {
             touchableFrameLayout.clipToOutline = true
             touchableFrameLayout.outlineProvider = outlineProvider

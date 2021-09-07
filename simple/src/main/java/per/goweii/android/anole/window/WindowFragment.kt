@@ -29,6 +29,8 @@ class WindowFragment : BaseFragment() {
     private lateinit var homeFragment: HomeFragment
     private lateinit var allWebFragment: AllWebFragment
 
+    private var currentFragment: String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,14 +78,24 @@ class WindowFragment : BaseFragment() {
                 loadUrlOnNewWeb(it)
             }
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-            val args: WindowFragmentArgs by navArgs()
-            if (!args.initialUrl.isNullOrBlank()) {
-                showAllWebFragment()
-                allWebFragment.createNewWeb(args.initialUrl)
-            } else {
+        when {
+            HomeFragment::class.java.name == currentFragment -> {
                 showHomeFragment()
-                allWebFragment.exitChoiceMode()
+            }
+            AllWebFragment::class.java.name == currentFragment -> {
+                showAllWebFragment()
+            }
+            else -> {
+                viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+                    val args: WindowFragmentArgs by navArgs()
+                    if (!args.initialUrl.isNullOrBlank()) {
+                        showAllWebFragment()
+                        allWebFragment.createNewWeb(args.initialUrl)
+                    } else {
+                        showHomeFragment()
+                        allWebFragment.exitChoiceMode()
+                    }
+                }
             }
         }
     }
@@ -95,11 +107,13 @@ class WindowFragment : BaseFragment() {
                 ?: HomeFragment().also {
                     add(R.id.fragment_container_view, it, HomeFragment::class.java.name)
                 }
+            hide(homeFragment)
             allWebFragment = childFragmentManager
                 .findFragmentByTag(AllWebFragment::class.java.name) as AllWebFragment?
                 ?: AllWebFragment().also {
                     add(R.id.fragment_container_view, it, AllWebFragment::class.java.name)
                 }
+            hide(allWebFragment)
         }
     }
 
@@ -109,6 +123,15 @@ class WindowFragment : BaseFragment() {
             allWebFragment.createNewWeb(it)
             showAllWebFragment()
             mainViewModel.loadUrlFromSearch = null
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (allWebFragment.isVisible) {
+            currentFragment = AllWebFragment::class.java.name
+        } else if (homeFragment.isVisible) {
+            currentFragment = HomeFragment::class.java.name
         }
     }
 

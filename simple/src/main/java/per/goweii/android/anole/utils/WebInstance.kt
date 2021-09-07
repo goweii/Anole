@@ -42,6 +42,12 @@ class WebInstance(private val application: Application) {
         return kernelView
     }
 
+    fun remove(kernelId: Int): KernelView? {
+        val kernelView = kernels.get(kernelId)
+        kernels.remove(kernelId)
+        return kernelView
+    }
+
     fun put(kernelId: Int, kernelView: KernelView) {
         if (kernels.containsKey(kernelId)) {
             throw IllegalStateException("已存在相同kernelId($kernelId)的KernelView")

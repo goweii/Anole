@@ -22,4 +22,6 @@
     <dimen name="dimenShadowOffsetY">6dp</dimen>
     <attr name="dimenElevation1" format="dimension" />
     <dimen name="dimenElevation1">1dp</dimen>
+    <attr name="dimenIconLineWidth" format="dimension" />
+    <dimen name="dimenIconLineWidth">2dp</dimen>
 </resources>

@@ -1,47 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motion_layout"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="?attr/colorSurface"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    app:layoutDescription="@xml/layout_bottom_nav_scene">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_back"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
         android:scaleType="centerInside"
         android:src="@drawable/ic_back"
+        app:layout_constraintEnd_toStartOf="@+id/iv_forward"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_forward"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
         android:scaleType="centerInside"
         android:src="@drawable/ic_forward"
-        tools:ignore="ContentDescription" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_menu"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackground"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_menu"
+        app:layout_constraintEnd_toStartOf="@+id/rl_windows"
+        app:layout_constraintStart_toEndOf="@+id/iv_back"
         tools:ignore="ContentDescription" />
 
     <RelativeLayout
         android:id="@+id/rl_windows"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackground">
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintEnd_toStartOf="@+id/iv_menu"
+        app:layout_constraintStart_toEndOf="@+id/iv_forward">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_windows"
@@ -71,13 +67,89 @@
     </RelativeLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_menu"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintEnd_toStartOf="@+id/iv_home"
+        app:layout_constraintStart_toEndOf="@+id/rl_windows"
+        tools:ignore="ContentDescription" />
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_home"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
         android:scaleType="centerInside"
         android:src="@drawable/ic_home"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_menu"
         tools:ignore="ContentDescription" />
 
-</merge>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_logo"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="?attr/dimenMarginHalf"
+        app:cardBackgroundColor="#00000000"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_back"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_launcher_background" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_edittext_bg"
+        android:gravity="center"
+        android:paddingStart="32dp"
+        android:paddingTop="?attr/dimenMarginHalf"
+        android:paddingEnd="32dp"
+        android:paddingBottom="?attr/dimenMarginHalf"
+        android:singleLine="true"
+        android:transitionName="@string/transition_name_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cv_count"
+        app:layout_constraintStart_toStartOf="@+id/cv_logo"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@tools:sample/avatars" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_count"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="?attr/dimenMarginHalf"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_home"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_count"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            tools:ignore="SpUsage"
+            tools:text="99" />
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

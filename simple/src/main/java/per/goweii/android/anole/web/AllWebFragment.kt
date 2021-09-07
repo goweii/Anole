@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentAllWebBinding
+import per.goweii.android.anole.utils.WebInitConfig
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
@@ -83,7 +84,7 @@ class AllWebFragment : BaseFragment() {
     fun createNewWeb(initialUrl: String?) {
         if (isDetached) return
         if (!isAdded) return
-        adapter.addWeb(WebFragment.newInstance(initialUrl))
+        adapter.addWeb(WebInitConfig(initialUrl))
         binding.vpAllWeb.setCurrentItem(adapter.itemCount - 1, true)
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)

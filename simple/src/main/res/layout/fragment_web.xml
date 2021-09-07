@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="?attr/colorSurface">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -20,53 +20,43 @@
             <View
                 android:id="@+id/v_status_bar"
                 android:layout_width="match_parent"
-                android:layout_height="0dp" />
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_height="30dp" />
 
-            <RelativeLayout
-                android:id="@+id/title_bar"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="?attr/colorSurface"
-                android:orientation="horizontal"
-                android:paddingStart="?attr/dimenMarginHalf"
-                android:paddingTop="?attr/dimenMarginHalf"
-                android:paddingEnd="?attr/dimenMarginHalf"
-                android:paddingBottom="?attr/dimenMarginHalf"
-                app:layout_scrollFlags="scroll|snap|enterAlways">
-
-                <ProgressBar
-                    android:id="@+id/pb"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_alignStart="@+id/url_input_view"
-                    android:layout_alignTop="@+id/url_input_view"
-                    android:layout_alignEnd="@+id/url_input_view"
-                    android:layout_alignBottom="@+id/url_input_view"
-                    android:alpha="0.3"
-                    android:max="100"
-                    android:progressDrawable="@drawable/progress_bar"
-                    tools:progress="5" />
-
-                <per.goweii.android.anole.widget.UrlInputView
-                    android:id="@+id/url_input_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </RelativeLayout>
-
-            <FrameLayout
+            <per.goweii.android.anole.widget.WebContainer
                 android:id="@+id/web_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
 
-            <per.goweii.android.anole.widget.BottomNavView
+            <per.goweii.android.anole.widget.WebControlView
                 android:id="@+id/bottom_nav_view"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?attr/actionBarSize"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+            <ProgressBar
+                android:id="@+id/pb"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:alpha="0.3"
+                android:max="100"
+                android:progressDrawable="@drawable/progress_bar"
+                app:layout_constraintEnd_toEndOf="@+id/bottom_nav_view"
+                app:layout_constraintStart_toStartOf="@+id/bottom_nav_view"
+                app:layout_constraintTop_toTopOf="@+id/bottom_nav_view"
+                tools:progress="5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </per.goweii.android.anole.widget.TouchableFrameLayout>
 

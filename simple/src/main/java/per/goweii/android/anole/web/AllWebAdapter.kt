@@ -2,45 +2,51 @@ package per.goweii.android.anole.web
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import per.goweii.android.anole.utils.WebInitConfig
 
 class AllWebAdapter(fragment: AllWebFragment) :
     FragmentStateAdapter(fragment.childFragmentManager, fragment.lifecycle) {
-    private val webFragments = arrayListOf<WebFragment>()
+    private val webInitConfigList = arrayListOf<WebInitConfig>()
 
-    fun indexOf(webFragment: WebFragment): Int {
-        return webFragments.indexOf(webFragment)
+    fun indexOf(webInitConfig: WebInitConfig): Int {
+        return webInitConfigList.indexOf(webInitConfig)
     }
 
-    fun addWeb(webFragment: WebFragment) {
-        webFragments.add(webFragment)
-        notifyItemInserted(webFragments.lastIndex)
+    fun indexOf(kernelId: Int): Int {
+        return webInitConfigList.indexOfFirst { it.kernelId == kernelId }
     }
 
-    fun removeWeb(webFragment: WebFragment) {
-        val index = webFragments.indexOf(webFragment)
+    fun addWeb(webInitConfig: WebInitConfig) {
+        webInitConfigList.add(webInitConfig)
+        notifyItemInserted(webInitConfigList.lastIndex)
+    }
+
+    fun removeWeb(webInitConfig: WebInitConfig) {
+        val index = webInitConfigList.indexOf(webInitConfig)
         removeWebAt(index)
     }
 
     fun removeWebAt(index: Int) {
-        if (index in webFragments.indices) {
-            webFragments.removeAt(index)
+        if (index in webInitConfigList.indices) {
+            webInitConfigList.removeAt(index)
             notifyItemRemoved(index)
         }
     }
 
     override fun getItemCount(): Int {
-        return webFragments.size
+        return webInitConfigList.size
     }
 
     override fun getItemId(position: Int): Long {
-        return System.identityHashCode(webFragments[position]).toLong()
+        return System.identityHashCode(webInitConfigList[position]).toLong()
     }
 
     override fun containsItem(itemId: Long): Boolean {
-        return webFragments.find { System.identityHashCode(it).toLong() == itemId } != null
+        return webInitConfigList.find { System.identityHashCode(it).toLong() == itemId } != null
     }
 
     override fun createFragment(position: Int): Fragment {
-        return webFragments[position]
+        val initConfig = webInitConfigList[position]
+        return WebFragment.newInstance(initConfig)
     }
 }
