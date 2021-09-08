@@ -27,6 +27,7 @@
         <item name="dimenCornerRadiusDefault">@dimen/dimenCornerRadiusDefault</item>
         <item name="dimenCornerRadiusBig">@dimen/dimenCornerRadiusBig</item>
         <item name="dimenButtonSizeDefault">@dimen/dimenButtonSizeDefault</item>
+        <item name="dimenNavIconBtnSize">@dimen/dimenNavIconBtnSize</item>
         <item name="dimenElevation1">@dimen/dimenElevation1</item>
         <item name="dimenIconButtonSizeDefault">@dimen/dimenIconButtonSizeDefault</item>
         <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>

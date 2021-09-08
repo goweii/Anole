@@ -100,23 +100,6 @@ class WindowFragment : BaseFragment() {
         }
     }
 
-    private fun prepareFragments() {
-        childFragmentManager.commit {
-            homeFragment = childFragmentManager
-                .findFragmentByTag(HomeFragment::class.java.name) as HomeFragment?
-                ?: HomeFragment().also {
-                    add(R.id.fragment_container_view, it, HomeFragment::class.java.name)
-                }
-            hide(homeFragment)
-            allWebFragment = childFragmentManager
-                .findFragmentByTag(AllWebFragment::class.java.name) as AllWebFragment?
-                ?: AllWebFragment().also {
-                    add(R.id.fragment_container_view, it, AllWebFragment::class.java.name)
-                }
-            hide(allWebFragment)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         mainViewModel.loadUrlFromSearch?.let {
@@ -126,17 +109,9 @@ class WindowFragment : BaseFragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (allWebFragment.isVisible) {
-            currentFragment = AllWebFragment::class.java.name
-        } else if (homeFragment.isVisible) {
-            currentFragment = HomeFragment::class.java.name
-        }
-    }
-
     private fun showHomeFragment() {
         if (homeFragment.isVisible) return
+        currentFragment = HomeFragment::class.java.name
         childFragmentManager.commit {
             hide(allWebFragment)
             show(homeFragment)
@@ -151,6 +126,7 @@ class WindowFragment : BaseFragment() {
 
     private fun showAllWebFragment() {
         if (allWebFragment.isVisible) return
+        currentFragment = AllWebFragment::class.java.name
         childFragmentManager.commit {
             hide(homeFragment)
             show(allWebFragment)
@@ -166,6 +142,23 @@ class WindowFragment : BaseFragment() {
     private fun loadUrlOnNewWeb(url: String?) {
         showAllWebFragment()
         allWebFragment.createNewWeb(url ?: getString(R.string.initial_url))
+    }
+
+    private fun prepareFragments() {
+        childFragmentManager.commit {
+            homeFragment = childFragmentManager
+                .findFragmentByTag(HomeFragment::class.java.name) as HomeFragment?
+                ?: HomeFragment().also {
+                    add(R.id.fragment_container_view, it, HomeFragment::class.java.name)
+                }
+            hide(homeFragment)
+            allWebFragment = childFragmentManager
+                .findFragmentByTag(AllWebFragment::class.java.name) as AllWebFragment?
+                ?: AllWebFragment().also {
+                    add(R.id.fragment_container_view, it, AllWebFragment::class.java.name)
+                }
+            hide(allWebFragment)
+        }
     }
 
 }

@@ -125,12 +125,6 @@ class WebFragment : BaseFragment() {
             ivHome.setOnClickListener {
                 windowViewModel.showHome()
             }
-            rlWindows.setOnClickListener {
-                windowViewModel.switchChoiceMode(null)
-            }
-            cvCount.setOnClickListener {
-                windowViewModel.switchChoiceMode(null)
-            }
             tvTitle.setOnClickListener {
                 findNavController().navigate(
                     WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
@@ -139,7 +133,10 @@ class WebFragment : BaseFragment() {
                     )
                 )
             }
-            rlWindows.setOnLongClickListener {
+            cvCount.setOnClickListener {
+                windowViewModel.switchChoiceMode(null)
+            }
+            cvCount.setOnLongClickListener {
                 windowViewModel.loadUrlOnNewWindow(
                     DefHome.getInstance(requireContext()).getDefHome()
                 )
@@ -227,10 +224,8 @@ class WebFragment : BaseFragment() {
         }
         windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
             if (it > 0) {
-                binding.bottomNavView.tvWindowsCount.text = it.toString()
                 binding.bottomNavView.tvCount.text = it.toString()
             } else {
-                binding.bottomNavView.tvWindowsCount.text = getString(R.string.add_window)
                 binding.bottomNavView.tvCount.text = getString(R.string.add_window)
                 windowViewModel.showHome()
             }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -18,8 +17,6 @@ class WebControlView @JvmOverloads constructor(
     val ivForward: ImageView
     val ivMenu: ImageView
     val cvCount: CardView
-    val rlWindows: RelativeLayout
-    val tvWindowsCount: TextView
     val ivHome: ImageView
     val ivLogo: ImageView
     val tvTitle: TextView
@@ -31,8 +28,6 @@ class WebControlView @JvmOverloads constructor(
         ivBack = findViewById(R.id.iv_back)
         ivForward = findViewById(R.id.iv_forward)
         ivMenu = findViewById(R.id.iv_menu)
-        rlWindows = findViewById(R.id.rl_windows)
-        tvWindowsCount = findViewById(R.id.tv_windows_count)
         ivHome = findViewById(R.id.iv_home)
         ivLogo = findViewById(R.id.iv_logo)
         tvTitle = findViewById(R.id.tv_title)

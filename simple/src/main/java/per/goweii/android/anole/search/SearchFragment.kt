@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
@@ -22,7 +24,8 @@ import per.goweii.android.anole.utils.activityViewModelsByAndroid
 
 class SearchFragment : BaseFragment() {
     private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
-    private var binding: FragmentSearchBinding? = null
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,27 +40,27 @@ class SearchFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
-        return binding!!.root
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.doOnAttach {
-            binding?.vStatusBar?.layoutParams?.height = ViewCompat.getRootWindowInsets(view)
+            binding.vStatusBar.layoutParams.height = ViewCompat.getRootWindowInsets(view)
                 ?.getInsets(WindowInsetsCompat.Type.systemBars())?.top ?: 0
         }
-        binding?.ivBack?.setOnClickListener {
+        binding.ivBack.setOnClickListener {
             it.findNavController().navigateUp()
         }
-        binding?.etSearch?.apply {
+        binding.etSearch.apply {
             imeOptions = EditorInfo.IME_ACTION_GO
             addTextChangedListener {
                 val url = Url.parse(it?.toString())
                 if (url.maybeUrl) {
-                    binding?.ivSearch?.setImageResource(R.drawable.ic_enter)
+                    binding.ivSearch.setImageResource(R.drawable.ic_enter)
                 } else {
-                    binding?.ivSearch?.setImageResource(R.drawable.ic_search)
+                    binding.ivSearch.setImageResource(R.drawable.ic_search)
                 }
             }
             setOnEditorActionListener { _, actionId, _ ->
@@ -69,20 +72,26 @@ class SearchFragment : BaseFragment() {
                 return@setOnEditorActionListener true
             }
         }
-        binding?.ivSearch?.setOnClickListener {
+        binding.ivSearch.setOnClickListener {
             doSearch()
+        }
+        binding.etSearch.post {
+            binding.etSearch.requestFocus()
+            val imm = requireContext().getSystemService<InputMethodManager>()!!
+            imm.showSoftInput(binding.etSearch, 0)
         }
     }
 
     override fun onDestroyView() {
+        val imm = requireContext().getSystemService<InputMethodManager>()!!
+        imm.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
+        _binding = null
         super.onDestroyView()
-        binding = null
     }
 
     private fun doSearch() {
-        val et = binding?.etSearch ?: return
-        val text = et.text?.toString() ?: return
-        et.clearFocus()
+        val text = binding.etSearch.text?.toString() ?: return
+        binding.etSearch.clearFocus()
         val url = Url.parse(text).toUrl()
             ?: DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(text)
         mainViewModel.loadUrlFromSearch = url

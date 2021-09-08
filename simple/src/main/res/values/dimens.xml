@@ -16,6 +16,8 @@
     <dimen name="dimenIconButtonSizeDefault">56dp</dimen>
     <attr name="dimenIconButtonPaddingDefault" format="dimension" />
     <dimen name="dimenIconButtonPaddingDefault">12dp</dimen>
+    <attr name="dimenNavIconBtnSize" format="dimension" />
+    <dimen name="dimenNavIconBtnSize">40dp</dimen>
     <attr name="dimenShadowRadius" format="dimension" />
     <dimen name="dimenShadowRadius">12dp</dimen>
     <attr name="dimenShadowOffsetY" format="dimension" />
@@ -23,5 +25,5 @@
     <attr name="dimenElevation1" format="dimension" />
     <dimen name="dimenElevation1">1dp</dimen>
     <attr name="dimenIconLineWidth" format="dimension" />
-    <dimen name="dimenIconLineWidth">2dp</dimen>
+    <dimen name="dimenIconLineWidth">1dp</dimen>
 </resources>

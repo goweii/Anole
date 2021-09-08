@@ -8,7 +8,7 @@
     <View
         android:id="@+id/v_status_bar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +35,9 @@
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_search"
         android:layout_width="0dp"
-        android:layout_height="?attr/dimenButtonSizeDefault"
+        android:layout_height="wrap_content"
+        android:paddingTop="?attr/dimenMarginHalf"
+        android:paddingBottom="?attr/dimenMarginHalf"
         android:background="@drawable/shape_edittext_bg"
         android:gravity="center_vertical"
         android:hint="@string/search_hint"
