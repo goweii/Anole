@@ -131,7 +131,7 @@ class PermissionAbility(
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)
-        context = kernel.kernelView.context
+        context = kernel.kernelView.findActivity()
         mainHandler = Handler(Looper.getMainLooper())
     }
 

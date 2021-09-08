@@ -11,16 +11,26 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import per.goweii.anole.ability.CustomViewCallback
 import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.findActivity
 
-class FullscreenVideoAbility(
-    private val activity: Activity? = null
-) : WebAbility() {
+class FullscreenVideoAbility : WebAbility() {
+    private var activity: Activity? = null
     private var view: View? = null
     private var callback: CustomViewCallback? = null
     private var oldOrientation = 0
     private var oldIsFullscreen = false
     private var oldIsKeepScreen = false
+
+    override fun onAttachToKernel(kernel: WebKernel) {
+        super.onAttachToKernel(kernel)
+        activity = kernel.kernelView.findActivity()
+    }
+
+    override fun onDetachFromKernel(kernel: WebKernel) {
+        super.onDetachFromKernel(kernel)
+        activity = null
+    }
 
     override fun onShowCustomView(
         customView: View?,

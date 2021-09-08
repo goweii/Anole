@@ -69,7 +69,7 @@ class DownloadAbility(
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)
-        this.context = kernel.kernelView.context
+        this.context = kernel.kernelView.findActivity()
     }
 
     override fun onDetachFromKernel(kernel: WebKernel) {
@@ -193,7 +193,7 @@ class DownloadAbility(
                 extension = extFromType
             }
             if (extension.isNullOrBlank()) {
-                if (mimeType.toLowerCase(Locale.ROOT).startsWith("text/")) {
+                if (mimeType.lowercase(Locale.ROOT).startsWith("text/")) {
                     extension = if (mimeType.equals("text/html", ignoreCase = true)) {
                         ".html"
                     } else {

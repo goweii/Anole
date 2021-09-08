@@ -9,15 +9,26 @@ import per.goweii.anole.Constants
 import per.goweii.anole.ability.FileChooserParams
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.ValueCallback
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.ResultUtils
 import per.goweii.anole.utils.findActivity
 
-class FileChooseAbility(
-    private val activity: Activity? = null
-) : WebAbility() {
-    private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
-
+class FileChooseAbility : WebAbility() {
     private val reqCode = Constants.REQUEST_CODE_CHOOSE_FILE
+
+    private var activity: Activity? = null
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    override fun onAttachToKernel(kernel: WebKernel) {
+        super.onAttachToKernel(kernel)
+        activity = kernel.kernelView.findActivity()
+    }
+
+    override fun onDetachFromKernel(kernel: WebKernel) {
+        super.onDetachFromKernel(kernel)
+        activity = null
+        filePathCallback = null
+    }
 
     override fun onShowFileChooser(
         webView: View,
@@ -27,7 +38,7 @@ class FileChooseAbility(
         val activity = activity ?: webView.findActivity()
         if (activity != null && filePathCallback != null && fileChooserParams != null) {
             if (chooseFiles(activity, fileChooserParams)) {
-                mFilePathCallback = filePathCallback
+                this.filePathCallback = filePathCallback
                 return true
             }
         }
@@ -72,7 +83,7 @@ class FileChooseAbility(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             uris = fileChooserParams.parseResult(resultCode, data)
         }
-        mFilePathCallback?.onReceiveValue(uris ?: emptyArray())
-        mFilePathCallback = null
+        filePathCallback?.onReceiveValue(uris ?: emptyArray())
+        filePathCallback = null
     }
 }
