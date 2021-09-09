@@ -6,58 +6,172 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <per.goweii.android.anole.widget.TouchableFrameLayout
-        android:id="@+id/touchable_layout"
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motion_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorSurface">
+        android:background="?attr/colorSurface"
+        android:orientation="horizontal"
+        app:layoutDescription="@xml/layout_bottom_nav_scene">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <View
+            android:id="@+id/v_status_bar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_height="30dp" />
 
-            <View
-                android:id="@+id/v_status_bar"
+        <per.goweii.android.anole.widget.WebContainer
+            android:id="@+id/web_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_bottom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="?attr/actionBarSize" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_back"
+            android:layout_width="?attr/dimenNavIconBtnSize"
+            android:layout_height="?attr/dimenNavIconBtnSize"
+            android:layout_marginStart="?attr/dimenMarginHalf"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_forward"
+            android:layout_width="?attr/dimenNavIconBtnSize"
+            android:layout_height="?attr/dimenNavIconBtnSize"
+            android:layout_marginStart="?attr/dimenMarginHalf"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_forward"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_back"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="?attr/dimenNavIconBtnSize"
+            android:layout_height="?attr/dimenNavIconBtnSize"
+            android:layout_marginEnd="?attr/dimenMarginHalf"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_menu"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_home"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_home"
+            android:layout_width="?attr/dimenNavIconBtnSize"
+            android:layout_height="?attr/dimenNavIconBtnSize"
+            android:layout_marginEnd="?attr/dimenMarginHalf"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_home"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:ignore="ContentDescription" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="?attr/dimenMarginHalf"
+            android:layout_marginEnd="?attr/dimenMarginHalf"
+            android:background="@drawable/shape_edittext_bg"
+            android:gravity="center"
+            android:paddingStart="40dp"
+            android:paddingTop="?attr/dimenMarginHalf"
+            android:paddingEnd="40dp"
+            android:paddingBottom="?attr/dimenMarginHalf"
+            android:singleLine="true"
+            android:transitionName="@string/transition_name_search"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_menu"
+            app:layout_constraintStart_toEndOf="@+id/iv_forward"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:text="@tools:sample/avatars" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_logo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="?attr/dimenMarginHalf"
+            app:cardBackgroundColor="#00000000"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_title"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_logo"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_height="30dp" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/ic_launcher_background" />
 
-            <per.goweii.android.anole.widget.WebContainer
-                android:id="@+id/web_container"
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_count"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="?attr/dimenMarginHalf"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tv_title"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_count"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_bookmark_bg"
+                android:gravity="center"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="13dp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                tools:ignore="SpUsage"
+                tools:text="11" />
 
-            <per.goweii.android.anole.widget.WebControlView
-                android:id="@+id/bottom_nav_view"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.cardview.widget.CardView>
 
-            <ProgressBar
-                android:id="@+id/pb"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:alpha="0.3"
-                android:max="100"
-                android:progressDrawable="@drawable/progress_bar"
-                app:layout_constraintEnd_toEndOf="@+id/bottom_nav_view"
-                app:layout_constraintStart_toStartOf="@+id/bottom_nav_view"
-                app:layout_constraintTop_toTopOf="@+id/bottom_nav_view"
-                tools:progress="5" />
+        <ProgressBar
+            android:id="@+id/pb"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:alpha="0.3"
+            android:max="100"
+            android:progressDrawable="@drawable/progress_bar"
+            app:layout_constraintEnd_toEndOf="@+id/bottom_nav_view"
+            app:layout_constraintStart_toStartOf="@+id/bottom_nav_view"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
+            tools:progress="5" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </per.goweii.android.anole.widget.TouchableFrameLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
 </per.goweii.android.anole.widget.SwipeActionLayout>

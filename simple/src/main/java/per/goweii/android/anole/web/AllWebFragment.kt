@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.animation.doOnEnd
-import androidx.core.animation.doOnStart
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -53,6 +51,26 @@ class AllWebFragment : BaseFragment() {
             )
         }
         binding.vpAllWeb.setPageTransformer(transformer)
+        childFragmentManager.addFragmentOnAttachListener { _, fragment ->
+            val f = fragment as? WebFragment? ?: return@addFragmentOnAttachListener
+            f.onGestureStart = {
+                binding.vpAllWeb.beginFakeDrag()
+            }
+            f.onGestureScroll = { dx, dy ->
+                binding.vpAllWeb.fakeDragBy(dx)
+                val endy = (binding.vpAllWeb.height * (1F - transformer.scale)) / 2F
+                transformer.faction = -dy / endy
+                binding.vpAllWeb.requestTransform()
+            }
+            f.onGestureEnd = {
+                binding.vpAllWeb.endFakeDrag()
+                if (transformer.faction > 0.6) {
+                    enterChoiceMode()
+                } else {
+                    exitChoiceMode()
+                }
+            }
+        }
         if (!this::adapter.isInitialized) {
             adapter = AllWebAdapter(this)
         }
@@ -93,9 +111,6 @@ class AllWebFragment : BaseFragment() {
 
     fun enterChoiceMode() {
         ValueAnimator.ofFloat(transformer.faction, 1F).apply {
-            doOnEnd {
-                binding.vpAllWeb.isUserInputEnabled = true
-            }
             addUpdateListener {
                 transformer.faction = it.animatedValue as Float
                 binding.vpAllWeb.requestTransform()
@@ -105,9 +120,6 @@ class AllWebFragment : BaseFragment() {
 
     fun exitChoiceMode() {
         ValueAnimator.ofFloat(transformer.faction, 0F).apply {
-            doOnStart {
-                binding.vpAllWeb.isUserInputEnabled = false
-            }
             addUpdateListener {
                 transformer.faction = it.animatedValue as Float
                 binding.vpAllWeb.requestTransform()

@@ -2,11 +2,10 @@ package per.goweii.android.anole.web
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
@@ -90,6 +89,7 @@ class WebFragment : BaseFragment() {
         kernelView.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -103,45 +103,49 @@ class WebFragment : BaseFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
-        binding.touchableLayout.onTouch = { _ ->
+        binding.webContainer.onTouch = { _ ->
             allWebViewModel.onTouchedWebFragment(initConfig)
         }
-        binding.bottomNavView.apply {
-            ivBack.setOnClickListener {
-                if (kernelView.canGoBack) {
-                    kernelView.goBack()
+        binding.ivBack.setOnClickListener {
+            if (kernelView.canGoBack) {
+                kernelView.goBack()
+            }
+        }
+        binding.ivForward.setOnClickListener {
+            if (kernelView.canGoForward) {
+                kernelView.goForward()
+            }
+        }
+        binding.ivMenu.setOnClickListener {
+            findNavController().navigate(
+                WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
+            )
+        }
+        binding.ivHome.setOnClickListener {
+            windowViewModel.showHome()
+        }
+        val gestureListener = GestureListenerImpl()
+        val gestureDetector = GestureDetector(requireContext(), gestureListener)
+        binding.tvTitle.setOnTouchListener { _, e ->
+            gestureDetector.onTouchEvent(e)
+            when (e.action) {
+                MotionEvent.ACTION_UP -> {
+                    gestureListener.onUp(e)
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    gestureListener.onCancel(e)
                 }
             }
-            ivForward.setOnClickListener {
-                if (kernelView.canGoForward) {
-                    kernelView.goForward()
-                }
-            }
-            ivMenu.setOnClickListener {
-                findNavController().navigate(
-                    WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
-                )
-            }
-            ivHome.setOnClickListener {
-                windowViewModel.showHome()
-            }
-            tvTitle.setOnClickListener {
-                findNavController().navigate(
-                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
-                    FragmentNavigatorExtras(
-                        binding.bottomNavView.tvTitle to getString(R.string.transition_name_search)
-                    )
-                )
-            }
-            cvCount.setOnClickListener {
-                windowViewModel.switchChoiceMode(null)
-            }
-            cvCount.setOnLongClickListener {
-                windowViewModel.loadUrlOnNewWindow(
-                    DefHome.getInstance(requireContext()).getDefHome()
-                )
-                return@setOnLongClickListener true
-            }
+            true
+        }
+        binding.cvCount.setOnClickListener {
+            windowViewModel.switchChoiceMode(null)
+        }
+        binding.cvCount.setOnLongClickListener {
+            windowViewModel.loadUrlOnNewWindow(
+                DefHome.getInstance(requireContext()).getDefHome()
+            )
+            return@setOnLongClickListener true
         }
         progressAbility = ProgressAbility(
             onProgress = {
@@ -162,34 +166,26 @@ class WebFragment : BaseFragment() {
             onReceivedPageUrl = {
             },
             onReceivedPageTitle = {
-                binding.bottomNavView.tvTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
+                binding.tvTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
             },
             onReceivedPageIcon = {
                 if (it != null) {
-                    binding.bottomNavView.ivLogo.setImageBitmap(it)
+                    binding.ivLogo.setImageBitmap(it)
                 } else {
-                    binding.bottomNavView.ivLogo.setImageResource(R.drawable.ic_browser)
+                    binding.ivLogo.setImageResource(R.drawable.ic_browser)
                 }
             }
         )
         backForwardIconAbility = BackForwardIconAbility(
             canGoBack = {
-                binding.bottomNavView.ivBack.isEnabled = it
-                binding.bottomNavView.ivBack.animate().alpha(if (it) 1F else 0.6F).start()
+                binding.ivBack.isEnabled = it
+                binding.ivBack.animate().alpha(if (it) 1F else 0.6F).start()
             },
             canGoForward = {
-                binding.bottomNavView.ivForward.isEnabled = it
-                binding.bottomNavView.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
+                binding.ivForward.isEnabled = it
+                binding.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
             }
         )
-        binding.webContainer.apply {
-            onDragUp = {
-                binding.bottomNavView.toInfoMode()
-            }
-            onDragDown = {
-                binding.bottomNavView.toActionMode()
-            }
-        }
         return binding.root
     }
 
@@ -224,9 +220,9 @@ class WebFragment : BaseFragment() {
         }
         windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
             if (it > 0) {
-                binding.bottomNavView.tvCount.text = it.toString()
+                binding.tvCount.text = it.toString()
             } else {
-                binding.bottomNavView.tvCount.text = getString(R.string.add_window)
+                binding.tvCount.text = getString(R.string.add_window)
                 windowViewModel.showHome()
             }
         }
@@ -353,4 +349,60 @@ class WebFragment : BaseFragment() {
             }
             .show()
     }
+
+    private inner class GestureListenerImpl : GestureDetector.SimpleOnGestureListener() {
+        private var startEvent: MotionEvent? = null
+        private val scrolling get() = startEvent != null
+
+        override fun onDown(e: MotionEvent): Boolean {
+            if (scrolling) {
+                startEvent = null
+            }
+            return true
+        }
+
+        fun onUp(e: MotionEvent) {
+            if (scrolling) {
+                startEvent = null
+                onGestureEnd?.invoke()
+            }
+        }
+
+        fun onCancel(e: MotionEvent) {
+            if (scrolling) {
+                startEvent = null
+                onGestureEnd?.invoke()
+            }
+        }
+
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            findNavController().navigate(
+                WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                FragmentNavigatorExtras(
+                    binding.tvTitle to getString(R.string.transition_name_search)
+                )
+            )
+            return true
+        }
+
+        override fun onScroll(
+            e1: MotionEvent,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            if (!scrolling) {
+                startEvent = MotionEvent.obtain(e2)
+                onGestureStart?.invoke()
+            }
+            val dx = e2.x - startEvent!!.x
+            val dy = e2.y - startEvent!!.y
+            onGestureScroll?.invoke(dx, dy)
+            return true
+        }
+    }
+
+    var onGestureStart: (() -> Unit)? = null
+    var onGestureScroll: ((dx: Float, dy: Float) -> Unit)? = null
+    var onGestureEnd: (() -> Unit)? = null
 }
