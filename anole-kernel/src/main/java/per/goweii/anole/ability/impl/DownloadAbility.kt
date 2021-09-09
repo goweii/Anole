@@ -1,6 +1,7 @@
 package per.goweii.anole.ability.impl
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Context
@@ -64,17 +65,10 @@ class DownloadAbility(
         Toast.makeText(this, "开始下载", Toast.LENGTH_SHORT).show()
     }
 ) : WebAbility() {
-    private var context: Context? = null
     private var downloadRequestDialog: Dialog? = null
-
-    override fun onAttachToKernel(kernel: WebKernel) {
-        super.onAttachToKernel(kernel)
-        this.context = kernel.kernelView.findActivity()
-    }
 
     override fun onDetachFromKernel(kernel: WebKernel) {
         downloadRequestDialog?.cancel()
-        this.context = null
         super.onDetachFromKernel(kernel)
     }
 
@@ -85,7 +79,7 @@ class DownloadAbility(
         mimeType: String?,
         contentLength: Long
     ): Boolean {
-        val context = context ?: return false
+        val context = activity ?: return false
         val realUrl = getRealUrl(url) ?: return false
         downloadRequestDialog?.cancel()
         val fileName = getFilename(realUrl, contentDisposition, mimeType)
@@ -101,6 +95,7 @@ class DownloadAbility(
         return true
     }
 
+    @SuppressLint("Range")
     private fun startDownload(
         context: Context,
         url: String,

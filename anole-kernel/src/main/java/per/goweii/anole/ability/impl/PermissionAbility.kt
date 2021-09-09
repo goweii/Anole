@@ -125,13 +125,11 @@ class PermissionAbility(
     }
 ) : WebAbility() {
     private var mainHandler: Handler? = null
-    private var context: Context? = null
     private var permissionRequestDialog: Dialog? = null
     private var geolocationPermissionsDialog: Dialog? = null
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)
-        context = kernel.kernelView.findActivity()
         mainHandler = Handler(Looper.getMainLooper())
     }
 
@@ -140,13 +138,12 @@ class PermissionAbility(
         geolocationPermissionsDialog?.cancel()
         mainHandler?.removeCallbacksAndMessages(null)
         mainHandler = null
-        context = null
         super.onDetachFromKernel(kernel)
     }
 
     override fun onPermissionRequest(request: PermissionRequest?): Boolean {
         val mainHandler = mainHandler ?: return super.onPermissionRequest(request)
-        val context = context ?: return super.onPermissionRequest(request)
+        val context = activity ?: return super.onPermissionRequest(request)
         request ?: return super.onPermissionRequest(request)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return super.onPermissionRequest(request)
@@ -166,9 +163,9 @@ class PermissionAbility(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ): Boolean {
-        val mainHandler = mainHandler
-            ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
-        val context = context ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
+        val mainHandler =
+            mainHandler ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
+        val context = activity ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
         origin ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
         callback ?: return super.onGeolocationPermissionsShowPrompt(origin, callback)
         mainHandler.post { showGeolocationPermissionsDialog(context, origin, callback) }

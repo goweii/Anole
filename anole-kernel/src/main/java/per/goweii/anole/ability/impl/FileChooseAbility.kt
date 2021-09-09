@@ -16,17 +16,10 @@ import per.goweii.anole.utils.findActivity
 class FileChooseAbility : WebAbility() {
     private val reqCode = Constants.REQUEST_CODE_CHOOSE_FILE
 
-    private var activity: Activity? = null
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-
-    override fun onAttachToKernel(kernel: WebKernel) {
-        super.onAttachToKernel(kernel)
-        activity = kernel.kernelView.findActivity()
-    }
 
     override fun onDetachFromKernel(kernel: WebKernel) {
         super.onDetachFromKernel(kernel)
-        activity = null
         filePathCallback = null
     }
 

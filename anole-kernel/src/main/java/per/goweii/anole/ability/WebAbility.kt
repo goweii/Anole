@@ -8,12 +8,20 @@ import android.view.KeyEvent
 import android.view.View
 import per.goweii.anole.kernel.ValueCallback
 import per.goweii.anole.kernel.WebKernel
+import per.goweii.anole.utils.findActivity
 
 open class WebAbility {
+    private var _kernel: WebKernel? = null
+    protected val kernel get() = _kernel
+    protected val activity get() = _kernel?.kernelView?.findActivity()
 
-    open fun onAttachToKernel(kernel: WebKernel) {}
+    open fun onAttachToKernel(kernel: WebKernel) {
+        _kernel = kernel
+    }
 
-    open fun onDetachFromKernel(kernel: WebKernel) {}
+    open fun onDetachFromKernel(kernel: WebKernel) {
+        _kernel = null
+    }
 
     open fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean = false
 

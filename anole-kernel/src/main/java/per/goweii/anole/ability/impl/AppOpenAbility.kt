@@ -32,13 +32,11 @@ class AppOpenAbility(
             .create()
     }
 ) : WebAbility() {
-    private var context: Context? = null
     private var mainHandler: Handler? = null
     private var openAppDialog: Dialog? = null
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)
-        context = kernel.kernelView.findActivity()
         mainHandler = Handler(Looper.getMainLooper())
     }
 
@@ -46,7 +44,6 @@ class AppOpenAbility(
         openAppDialog?.cancel()
         mainHandler?.removeCallbacksAndMessages(null)
         mainHandler = null
-        context = null
         super.onDetachFromKernel(kernel)
     }
 
@@ -59,14 +56,18 @@ class AppOpenAbility(
     ): Boolean {
         val scheme = reqUri.scheme
         if (!("http" == scheme || "https" == scheme)) {
-            mainHandler?.post { showOpenAppDialog(reqUri) }
+            val activity = activity ?: webView.findActivity()
+            activity?.let {
+                mainHandler?.post {
+                    showOpenAppDialog(activity, reqUri)
+                }
+            }
             return true
         }
         return super.shouldOverrideUrlLoading(webView, reqUri, reqHeaders, reqMethod, userAgent)
     }
 
-    private fun showOpenAppDialog(reqUri: Uri) {
-        val activity = context?.findActivity() ?: return
+    private fun showOpenAppDialog(activity: Activity, reqUri: Uri) {
         onOpenApp.invoke(activity, reqUri) {
             if (it) {
                 openApp(activity, reqUri)

@@ -7,21 +7,9 @@ import android.webkit.WebView.WebViewTransport
 import android.widget.FrameLayout
 import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.WebAbility
-import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.view.KernelView
 
 class WindowAbility : WebAbility() {
-    private var webKernel: WebKernel? = null
-
-    override fun onAttachToKernel(kernel: WebKernel) {
-        super.onAttachToKernel(kernel)
-        this.webKernel = kernel
-    }
-
-    override fun onDetachFromKernel(kernel: WebKernel) {
-        this.webKernel = null
-        super.onDetachFromKernel(kernel)
-    }
 
     override fun onCreateWindow(
         webView: View,
@@ -29,7 +17,7 @@ class WindowAbility : WebAbility() {
         isUserGesture: Boolean,
         resultMsg: Message
     ): Boolean {
-        val kernel = webKernel ?: return false
+        val kernel = kernel ?: return false
         val kernelView = kernel.kernelView
         val parent = kernelView.parent ?: return false
         if (parent !is FrameLayout) return false
@@ -45,7 +33,7 @@ class WindowAbility : WebAbility() {
     }
 
     override fun onCloseWindow(webView: View): Boolean {
-        val kernel = webKernel ?: return false
+        val kernel = kernel ?: return false
         val parent = kernel.kernelView.parent ?: return false
         if (parent !is FrameLayout) return false
         var newKernelView: KernelView? = null

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.View
+import android.view.ViewGroup
 
 internal fun Context.findActivity(): Activity? {
     var context: Context = this
@@ -17,8 +18,10 @@ internal fun Context.findActivity(): Activity? {
 
 internal fun View.findActivity(): Activity? {
     context?.findActivity()?.let { return it }
-    if (rootView != this) {
-        return rootView.context?.findActivity()
+    var view: View? = this
+    while (view != null) {
+        view.context?.findActivity()?.let { return it }
+        view = view.parent as? ViewGroup?
     }
     return null
 }
