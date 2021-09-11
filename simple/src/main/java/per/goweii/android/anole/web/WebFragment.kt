@@ -2,10 +2,12 @@ package per.goweii.android.anole.web
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
@@ -60,7 +62,8 @@ class WebFragment : BaseFragment() {
     private lateinit var initConfig: WebInitConfig
     private lateinit var kernelView: KernelView
 
-    private lateinit var binding: FragmentWebBinding
+    private var _binding: FragmentWebBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var backForwardIconAbility: BackForwardIconAbility
     private lateinit var pageInfoAbility: PageInfoAbility
@@ -71,8 +74,7 @@ class WebFragment : BaseFragment() {
             if (kernelView.canGoBack) {
                 kernelView.goBack()
             } else {
-                // 不要删除这个窗口
-                // allWebViewModel.onRemoveWebFragment(this@WebFragment)
+                windowViewModel.showHome()
             }
         }
     }
@@ -89,13 +91,12 @@ class WebFragment : BaseFragment() {
         kernelView.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWebBinding.inflate(inflater, container, false)
+        _binding = FragmentWebBinding.inflate(inflater, container, false)
         initSwipeDismiss()
         binding.webContainer.addView(
             kernelView, ViewGroup.LayoutParams(
@@ -124,20 +125,6 @@ class WebFragment : BaseFragment() {
         binding.ivHome.setOnClickListener {
             windowViewModel.showHome()
         }
-        val gestureListener = GestureListenerImpl()
-        val gestureDetector = GestureDetector(requireContext(), gestureListener)
-        binding.tvTitle.setOnTouchListener { _, e ->
-            gestureDetector.onTouchEvent(e)
-            when (e.action) {
-                MotionEvent.ACTION_UP -> {
-                    gestureListener.onUp(e)
-                }
-                MotionEvent.ACTION_CANCEL -> {
-                    gestureListener.onCancel(e)
-                }
-            }
-            true
-        }
         binding.cvCount.setOnClickListener {
             windowViewModel.switchChoiceMode(null)
         }
@@ -146,6 +133,20 @@ class WebFragment : BaseFragment() {
                 DefHome.getInstance(requireContext()).getDefHome()
             )
             return@setOnLongClickListener true
+        }
+        MultiWindowGesture(binding.tvTitle) {
+            onTouch = { e -> onGesture?.invoke(e) }
+            onDragStart = { onGestureStart?.invoke() }
+            onDragging = { dx, dy -> onGestureScroll?.invoke(dx, dy) }
+            onDragEnd = { vx, vy -> onGestureEnd?.invoke(vx, vy) }
+            onSingleTap = {
+                findNavController().navigate(
+                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                    FragmentNavigatorExtras(
+                        binding.tvTitle to getString(R.string.transition_name_search)
+                    )
+                )
+            }
         }
         progressAbility = ProgressAbility(
             onProgress = {
@@ -262,6 +263,7 @@ class WebFragment : BaseFragment() {
 
     override fun onDestroyView() {
         binding.webContainer.removeView(kernelView)
+        _binding = null
         super.onDestroyView()
     }
 
@@ -350,59 +352,8 @@ class WebFragment : BaseFragment() {
             .show()
     }
 
-    private inner class GestureListenerImpl : GestureDetector.SimpleOnGestureListener() {
-        private var startEvent: MotionEvent? = null
-        private val scrolling get() = startEvent != null
-
-        override fun onDown(e: MotionEvent): Boolean {
-            if (scrolling) {
-                startEvent = null
-            }
-            return true
-        }
-
-        fun onUp(e: MotionEvent) {
-            if (scrolling) {
-                startEvent = null
-                onGestureEnd?.invoke()
-            }
-        }
-
-        fun onCancel(e: MotionEvent) {
-            if (scrolling) {
-                startEvent = null
-                onGestureEnd?.invoke()
-            }
-        }
-
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            findNavController().navigate(
-                WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
-                FragmentNavigatorExtras(
-                    binding.tvTitle to getString(R.string.transition_name_search)
-                )
-            )
-            return true
-        }
-
-        override fun onScroll(
-            e1: MotionEvent,
-            e2: MotionEvent,
-            distanceX: Float,
-            distanceY: Float
-        ): Boolean {
-            if (!scrolling) {
-                startEvent = MotionEvent.obtain(e2)
-                onGestureStart?.invoke()
-            }
-            val dx = e2.x - startEvent!!.x
-            val dy = e2.y - startEvent!!.y
-            onGestureScroll?.invoke(dx, dy)
-            return true
-        }
-    }
-
+    var onGesture: ((e: MotionEvent) -> Unit)? = null
     var onGestureStart: (() -> Unit)? = null
     var onGestureScroll: ((dx: Float, dy: Float) -> Unit)? = null
-    var onGestureEnd: (() -> Unit)? = null
+    var onGestureEnd: ((vx: Float, vy: Float) -> Unit)? = null
 }

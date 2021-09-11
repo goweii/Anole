@@ -7,11 +7,7 @@
     <action
         android:id="@+id/action_global_windowFragment"
         app:destination="@id/windowFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
         app:launchSingleTop="true"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim"
         app:popUpTo="@id/windowFragment" />
     <fragment
         android:id="@+id/windowFragment"
@@ -25,10 +21,18 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_windowFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/zoom_big_enter"
+            app:exitAnim="@anim/no_anim"
+            app:popEnterAnim="@anim/no_anim"
+            app:popExitAnim="@anim/zoom_small_exit" />
         <action
             android:id="@+id/action_windowFragment_to_settingFragment"
-            app:destination="@id/settingFragment" />
+            app:destination="@id/settingFragment"
+            app:enterAnim="@anim/zoom_big_enter"
+            app:exitAnim="@anim/no_anim"
+            app:popEnterAnim="@anim/no_anim"
+            app:popExitAnim="@anim/zoom_small_exit" />
         <action
             android:id="@+id/action_windowFragment_to_scanFragment"
             app:destination="@id/scanActivity"

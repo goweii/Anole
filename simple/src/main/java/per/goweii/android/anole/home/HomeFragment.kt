@@ -24,7 +24,8 @@ import per.goweii.android.anole.window.WindowViewModel
 class HomeFragment : BaseFragment() {
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val viewModel: HomeViewModel by viewModelsByAndroid()
-    private lateinit var binding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
     private var bookmarkAdapter: BookmarkAdapter? = null
 
@@ -33,7 +34,7 @@ class HomeFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -97,6 +98,11 @@ class HomeFragment : BaseFragment() {
                 binding.tvWindowsCount.text = getString(R.string.add_window)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun addOrUpdateBookmark(bookmark: Bookmark) {

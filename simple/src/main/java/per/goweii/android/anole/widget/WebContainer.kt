@@ -13,7 +13,7 @@ class WebContainer @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
     private val gestureDetector = GestureDetector(context, SimpleOnGestureListenerImpl())
     private val minVelocity: Int = ViewConfiguration.get(context).scaledMinimumFlingVelocity
-    private var velocityTracker: VelocityTracker? = null
+    private lateinit var velocityTracker: VelocityTracker
 
     private var currDirection = 0
 
@@ -28,32 +28,33 @@ class WebContainer @JvmOverloads constructor(
         }
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
-                velocityTracker = VelocityTracker.obtain()
+                if (!this::velocityTracker.isInitialized) {
+                    velocityTracker = VelocityTracker.obtain()
+                } else {
+                    velocityTracker.clear()
+                }
                 currDirection = 0
             }
         }
-        velocityTracker?.also { vt ->
-            vt.addMovement(ev)
-            vt.computeCurrentVelocity(1000)
-            when {
-                vt.yVelocity > minVelocity -> {
-                    if (currDirection <= 0) {
-                        currDirection = 1
-                        onDragDown?.invoke()
-                    }
+        velocityTracker.addMovement(ev)
+        velocityTracker.computeCurrentVelocity(1000)
+        when {
+            velocityTracker.yVelocity > minVelocity -> {
+                if (currDirection <= 0) {
+                    currDirection = 1
+                    onDragDown?.invoke()
                 }
-                vt.yVelocity < -minVelocity -> {
-                    if (currDirection >= 0) {
-                        currDirection = -1
-                        onDragUp?.invoke()
-                    }
+            }
+            velocityTracker.yVelocity < -minVelocity -> {
+                if (currDirection >= 0) {
+                    currDirection = -1
+                    onDragUp?.invoke()
                 }
             }
         }
         when (ev.action) {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                velocityTracker = null
-                currDirection = 0
+                velocityTracker.clear()
             }
         }
         return super.dispatchTouchEvent(ev)

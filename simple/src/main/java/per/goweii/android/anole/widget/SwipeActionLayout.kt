@@ -2,7 +2,6 @@ package per.goweii.android.anole.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -113,11 +112,7 @@ class SwipeActionLayout @JvmOverloads constructor(
                 if (f > 0.5F) {
                     if (!collecting) {
                         collecting = true
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        } else {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                        }
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         onCollect?.invoke()
                     }
                 } else {

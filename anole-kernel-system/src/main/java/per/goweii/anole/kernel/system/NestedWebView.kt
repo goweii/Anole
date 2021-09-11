@@ -579,6 +579,8 @@ class NestedWebView @JvmOverloads constructor(
     private fun initVelocityTrackerIfNotExists() {
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain()
+        } else {
+            mVelocityTracker?.recycle()
         }
     }
 

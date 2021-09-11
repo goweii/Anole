@@ -16,6 +16,7 @@ import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
+import per.goweii.android.anole.listener
 import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
@@ -62,7 +63,6 @@ class WindowFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.showHomeModeSharedFlow.collect {
                 showHomeFragment()
-                allWebFragment.exitChoiceMode()
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -93,7 +93,6 @@ class WindowFragment : BaseFragment() {
                         allWebFragment.createNewWeb(args.initialUrl)
                     } else {
                         showHomeFragment()
-                        allWebFragment.exitChoiceMode()
                     }
                 }
             }
@@ -112,14 +111,38 @@ class WindowFragment : BaseFragment() {
     private fun showHomeFragment() {
         if (homeFragment.isVisible) return
         currentFragment = HomeFragment::class.java.name
-        childFragmentManager.commit {
-            hide(allWebFragment)
-            show(homeFragment)
-            setMaxLifecycle(allWebFragment, Lifecycle.State.STARTED)
-            setMaxLifecycle(homeFragment, Lifecycle.State.RESUMED)
-            homeFragment.view?.doOnPreDraw {
-                val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.small_zoom_enter)
-                it.startAnimation(anim)
+
+        fun runHideWebAnim(finish: () -> Unit) {
+            if (!allWebFragment.isVisible) {
+                finish.invoke()
+                return
+            }
+            val view = allWebFragment.view
+            if (view == null) {
+                finish.invoke()
+                return
+            }
+            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_exit)
+            view.startAnimation(anim)
+            anim.listener { onEnd = { finish.invoke() } }
+        }
+
+        fun runShowHomeAnim() {
+            val view = homeFragment.view
+            view?.doOnPreDraw {
+                val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_small_enter)
+                view.startAnimation(anim)
+            }
+        }
+
+        runHideWebAnim {
+            allWebFragment.exitChoiceMode()
+            childFragmentManager.commit {
+                hide(allWebFragment)
+                show(homeFragment)
+                setMaxLifecycle(allWebFragment, Lifecycle.State.STARTED)
+                setMaxLifecycle(homeFragment, Lifecycle.State.RESUMED)
+                runShowHomeAnim()
             }
         }
     }
@@ -127,14 +150,37 @@ class WindowFragment : BaseFragment() {
     private fun showAllWebFragment() {
         if (allWebFragment.isVisible) return
         currentFragment = AllWebFragment::class.java.name
-        childFragmentManager.commit {
-            hide(homeFragment)
-            show(allWebFragment)
-            setMaxLifecycle(homeFragment, Lifecycle.State.STARTED)
-            setMaxLifecycle(allWebFragment, Lifecycle.State.RESUMED)
-            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.small_zoom_enter)
-            allWebFragment.view?.doOnPreDraw {
-                it.startAnimation(anim)
+
+        fun runHideHomeAnim(finish: () -> Unit) {
+            if (!homeFragment.isVisible) {
+                finish.invoke()
+                return
+            }
+            val view = homeFragment.view
+            if (view == null) {
+                finish.invoke()
+                return
+            }
+            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_exit)
+            view.startAnimation(anim)
+            anim.listener { onEnd = { finish.invoke() } }
+        }
+
+        fun runShowWebAnim() {
+            val view = allWebFragment.view
+            view?.doOnPreDraw {
+                val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.zoom_big_enter)
+                view.startAnimation(anim)
+            }
+        }
+
+        runHideHomeAnim {
+            childFragmentManager.commit {
+                hide(homeFragment)
+                show(allWebFragment)
+                setMaxLifecycle(homeFragment, Lifecycle.State.STARTED)
+                setMaxLifecycle(allWebFragment, Lifecycle.State.RESUMED)
+                runShowWebAnim()
             }
         }
     }
