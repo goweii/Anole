@@ -87,7 +87,7 @@ class WebFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initConfig = requireArguments().getParcelable(ARG_INIT_CONFIG)!!
-        kernelView = WebInstance.getInstance(requireContext()).get(initConfig.kernelId)
+        kernelView = WebInstance.getInstance(requireContext()).obtain(initConfig.kernelId)
         kernelView.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
     }
 
@@ -269,7 +269,7 @@ class WebFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        WebInstance.getInstance(requireContext()).remove(initConfig.kernelId)
+        WebInstance.getInstance(requireContext()).release(initConfig.kernelId)
         kernelView.destroy()
     }
 

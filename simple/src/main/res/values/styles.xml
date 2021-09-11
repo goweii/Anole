@@ -9,15 +9,20 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorDivider">@color/colorDivider</item>
+        <item name="colorProgressBar">@color/colorProgressBar</item>
         <item name="colorBackground">@color/colorBackground</item>
-        <item name="colorEditTextBackground">@color/colorEditTextBackground</item>
         <item name="colorIconBackground">@color/colorIconBackground</item>
+        <item name="colorEditTextBackground">@color/colorEditTextBackground</item>
+        <item name="colorDivider">@color/colorDivider</item>
         <item name="colorEditTextHint">@color/colorEditTextHint</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorShadow">@color/colorShadow</item>
+        <item name="colorSurface">@color/colorSurface</item>
         <item name="colorSurfaceAbove">@color/colorSurfaceAbove</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurfaceSubWeak">@color/colorOnSurfaceSubWeak</item>
+        <item name="colorOnSurfaceWeak">@color/colorOnSurfaceWeak</item>
+        <item name="colorOnSurfaceWeakest">@color/colorOnSurfaceWeakest</item>
 
         <item name="dimenShadowOffsetY">@dimen/dimenShadowOffsetY</item>
         <item name="dimenShadowRadius">@dimen/dimenShadowRadius</item>
@@ -33,6 +38,28 @@
         <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>
         <item name="dimenIconLineWidth">@dimen/dimenIconLineWidth</item>
 
+        <item name="textSizeHeadline1">@dimen/textSizeHeadline1</item>
+        <item name="textSizeHeadline2">@dimen/textSizeHeadline2</item>
+        <item name="textSizeHeadline3">@dimen/textSizeHeadline3</item>
+        <item name="textSizeHeadline4">@dimen/textSizeHeadline4</item>
+        <item name="textSizeHeadline5">@dimen/textSizeHeadline5</item>
+        <item name="textSizeTitle">@dimen/textSizeTitle</item>
+        <item name="textSizeSubtitle">@dimen/textSizeSubtitle</item>
+        <item name="textSizeSmallTitle">@dimen/textSizeSmallTitle</item>
+        <item name="textSizeContent">@dimen/textSizeContent</item>
+        <item name="textSizeButton">@dimen/textSizeButton</item>
+        <item name="textSizeAuxiliary">@dimen/textSizeAuxiliary</item>
+        <item name="textSizeTimestamp">@dimen/textSizeTimestamp</item>
+        <item name="textSizeMinimum">@dimen/textSizeMinimum</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:elevation">0dp</item>
     </style>
 
 </resources>

@@ -39,57 +39,95 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_end="?attr/actionBarSize" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_back"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_back"
             android:layout_width="?attr/dimenNavIconBtnSize"
             android:layout_height="?attr/dimenNavIconBtnSize"
             android:layout_marginStart="?attr/dimenMarginHalf"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_back"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="9999dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_forward"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_back"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_back"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_forward"
             android:layout_width="?attr/dimenNavIconBtnSize"
             android:layout_height="?attr/dimenNavIconBtnSize"
-            android:layout_marginStart="?attr/dimenMarginHalf"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_forward"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="9999dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/iv_back"
-            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintStart_toEndOf="@+id/cv_back"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_menu"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_forward"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_forward"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_menu"
+            android:layout_width="?attr/dimenNavIconBtnSize"
+            android:layout_height="?attr/dimenNavIconBtnSize"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="9999dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cv_home"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_menu"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_home"
             android:layout_width="?attr/dimenNavIconBtnSize"
             android:layout_height="?attr/dimenNavIconBtnSize"
             android:layout_marginEnd="?attr/dimenMarginHalf"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_menu"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_home"
-            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
-            tools:ignore="ContentDescription" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_home"
-            android:layout_width="?attr/dimenNavIconBtnSize"
-            android:layout_height="?attr/dimenNavIconBtnSize"
-            android:layout_marginEnd="?attr/dimenMarginHalf"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_home"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="9999dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_home"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_title"
@@ -106,8 +144,8 @@
             android:singleLine="true"
             android:transitionName="@string/transition_name_search"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_menu"
-            app:layout_constraintStart_toEndOf="@+id/iv_forward"
+            app:layout_constraintEnd_toStartOf="@+id/cv_menu"
+            app:layout_constraintStart_toEndOf="@+id/cv_forward"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
             tools:text="@tools:sample/avatars" />
 
@@ -128,7 +166,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                tools:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/ic_browser" />
 
         </androidx.cardview.widget.CardView>
 

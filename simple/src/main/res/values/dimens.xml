@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="dimenMarginBig" format="dimension" />
+
     <dimen name="dimenMarginBig">32dp</dimen>
-    <attr name="dimenMarginDefault" format="dimension" />
     <dimen name="dimenMarginDefault">16dp</dimen>
-    <attr name="dimenMarginHalf" format="dimension" />
     <dimen name="dimenMarginHalf">8dp</dimen>
-    <attr name="dimenCornerRadiusDefault" format="dimension" />
     <dimen name="dimenCornerRadiusDefault">12dp</dimen>
-    <attr name="dimenCornerRadiusBig" format="dimension" />
     <dimen name="dimenCornerRadiusBig">24dp</dimen>
-    <attr name="dimenButtonSizeDefault" format="dimension" />
     <dimen name="dimenButtonSizeDefault">48dp</dimen>
-    <attr name="dimenIconButtonSizeDefault" format="dimension" />
-    <dimen name="dimenIconButtonSizeDefault">56dp</dimen>
-    <attr name="dimenIconButtonPaddingDefault" format="dimension" />
+    <dimen name="dimenIconButtonSizeDefault">48dp</dimen>
     <dimen name="dimenIconButtonPaddingDefault">12dp</dimen>
-    <attr name="dimenNavIconBtnSize" format="dimension" />
-    <dimen name="dimenNavIconBtnSize">40dp</dimen>
-    <attr name="dimenShadowRadius" format="dimension" />
+    <dimen name="dimenNavIconBtnSize">48dp</dimen>
     <dimen name="dimenShadowRadius">12dp</dimen>
-    <attr name="dimenShadowOffsetY" format="dimension" />
     <dimen name="dimenShadowOffsetY">6dp</dimen>
-    <attr name="dimenElevation1" format="dimension" />
     <dimen name="dimenElevation1">1dp</dimen>
-    <attr name="dimenIconLineWidth" format="dimension" />
-    <dimen name="dimenIconLineWidth">1dp</dimen>
+    <dimen name="dimenIconLineWidth">1.5dp</dimen>
+
+    <dimen name="textSizeHeadline1">40sp</dimen>
+    <dimen name="textSizeHeadline2">32sp</dimen>
+    <dimen name="textSizeHeadline3">24sp</dimen>
+    <dimen name="textSizeHeadline4">22sp</dimen>
+    <dimen name="textSizeHeadline5">20sp</dimen>
+    <dimen name="textSizeTitle">18sp</dimen>
+    <dimen name="textSizeSubtitle">16sp</dimen>
+    <dimen name="textSizeSmallTitle">14sp</dimen>
+    <dimen name="textSizeContent">16sp</dimen>
+    <dimen name="textSizeButton">16sp</dimen>
+    <dimen name="textSizeAuxiliary">14sp</dimen>
+    <dimen name="textSizeTimestamp">12sp</dimen>
+    <dimen name="textSizeMinimum">10sp</dimen>
 </resources>

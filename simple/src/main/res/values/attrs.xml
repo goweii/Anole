@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryDark" format="color" />
+    <attr name="colorAccent" format="color" />
+    <attr name="colorProgressBar" format="color" />
+    <attr name="colorBackground" format="color" />
+    <attr name="colorIconBackground" format="color" />
+    <attr name="colorEditTextBackground" format="color" />
+    <attr name="colorDivider" format="color" />
+    <attr name="colorEditTextHint" format="color" />
+    <attr name="colorShadow" format="color" />
+    <attr name="colorSurface" format="color" />
+    <attr name="colorSurfaceAbove" format="color" />
+    <attr name="colorOnPrimary" format="color" />
+    <attr name="colorOnSurface" format="color" />
+    <attr name="colorOnSurfaceSubWeak" format="color" />
+    <attr name="colorOnSurfaceWeak" format="color" />
+    <attr name="colorOnSurfaceWeakest" format="color" />
+
+    <attr name="dimenMarginBig" format="dimension" />
+    <attr name="dimenMarginDefault" format="dimension" />
+    <attr name="dimenMarginHalf" format="dimension" />
+    <attr name="dimenCornerRadiusDefault" format="dimension" />
+    <attr name="dimenCornerRadiusBig" format="dimension" />
+    <attr name="dimenButtonSizeDefault" format="dimension" />
+    <attr name="dimenIconButtonSizeDefault" format="dimension" />
+    <attr name="dimenIconButtonPaddingDefault" format="dimension" />
+    <attr name="dimenNavIconBtnSize" format="dimension" />
+    <attr name="dimenShadowRadius" format="dimension" />
+    <attr name="dimenShadowOffsetY" format="dimension" />
+    <attr name="dimenElevation1" format="dimension" />
+    <attr name="dimenIconLineWidth" format="dimension" />
+
+    <attr name="textSizeHeadline1" format="dimension" />
+    <attr name="textSizeHeadline2" format="dimension" />
+    <attr name="textSizeHeadline3" format="dimension" />
+    <attr name="textSizeHeadline4" format="dimension" />
+    <attr name="textSizeHeadline5" format="dimension" />
+    <attr name="textSizeTitle" format="dimension" />
+    <attr name="textSizeSubtitle" format="dimension" />
+    <attr name="textSizeSmallTitle" format="dimension" />
+    <attr name="textSizeContent" format="dimension" />
+    <attr name="textSizeButton" format="dimension" />
+    <attr name="textSizeAuxiliary" format="dimension" />
+    <attr name="textSizeTimestamp" format="dimension" />
+    <attr name="textSizeMinimum" format="dimension" />
+</resources>

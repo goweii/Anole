@@ -2,6 +2,13 @@
     <string name="app_name">Anole</string>
     <string name="search_hint">搜索或输入网址</string>
     <string name="add_window">+</string>
-    <string name="initial_url">about:blank</string>
-    <string name="transition_name_search">transition_search</string>
+    <string name="refresh">刷新</string>
+    <string name="scan_code">扫码</string>
+    <string name="setting">设置</string>
+    <string name="exit">退出</string>
+
+    <string name="initial_url" translatable="false">about:blank</string>
+
+    <string name="transition_name_search" translatable="false">transition_search</string>
+
 </resources>

@@ -1,18 +1,17 @@
-package per.goweii.android.anole.utils;
+package per.goweii.android.anole.utils
 
-import android.content.Context;
-import android.content.res.TypedArray;
+import android.content.Context
 
-public class ThemeUtils {
-    private static final int[] TEMP_ARRAY = new int[1];
+object ThemeUtils {
+    private val tempArray = IntArray(1)
 
-    public static int getThemeAttrColor(Context context, int attr) {
-        TEMP_ARRAY[0] = attr;
-        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
-        try {
-            return a.getColor(0, 0);
+    fun getThemeAttrColor(context: Context, attr: Int): Int {
+        tempArray[0] = attr
+        val a = context.obtainStyledAttributes(null, tempArray)
+        return try {
+            a.getColor(0, 0)
         } finally {
-            a.recycle();
+            a.recycle()
         }
     }
 }

@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="?attr/dimenIconLineWidth"
-        android:color="?attr/colorOnSurface" />
+        android:color="?attr/colorOnSurfaceSubWeak" />
     <corners android:radius="9999dp" />
 </shape>
