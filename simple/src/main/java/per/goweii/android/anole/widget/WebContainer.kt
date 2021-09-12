@@ -13,7 +13,7 @@ class WebContainer @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
     private val gestureDetector = GestureDetector(context, SimpleOnGestureListenerImpl())
     private val minVelocity: Int = ViewConfiguration.get(context).scaledMinimumFlingVelocity
-    private lateinit var velocityTracker: VelocityTracker
+    private val velocityTracker: VelocityTracker = VelocityTracker.obtain()
 
     private var currDirection = 0
 
@@ -28,11 +28,7 @@ class WebContainer @JvmOverloads constructor(
         }
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
-                if (!this::velocityTracker.isInitialized) {
-                    velocityTracker = VelocityTracker.obtain()
-                } else {
-                    velocityTracker.clear()
-                }
+                velocityTracker.clear()
                 currDirection = 0
             }
         }

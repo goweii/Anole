@@ -165,15 +165,20 @@ class WebFragment : BaseFragment() {
         )
         pageInfoAbility = PageInfoAbility(
             onReceivedPageUrl = {
+                binding.ivTopBookmark.isSelected = BookmarkManager.getInstance(requireContext())
+                    .find(it ?: "") != null
             },
             onReceivedPageTitle = {
                 binding.tvTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
+                binding.tvTopTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
             },
             onReceivedPageIcon = {
                 if (it != null) {
                     binding.ivLogo.setImageBitmap(it)
+                    binding.ivTopLogo.setImageBitmap(it)
                 } else {
                     binding.ivLogo.setImageResource(R.drawable.ic_browser)
+                    binding.ivTopLogo.setImageResource(R.drawable.ic_browser)
                 }
             }
         )
@@ -193,8 +198,17 @@ class WebFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.doOnAttach {
-            binding.vStatusBar.layoutParams.height = ViewCompat.getRootWindowInsets(view)
+            val topInset = ViewCompat.getRootWindowInsets(view)
                 ?.getInsets(WindowInsetsCompat.Type.systemBars())?.top ?: 0
+            binding.vStatusBar.layoutParams.height = topInset
+            binding.llTop.layoutParams?.let { lp ->
+                lp
+                lp.topMargin = topInset - resources.getDimensionPixelSize(
+                    R.dimen.dimenIconButtonSizeDefault
+                ) - resources.getDimensionPixelSize(
+                    R.dimen.dimenMarginHalf
+                )
+            }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.goBackOrForwardSharedFlow
@@ -212,11 +226,13 @@ class WebFragment : BaseFragment() {
                 .collect { kernelView.reload() }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            windowViewModel.addOrUpdateBookmarkSharedFlow.collect { bookmark ->
+            windowViewModel.addOrUpdateBookmarkSharedFlow.collect {
+                binding.ivTopBookmark.isSelected = true
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.removeBookmarkSharedFlow.collect {
+                binding.ivTopBookmark.isSelected = false
             }
         }
         windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {

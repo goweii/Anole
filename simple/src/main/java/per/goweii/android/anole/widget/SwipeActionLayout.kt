@@ -11,6 +11,7 @@ import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan
 
 class SwipeActionLayout @JvmOverloads constructor(
@@ -20,14 +21,10 @@ class SwipeActionLayout @JvmOverloads constructor(
     var draggable: Boolean = false
         set(value) {
             field = value
-            if (!value) {
-                viewDragHelper.capturedView?.let {
-                    viewDragHelper.smoothSlideViewTo(it, 0, getChildOriginalTop(it))
-                    ViewCompat.postInvalidateOnAnimation(this@SwipeActionLayout)
-                }
-            }
+            onDraggableChanged()
         }
 
+    private var dismissing = false
     private var collecting = false
 
     var onDismiss: (() -> Unit)? = null
@@ -35,6 +32,14 @@ class SwipeActionLayout @JvmOverloads constructor(
 
     init {
         viewDragHelper = ViewDragHelper.create(this, 1.0f, ViewDragCallback())
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        getChildAt(childCount - 1)?.alpha = 1F
+        for (i in 0 until childCount - 1) {
+            getChildAt(i).alpha = if (draggable) 1F else 0F
+        }
     }
 
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
@@ -65,9 +70,58 @@ class SwipeActionLayout @JvmOverloads constructor(
         }
     }
 
+    private fun onDraggableChanged() {
+        if (!draggable) {
+            viewDragHelper.capturedView?.let {
+                viewDragHelper.smoothSlideViewTo(it, 0, getChildOriginalTop(it))
+                ViewCompat.postInvalidateOnAnimation(this)
+            }
+        }
+        for (i in 0 until childCount - 1) {
+            getChildAt(i).animate()
+                .setDuration(80)
+                .alpha(if (draggable) 1F else 0F)
+                .start()
+        }
+    }
+
+    private fun onSwiping(f: Float) {
+        when {
+            f >= 0.5F -> {
+                if (!collecting) {
+                    collecting = true
+                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    onCollect?.invoke()
+                }
+            }
+            else -> {
+                collecting = false
+            }
+        }
+        when {
+            f < 0F -> {
+                if (!dismissing) {
+                    dismissing = true
+                }
+            }
+            else -> {
+                if (dismissing) {
+                    dismissing = false
+                }
+            }
+        }
+        val dragView = getChildAt(childCount - 1)
+        for (i in 0 until childCount - 1) {
+            getChildAt(i).translationY = dragView.top + dragView.translationY
+        }
+        if (f <= -1F) {
+            onDismiss?.invoke()
+        }
+    }
+
     private inner class ViewDragCallback : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-            return draggable
+            return draggable && child === getChildAt(childCount - 1)
         }
 
         override fun onViewCaptured(capturedChild: View, activePointerId: Int) {
@@ -103,35 +157,32 @@ class SwipeActionLayout @JvmOverloads constructor(
             val minTop = getChildMinTop(changedView)
             val maxTop = getChildMaxTop(changedView)
             val oriTop = getChildOriginalTop(changedView)
-            if (newTop >= oriTop) {
-                val curMove = newTop.toFloat() - oriTop.toFloat()
-                val maxMove = maxTop.toFloat() - oriTop.toFloat()
-                val f = atan((curMove / maxMove) * (PI / 2F)) / (PI / 2F)
-                val realMove = (maxMove * f).toInt() + oriTop
-                changedView.translationY = (realMove - newTop).toFloat()
-                if (f > 0.5F) {
-                    if (!collecting) {
-                        collecting = true
-                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-                        onCollect?.invoke()
-                    }
-                } else {
-                    collecting = false
+            val curMove = newTop.toFloat() - oriTop.toFloat()
+            val minMove = minTop.toFloat() - oriTop.toFloat()
+            val maxMove = maxTop.toFloat() - oriTop.toFloat()
+            val f = when {
+                newTop < oriTop -> -abs(curMove / minMove)
+                newTop > oriTop -> atan((curMove / maxMove) * (PI / 2F)) / (PI / 2F)
+                else -> 0F
+            }.toFloat()
+            when {
+                f > 0F -> {
+                    val realMove = (maxMove * f).toInt() + oriTop
+                    changedView.alpha = 1F
+                    changedView.translationY = (realMove - newTop).toFloat()
                 }
-            } else {
-                changedView.translationY = 0F
-                collecting = false
+                f < 0F -> {
+                    val range = oriTop - minTop
+                    val change = oriTop - changedView.top
+                    changedView.alpha = 1F - (change.toFloat() / range.toFloat())
+                    changedView.translationY = 0F
+                }
+                else -> {
+                    changedView.alpha = 1F
+                    changedView.translationY = 0F
+                }
             }
-            if (newTop >= oriTop) {
-                changedView.alpha = 1F
-            } else {
-                val range = oriTop - minTop
-                val change = oriTop - changedView.top
-                changedView.alpha = 1F - (change.toFloat() / range.toFloat())
-            }
-            if (newTop <= minTop) {
-                onDismiss?.invoke()
-            }
+            onSwiping(f)
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
@@ -179,8 +230,8 @@ class SwipeActionLayout @JvmOverloads constructor(
         var top = 0
         var thisView: View? = this
         while ((thisView?.parent as? ViewGroup?)?.clipChildren == false) {
-            val sy = thisView.pivotY - thisView.scaleY * thisView.pivotY
             top += thisView.top
+            val sy = thisView.pivotY - thisView.scaleY * thisView.pivotY
             top += sy.toInt()
             thisView = thisView.parent as? ViewGroup?
         }

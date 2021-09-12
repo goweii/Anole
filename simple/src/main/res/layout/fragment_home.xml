@@ -35,7 +35,7 @@
         android:paddingStart="?attr/dimenMarginDefault"
         android:paddingEnd="?attr/dimenMarginDefault"
         android:text="@string/search_hint"
-        android:textAppearance="?attr/textAppearanceBody1"
+        android:textSize="?attr/textSizeButton"
         android:textColor="?attr/colorEditTextHint"
         android:transitionName="@string/transition_name_search"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -49,19 +49,19 @@
         android:id="@+id/rv_bookmark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/dimenMarginBig"
+        android:layout_marginStart="?attr/dimenMarginDefault"
         android:layout_marginTop="?attr/dimenMarginBig"
-        android:layout_marginEnd="?attr/dimenMarginBig"
+        android:layout_marginEnd="?attr/dimenMarginDefault"
         android:layout_marginBottom="?attr/dimenMarginBig"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="never"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_search"
-        tools:itemCount="8"
+        tools:itemCount="10"
         tools:layoutManager="GridLayoutManager"
         tools:listitem="@layout/item_bookmark"
-        tools:spanCount="4" />
+        tools:spanCount="5" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_menu"

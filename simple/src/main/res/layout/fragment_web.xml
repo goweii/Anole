@@ -6,12 +6,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/ll_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_top_logo"
+            android:layout_width="?attr/dimenIconButtonSizeDefault"
+            android:layout_height="?attr/dimenIconButtonSizeDefault"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            app:cardCornerRadius="9999dp"
+            app:cardElevation="0dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_top_logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="?attr/dimenIconButtonPaddingDefault"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/ic_browser" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_top_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="2" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_top_bookmark"
+            android:layout_width="?attr/dimenIconButtonSizeDefault"
+            android:layout_height="?attr/dimenIconButtonSizeDefault"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:padding="?attr/dimenIconButtonPaddingDefault"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/selector_collect" />
+
+    </LinearLayout>
+
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/motion_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorSurface"
-        android:orientation="horizontal"
         app:layoutDescription="@xml/layout_bottom_nav_scene">
 
         <View
@@ -147,7 +194,7 @@
             app:layout_constraintEnd_toStartOf="@+id/cv_menu"
             app:layout_constraintStart_toEndOf="@+id/cv_forward"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
-            tools:text="@tools:sample/avatars" />
+            tools:text="@tools:sample/lorem/random" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_logo"
@@ -205,8 +252,8 @@
             android:alpha="0.3"
             android:max="100"
             android:progressDrawable="@drawable/progress_bar"
-            app:layout_constraintEnd_toEndOf="@+id/bottom_nav_view"
-            app:layout_constraintStart_toStartOf="@+id/bottom_nav_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
             tools:progress="5" />
 

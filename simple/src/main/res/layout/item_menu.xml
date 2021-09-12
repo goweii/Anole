@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="15dp">
+    android:padding="?attr/dimenMarginHalf">
 
     <androidx.cardview.widget.CardView
         android:layout_width="?attr/dimenIconButtonSizeDefault"
@@ -23,7 +23,6 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="?attr/dimenIconButtonPaddingDefault"
             android:scaleType="fitCenter"
-            app:tint="?colorOnSurface"
             tools:src="@drawable/ic_bookmark" />
 
     </androidx.cardview.widget.CardView>
