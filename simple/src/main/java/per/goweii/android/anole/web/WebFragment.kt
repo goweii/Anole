@@ -202,7 +202,7 @@ class WebFragment : BaseFragment() {
                 ?.getInsets(WindowInsetsCompat.Type.systemBars())?.top ?: 0
             binding.vStatusBar.layoutParams.height = topInset
             binding.llTop.layoutParams?.let { lp ->
-                lp
+                lp as ViewGroup.MarginLayoutParams
                 lp.topMargin = topInset - resources.getDimensionPixelSize(
                     R.dimen.dimenIconButtonSizeDefault
                 ) - resources.getDimensionPixelSize(

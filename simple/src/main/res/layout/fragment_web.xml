@@ -40,7 +40,9 @@
             android:layout_marginEnd="?attr/dimenMarginDefault"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:maxLines="2" />
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSurfaceSubWeak"
+            android:textSize="?attr/textSizeContent" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_top_bookmark"
