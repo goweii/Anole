@@ -10,6 +10,7 @@ import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.ability.WebResourceRequest
 import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.findActivity
 
@@ -49,22 +50,19 @@ class AppOpenAbility(
 
     override fun shouldOverrideUrlLoading(
         webView: View,
-        reqUri: Uri,
-        reqHeaders: Map<String, String>?,
-        reqMethod: String?,
-        userAgent: String?
+        request: WebResourceRequest
     ): Boolean {
-        val scheme = reqUri.scheme
+        val scheme = request.uri.scheme
         if (!("http" == scheme || "https" == scheme)) {
             val activity = activity ?: webView.findActivity()
             activity?.let {
                 mainHandler?.post {
-                    showOpenAppDialog(activity, reqUri)
+                    showOpenAppDialog(activity, request.uri)
                 }
             }
             return true
         }
-        return super.shouldOverrideUrlLoading(webView, reqUri, reqHeaders, reqMethod, userAgent)
+        return super.shouldOverrideUrlLoading(webView, request)
     }
 
     private fun showOpenAppDialog(activity: Activity, reqUri: Uri) {

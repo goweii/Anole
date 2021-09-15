@@ -20,9 +20,8 @@ class SystemKernelView @JvmOverloads constructor(
     init {
         addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         setDownloadListener(webClient)
-        val bridgeWebClient = BridgeWebClient(webClient)
-        webView.webViewClient = SystemWebViewClient(bridgeWebClient)
-        webView.webChromeClient = SystemWebChromeClient(bridgeWebClient)
+        webView.webViewClient = SystemWebViewClient(webClient)
+        webView.webChromeClient = SystemWebChromeClient(webClient)
     }
 
     override val hitTestResult: HitTestResult

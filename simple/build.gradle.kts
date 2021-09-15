@@ -43,11 +43,12 @@ android {
     kotlinOptions {
         jvmTarget = Androids.jvmTarget
     }
-    applicationVariants.forEach { variant ->
-        variant.outputs.forEach { output ->
-            if (output is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
-                output.outputFileName =
-                    "anole-${variant.buildType}-${defaultConfig.versionName}-${defaultConfig.versionCode}.apk"
+    android.applicationVariants.all {
+        val variant = this
+        outputs.all {
+            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+                outputFileName =
+                    "anole-${variant.buildType.name}-${defaultConfig.versionName}-${defaultConfig.versionCode}.apk"
             }
         }
     }

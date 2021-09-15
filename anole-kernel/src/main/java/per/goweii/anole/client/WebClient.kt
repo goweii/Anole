@@ -35,15 +35,10 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
 
     fun shouldInterceptRequest(
         webView: View,
-        reqUri: Uri,
-        reqHeaders: Map<String, String>?,
-        reqMethod: String?,
-        userAgent: String?
+        request: WebResourceRequest
     ): WebResourceResponse? {
         abilities.forEach { ability ->
-            ability.shouldInterceptRequest(
-                webView, reqUri, reqHeaders, reqMethod, userAgent
-            )?.let { resp ->
+            ability.shouldInterceptRequest(webView, request)?.let { resp ->
                 return resp
             }
         }
@@ -52,20 +47,10 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
 
     fun shouldOverrideUrlLoading(
         webView: View,
-        reqUri: Uri,
-        reqHeaders: Map<String, String>?,
-        reqMethod: String?,
-        userAgent: String?
+        request: WebResourceRequest
     ): Boolean {
         abilities.forEach { ability ->
-            if (ability.shouldOverrideUrlLoading(
-                    webView,
-                    reqUri,
-                    reqHeaders,
-                    reqMethod,
-                    userAgent
-                )
-            ) {
+            if (ability.shouldOverrideUrlLoading(webView, request)) {
                 return true
             }
         }
@@ -86,20 +71,22 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         request: WebResourceRequest?,
         threatType: Int,
         callback: SafeBrowsingResponse?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onSafeBrowsingHit(webView, request, threatType, callback)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean) {
+    fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean): Boolean {
         abilities.forEach { ability ->
             if (ability.doUpdateVisitedHistory(webView, url, isReload)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onReceivedError(
@@ -107,36 +94,39 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         errorCode: Int,
         description: String?,
         failingUrl: String?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedError(webView, errorCode, description, failingUrl)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onReceivedError(
         webView: View,
         request: WebResourceRequest?,
         error: WebResourceError?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedError(webView, request, error)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onReceivedHttpError(
         webView: View,
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedHttpError(webView, request, errorResponse)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onReceivedLoginRequest(
@@ -144,50 +134,57 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         realm: String?,
         account: String?,
         args: String?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedLoginRequest(webView, realm, account, args)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onPageStarted(webView: View, url: String?, favicon: Bitmap?) {
+    fun onPageStarted(webView: View, url: String?, favicon: Bitmap?): Boolean {
         abilities.forEach { ability ->
             if (ability.onPageStarted(webView, url, favicon)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onPageFinished(webView: View, url: String?) {
+    fun onPageFinished(webView: View, url: String?): Boolean {
         abilities.forEach { ability ->
             if (ability.onPageFinished(webView, url)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onScaleChanged(webView: View, oldScale: Float, newScale: Float) {
+    fun onScaleChanged(webView: View, oldScale: Float, newScale: Float): Boolean {
+        return false
     }
 
-    fun onPageCommitVisible(webView: View, url: String?) {
+    fun onPageCommitVisible(webView: View, url: String?): Boolean {
+        return false
     }
 
-    fun onUnhandledKeyEvent(webView: View, event: KeyEvent?) {
+    fun onUnhandledKeyEvent(webView: View, event: KeyEvent?): Boolean {
         abilities.forEach { ability ->
             if (ability.onUnhandledKeyEvent(webView, event)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onReceivedClientCertRequest(webView: View, request: ClientCertRequest?) {
+    fun onReceivedClientCertRequest(webView: View, request: ClientCertRequest?): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedClientCertRequest(webView, request)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onReceivedHttpAuthRequest(
@@ -195,42 +192,48 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         handler: HttpAuthHandler?,
         host: String?,
         realm: String?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedHttpAuthRequest(webView, handler, host, realm)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onReceivedSslError(webView: View, handler: SslErrorHandler?, error: SslError?) {
+    fun onReceivedSslError(webView: View, handler: SslErrorHandler?, error: SslError?): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedSslError(webView, handler, error)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onTooManyRedirects(webView: View, cancelMsg: Message?, continueMsg: Message?) {
+    fun onTooManyRedirects(webView: View, cancelMsg: Message?, continueMsg: Message?): Boolean {
+        return false
     }
 
-    fun onFormResubmission(webView: View, dontResend: Message?, resend: Message?) {
+    fun onFormResubmission(webView: View, dontResend: Message?, resend: Message?): Boolean {
+        return false
     }
 
-    fun onLoadResource(webView: View, url: String?) {
+    fun onLoadResource(webView: View, url: String?): Boolean {
         abilities.forEach { ability ->
             if (ability.onLoadResource(webView, url)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onRequestFocus(webView: View) {
+    fun onRequestFocus(webView: View): Boolean {
         abilities.forEach { ability ->
             if (ability.onRequestFocus(kernel)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onJsAlert(
@@ -302,20 +305,22 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
     fun onShowCustomView(
         customView: View?,
         callback: CustomViewCallback?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onShowCustomView(customView, callback)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onHideCustomView() {
+    fun onHideCustomView(): Boolean {
         abilities.forEach { ability ->
             if (ability.onHideCustomView()) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onCreateWindow(
@@ -332,31 +337,34 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         return false
     }
 
-    fun onCloseWindow(webView: View) {
+    fun onCloseWindow(webView: View): Boolean {
         abilities.forEach { ability ->
             if (ability.onCloseWindow(webView)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onGeolocationPermissionsShowPrompt(
         origin: String?,
         callback: GeolocationPermissions.Callback?
-    ) {
+    ): Boolean {
         abilities.forEach { ability ->
             if (ability.onGeolocationPermissionsShowPrompt(origin, callback)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onGeolocationPermissionsHidePrompt() {
+    fun onGeolocationPermissionsHidePrompt(): Boolean {
         abilities.forEach { ability ->
             if (ability.onGeolocationPermissionsHidePrompt()) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun onPermissionRequest(request: PermissionRequest?): Boolean {
@@ -399,44 +407,49 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
         return false
     }
 
-    fun onReceivedTouchIconUrl(webView: View, url: String?, precomposed: Boolean) {
+    fun onReceivedTouchIconUrl(webView: View, url: String?, precomposed: Boolean): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedTouchIconUrl(webView, url, precomposed)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onReceivedIcon(webView: View, icon: Bitmap?) {
+    fun onReceivedIcon(webView: View, icon: Bitmap?): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedIcon(webView, icon)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onReceivedTitle(webView: View, title: String?) {
+    fun onReceivedTitle(webView: View, title: String?): Boolean {
         abilities.forEach { ability ->
             if (ability.onReceivedTitle(webView, title)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun onProgressChanged(webView: View, newProgress: Int) {
+    fun onProgressChanged(webView: View, newProgress: Int): Boolean {
         abilities.forEach { ability ->
             if (ability.onProgressChanged(webView, newProgress)) {
-                return
+                return true
             }
         }
+        return false
     }
 
-    fun getVisitedHistory(callback: ValueCallback<Array<String>>?) {
+    fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean {
         abilities.forEach { ability ->
             if (ability.getVisitedHistory(callback)) {
-                return
+                return true
             }
         }
+        return false
     }
 
     fun getVideoLoadingProgressView(): View? {

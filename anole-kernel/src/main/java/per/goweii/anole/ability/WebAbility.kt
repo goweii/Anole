@@ -40,15 +40,11 @@ open class WebAbility {
 
     open fun getVisitedHistory(callback: ValueCallback<Array<String>>?): Boolean = false
 
-    open fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean): Boolean =
-        false
+    open fun doUpdateVisitedHistory(webView: View, url: String, isReload: Boolean): Boolean = false
 
     open fun shouldInterceptRequest(
         webView: View,
-        reqUri: Uri,
-        reqHeaders: Map<String, String>?,
-        reqMethod: String?,
-        userAgent: String?
+        request: WebResourceRequest
     ): WebResourceResponse? = null
 
     open fun onJsAlert(
@@ -90,10 +86,7 @@ open class WebAbility {
 
     open fun shouldOverrideUrlLoading(
         webView: View,
-        reqUri: Uri,
-        reqHeaders: Map<String, String>?,
-        reqMethod: String?,
-        userAgent: String?
+        request: WebResourceRequest
     ): Boolean = false
 
     open fun onPageStarted(webView: View, url: String?, favicon: Bitmap?): Boolean = false
