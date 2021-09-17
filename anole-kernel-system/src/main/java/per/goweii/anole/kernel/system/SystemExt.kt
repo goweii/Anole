@@ -33,7 +33,36 @@ fun android.webkit.WebResourceResponse.toLibraryWebResourceResponse(): per.gowei
 
 fun android.webkit.WebResourceError.toSystemWebResourceError(): per.goweii.anole.ability.WebResourceError? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return null
-    return per.goweii.anole.ability.WebResourceError(errorCode, description)
+    return per.goweii.anole.ability.WebResourceError(errorCode.toLibraryErrorCode(), description)
+}
+
+fun Int.toLibraryErrorCode(): Int = when (this) {
+    android.webkit.WebViewClient.ERROR_AUTHENTICATION -> per.goweii.anole.ability.WebConst.ERROR_AUTHENTICATION
+    android.webkit.WebViewClient.ERROR_BAD_URL -> per.goweii.anole.ability.WebConst.ERROR_BAD_URL
+    android.webkit.WebViewClient.ERROR_CONNECT -> per.goweii.anole.ability.WebConst.ERROR_CONNECT
+    android.webkit.WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> per.goweii.anole.ability.WebConst.ERROR_FAILED_SSL_HANDSHAKE
+    android.webkit.WebViewClient.ERROR_FILE -> per.goweii.anole.ability.WebConst.ERROR_FILE
+    android.webkit.WebViewClient.ERROR_FILE_NOT_FOUND -> per.goweii.anole.ability.WebConst.ERROR_FILE_NOT_FOUND
+    android.webkit.WebViewClient.ERROR_HOST_LOOKUP -> per.goweii.anole.ability.WebConst.ERROR_HOST_LOOKUP
+    android.webkit.WebViewClient.ERROR_IO -> per.goweii.anole.ability.WebConst.ERROR_IO
+    android.webkit.WebViewClient.ERROR_PROXY_AUTHENTICATION -> per.goweii.anole.ability.WebConst.ERROR_PROXY_AUTHENTICATION
+    android.webkit.WebViewClient.ERROR_REDIRECT_LOOP -> per.goweii.anole.ability.WebConst.ERROR_REDIRECT_LOOP
+    android.webkit.WebViewClient.ERROR_TIMEOUT -> per.goweii.anole.ability.WebConst.ERROR_TIMEOUT
+    android.webkit.WebViewClient.ERROR_TOO_MANY_REQUESTS -> per.goweii.anole.ability.WebConst.ERROR_TOO_MANY_REQUESTS
+    android.webkit.WebViewClient.ERROR_UNKNOWN -> per.goweii.anole.ability.WebConst.ERROR_UNKNOWN
+    android.webkit.WebViewClient.ERROR_UNSAFE_RESOURCE -> per.goweii.anole.ability.WebConst.ERROR_UNSAFE_RESOURCE
+    android.webkit.WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME -> per.goweii.anole.ability.WebConst.ERROR_UNSUPPORTED_AUTH_SCHEME
+    android.webkit.WebViewClient.ERROR_UNSUPPORTED_SCHEME -> per.goweii.anole.ability.WebConst.ERROR_UNSUPPORTED_SCHEME
+    else -> per.goweii.anole.ability.WebConst.ERROR_UNKNOWN
+}
+
+fun Int.toLibraryThreatType(): Int = when (this) {
+    android.webkit.WebViewClient.SAFE_BROWSING_THREAT_BILLING -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_BILLING
+    android.webkit.WebViewClient.SAFE_BROWSING_THREAT_MALWARE -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_MALWARE
+    android.webkit.WebViewClient.SAFE_BROWSING_THREAT_PHISHING -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_PHISHING
+    android.webkit.WebViewClient.SAFE_BROWSING_THREAT_UNKNOWN -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_UNKNOWN
+    android.webkit.WebViewClient.SAFE_BROWSING_THREAT_UNWANTED_SOFTWARE -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_UNWANTED_SOFTWARE
+    else -> per.goweii.anole.ability.WebConst.SAFE_BROWSING_THREAT_UNKNOWN
 }
 
 fun android.webkit.WebResourceRequest.toLibraryWebResourceRequest(): per.goweii.anole.ability.WebResourceRequest? {

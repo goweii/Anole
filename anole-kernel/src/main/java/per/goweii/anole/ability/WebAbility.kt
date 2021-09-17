@@ -108,13 +108,6 @@ open class WebAbility {
 
     open fun onReceivedError(
         webView: View,
-        errorCode: Int,
-        description: String?,
-        failingUrl: String?
-    ): Boolean = false
-
-    open fun onReceivedError(
-        webView: View,
         request: WebResourceRequest?,
         error: WebResourceError?
     ): Boolean = false

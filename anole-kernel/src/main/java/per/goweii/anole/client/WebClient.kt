@@ -91,20 +91,6 @@ class WebClient(private val kernel: WebKernel) : DownloadListener {
 
     fun onReceivedError(
         webView: View,
-        errorCode: Int,
-        description: String?,
-        failingUrl: String?
-    ): Boolean {
-        abilities.forEach { ability ->
-            if (ability.onReceivedError(webView, errorCode, description, failingUrl)) {
-                return true
-            }
-        }
-        return false
-    }
-
-    fun onReceivedError(
-        webView: View,
         request: WebResourceRequest?,
         error: WebResourceError?
     ): Boolean {

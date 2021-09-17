@@ -65,7 +65,7 @@ class SystemWebViewClient(
         if (!webClient.onSafeBrowsingHit(
                 view,
                 request?.toLibraryWebResourceRequest(),
-                threatType,
+                threatType.toLibraryThreatType(),
                 callback?.toLibrarySafeBrowsingResponse()
             )
         ) {
@@ -87,8 +87,15 @@ class SystemWebViewClient(
     ) {
         val request = failingUrl
             ?.let { Uri.parse(it) }
-            ?.let { per.goweii.anole.ability.WebResourceRequest(it) }
-        val error = per.goweii.anole.ability.WebResourceError(errorCode, description)
+            ?.let {
+                per.goweii.anole.ability.WebResourceRequest(
+                    it, isForMainFrame = true
+                )
+            }
+        val error = per.goweii.anole.ability.WebResourceError(
+            errorCode.toLibraryErrorCode(),
+            description
+        )
         if (!webClient.onReceivedError(view, request, error)) {
             super.onReceivedError(view, errorCode, description, failingUrl)
         }

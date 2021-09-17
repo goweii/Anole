@@ -57,6 +57,7 @@ class WebInstance(private val application: Application) {
             webClient.addAbility(ConsoleAbility())
             webClient.addAbility(PermissionAbility())
             webClient.addAbility(WindowAbility())
+            webClient.addAbility(CustomErrorPageAbility("errorpages/error.html"))
         }
     }
 }
