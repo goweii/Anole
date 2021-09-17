@@ -20,7 +20,6 @@ import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
 import kotlin.math.abs
 
-
 class AllWebFragment : BaseFragment() {
     private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
     private val viewModel by viewModelsByAndroid<AllWebViewModel>()
@@ -41,6 +40,8 @@ class AllWebFragment : BaseFragment() {
         binding.vpAllWeb.isHapticFeedbackEnabled = true
         binding.vpAllWeb.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
+
+    private var currentItem: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +81,15 @@ class AllWebFragment : BaseFragment() {
             adapter = AllWebAdapter(this)
         }
         binding.vpAllWeb.adapter = adapter
+        if (currentItem in 0 until adapter.itemCount) {
+            binding.vpAllWeb.setCurrentItem(currentItem, false)
+        }
+        binding.vpAllWeb.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentItem = position
+            }
+        })
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onTouchSharedFlow.collect {
                 val index = adapter.indexOf(it)
@@ -175,10 +185,24 @@ class AllWebFragment : BaseFragment() {
         if (isDetached) return
         if (!isAdded) return
         adapter.addWeb(WebInitConfig(initialUrl))
-        binding.vpAllWeb.setCurrentItem(adapter.itemCount - 1, true)
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }
+        binding.vpAllWeb.post {
+            binding.vpAllWeb.setCurrentItem(adapter.itemCount - 1, true)
+        }
+    }
+
+    fun loadOnCurWeb(url: String) {
+        if (isDetached) return
+        if (!isAdded) return
+        val id = adapter.getItemId(binding.vpAllWeb.currentItem)
+        childFragmentManager.findFragmentByTag("f$id")
+            ?.let {
+                if (it is WebFragment) {
+                    it.loadUrl(url)
+                }
+            }
     }
 
     fun enterChoiceMode() {

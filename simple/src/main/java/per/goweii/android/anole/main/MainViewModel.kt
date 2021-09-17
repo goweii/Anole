@@ -14,6 +14,4 @@ class MainViewModel(application: Application) : BaseAndroidViewModel(application
     fun reload() {
         viewModelScope.launch { _reloadFlow.emit(false) }
     }
-
-    var loadUrlFromSearch: String? = null
 }

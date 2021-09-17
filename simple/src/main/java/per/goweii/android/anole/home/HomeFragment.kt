@@ -54,7 +54,7 @@ class HomeFragment : BaseFragment() {
         binding.tvSearch.setOnClickListener {
             binding.tvSearch.findNavController()
                 .navigate(
-                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(null),
                     FragmentNavigatorExtras(
                         binding.tvSearch to getString(R.string.transition_name_search)
                     )

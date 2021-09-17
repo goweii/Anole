@@ -3,6 +3,7 @@ package per.goweii.android.anole.web
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -79,6 +80,16 @@ class WebFragment : BaseFragment() {
         }
     }
 
+    val curUrl: String? get() = if (::kernelView.isInitialized) kernelView.url else null
+    val curTitle: String? get() = if (::kernelView.isInitialized) kernelView.title else null
+    val curFavicon: Bitmap? get() = if (::kernelView.isInitialized) kernelView.favicon else null
+
+    fun loadUrl(url: String) {
+        if (::kernelView.isInitialized) {
+            kernelView.loadUrl(url)
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -141,7 +152,7 @@ class WebFragment : BaseFragment() {
             onDragEnd = { vx, vy -> onGestureEnd?.invoke(vx, vy) }
             onSingleTap = {
                 findNavController().navigate(
-                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(),
+                    WindowFragmentDirections.actionWindowFragmentToSearchFragment(curUrl, true),
                     FragmentNavigatorExtras(
                         binding.tvTitle to getString(R.string.transition_name_search)
                     )

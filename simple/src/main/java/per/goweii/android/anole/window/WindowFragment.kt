@@ -9,6 +9,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -17,13 +18,11 @@ import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
 import per.goweii.android.anole.listener
-import per.goweii.android.anole.main.MainViewModel
-import per.goweii.android.anole.utils.activityViewModelsByAndroid
+import per.goweii.android.anole.utils.UrlLoadEntry
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.web.AllWebFragment
 
 class WindowFragment : BaseFragment() {
-    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
     private val viewModel by viewModelsByAndroid<WindowViewModel>()
     private lateinit var binding: FragmentWindowBinding
 
@@ -78,6 +77,19 @@ class WindowFragment : BaseFragment() {
                 loadUrlOnNewWeb(it)
             }
         }
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<UrlLoadEntry>("new_url")
+            ?.observe(viewLifecycleOwner) {
+                showAllWebFragment()
+                binding.root.post {
+                    if (it.newWindow) {
+                        allWebFragment.createNewWeb(it.url)
+                    } else {
+                        allWebFragment.loadOnCurWeb(it.url)
+                    }
+                }
+            }
         when {
             HomeFragment::class.java.name == currentFragment -> {
                 showHomeFragment()
@@ -96,15 +108,6 @@ class WindowFragment : BaseFragment() {
                     }
                 }
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mainViewModel.loadUrlFromSearch?.let {
-            allWebFragment.createNewWeb(it)
-            showAllWebFragment()
-            mainViewModel.loadUrlFromSearch = null
         }
     }
 

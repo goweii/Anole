@@ -13,19 +13,20 @@ import androidx.core.view.doOnAttach
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentSearchBinding
-import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
-import per.goweii.android.anole.utils.activityViewModelsByAndroid
+import per.goweii.android.anole.utils.UrlLoadEntry
 
 class SearchFragment : BaseFragment() {
-    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
+
+    private val args: SearchFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +76,10 @@ class SearchFragment : BaseFragment() {
         binding.ivSearch.setOnClickListener {
             doSearch()
         }
+        args.url?.let {
+            binding.etSearch.setText(it)
+            binding.etSearch.setSelection(0, it.length)
+        }
         binding.etSearch.post {
             binding.etSearch.requestFocus()
             val imm = requireContext().getSystemService<InputMethodManager>()!!
@@ -94,7 +99,11 @@ class SearchFragment : BaseFragment() {
         binding.etSearch.clearFocus()
         val url = Url.parse(text).toUrl()
             ?: DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(text)
-        mainViewModel.loadUrlFromSearch = url
-        findNavController().navigateUp()
+        findNavController().apply {
+            previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("new_url", UrlLoadEntry(url, !args.fromWindow))
+            popBackStack()
+        }
     }
 }

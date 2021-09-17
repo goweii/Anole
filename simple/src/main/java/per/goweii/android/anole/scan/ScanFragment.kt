@@ -15,6 +15,7 @@ import per.goweii.android.anole.databinding.FragmentScanBinding
 import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
+import per.goweii.android.anole.utils.UrlLoadEntry
 import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.codex.processor.zxing.ZXingScanProcessor
 
@@ -48,8 +49,12 @@ class ScanFragment : BaseFragment() {
                 val text = it.first().text
                 val url = Url.parse(text).toUrl() ?: DefSearch.getInstance(requireContext())
                     .getDefSearch().getSearchUrl(text)
-                mainViewModel.loadUrlFromSearch = url
-                findNavController().navigateUp()
+                findNavController().apply {
+                    previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("new_url", UrlLoadEntry(url, true))
+                    popBackStack()
+                }
             }
             bindToLifecycle(this@ScanFragment.viewLifecycleOwner)
         }

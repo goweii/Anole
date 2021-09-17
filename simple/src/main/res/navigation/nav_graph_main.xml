@@ -48,7 +48,16 @@
         android:id="@+id/searchFragment"
         android:name="per.goweii.android.anole.search.SearchFragment"
         android:label="SearchFragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+        <argument
+            android:name="url"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="fromWindow"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="per.goweii.android.anole.settings.SettingFragment"
