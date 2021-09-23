@@ -87,7 +87,7 @@ class SwipeActionLayout @JvmOverloads constructor(
 
     private fun onSwiping(f: Float) {
         when {
-            f >= 0.5F -> {
+            f >= 0.3F -> {
                 if (!collecting) {
                     collecting = true
                     performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)

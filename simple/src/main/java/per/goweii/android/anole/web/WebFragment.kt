@@ -37,7 +37,7 @@ import per.goweii.android.anole.window.WindowViewModel
 import per.goweii.anole.ability.impl.BackForwardIconAbility
 import per.goweii.anole.ability.impl.PageInfoAbility
 import per.goweii.anole.ability.impl.ProgressAbility
-import per.goweii.anole.view.KernelView
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.layer.core.Layer
 import per.goweii.layer.core.anim.CommonAnimatorCreator
 import per.goweii.layer.popup.PopupLayer
@@ -61,7 +61,7 @@ class WebFragment : BaseFragment() {
     private val allWebViewModel by parentViewModelsByAndroid<AllWebViewModel, AllWebFragment>()
 
     private lateinit var initConfig: WebInitConfig
-    private lateinit var kernelView: KernelView
+    private lateinit var webKernel: WebKernel
 
     private var _binding: FragmentWebBinding? = null
     private val binding get() = _binding!!
@@ -72,21 +72,21 @@ class WebFragment : BaseFragment() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            if (kernelView.canGoBack) {
-                kernelView.goBack()
+            if (webKernel.canGoBack) {
+                webKernel.goBack()
             } else {
                 windowViewModel.showHome()
             }
         }
     }
 
-    val curUrl: String? get() = if (::kernelView.isInitialized) kernelView.url else null
-    val curTitle: String? get() = if (::kernelView.isInitialized) kernelView.title else null
-    val curFavicon: Bitmap? get() = if (::kernelView.isInitialized) kernelView.favicon else null
+    val curUrl: String? get() = if (::webKernel.isInitialized) webKernel.url else null
+    val curTitle: String? get() = if (::webKernel.isInitialized) webKernel.title else null
+    val curFavicon: Bitmap? get() = if (::webKernel.isInitialized) webKernel.favicon else null
 
     fun loadUrl(url: String) {
-        if (::kernelView.isInitialized) {
-            kernelView.loadUrl(url)
+        if (::webKernel.isInitialized) {
+            webKernel.loadUrl(url)
         }
     }
 
@@ -98,8 +98,10 @@ class WebFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initConfig = requireArguments().getParcelable(ARG_INIT_CONFIG)!!
-        kernelView = WebInstance.getInstance(requireContext()).obtain(initConfig.kernelId)
-        kernelView.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
+        webKernel = WebInstance.getInstance(requireContext()).obtain(initConfig.kernelId)
+        if (initConfig.kernelId != webKernel.hashCode()) {
+            webKernel.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
+        }
     }
 
     override fun onCreateView(
@@ -110,7 +112,7 @@ class WebFragment : BaseFragment() {
         _binding = FragmentWebBinding.inflate(inflater, container, false)
         initSwipeDismiss()
         binding.webContainer.addView(
-            kernelView, ViewGroup.LayoutParams(
+            webKernel.kernelView, ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
@@ -119,13 +121,13 @@ class WebFragment : BaseFragment() {
             allWebViewModel.onTouchedWebFragment(initConfig)
         }
         binding.ivBack.setOnClickListener {
-            if (kernelView.canGoBack) {
-                kernelView.goBack()
+            if (webKernel.canGoBack) {
+                webKernel.goBack()
             }
         }
         binding.ivForward.setOnClickListener {
-            if (kernelView.canGoForward) {
-                kernelView.goForward()
+            if (webKernel.canGoForward) {
+                webKernel.goForward()
             }
         }
         binding.ivMenu.setOnClickListener {
@@ -180,8 +182,8 @@ class WebFragment : BaseFragment() {
                     .find(it ?: "") != null
             },
             onReceivedPageTitle = {
-                binding.tvTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
-                binding.tvTopTitle.text = it ?: Url.parse(kernelView.url).host ?: ""
+                binding.tvTitle.text = it ?: Url.parse(webKernel.url).host ?: ""
+                binding.tvTopTitle.text = it ?: Url.parse(webKernel.url).host ?: ""
             },
             onReceivedPageIcon = {
                 if (it != null) {
@@ -224,17 +226,17 @@ class WebFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.goBackOrForwardSharedFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect { kernelView.goBackOrForward(it) }
+                .collect { webKernel.goBackOrForward(it) }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.loadUrlSharedFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect { kernelView.loadUrl(it ?: getString(R.string.initial_url)) }
+                .collect { webKernel.loadUrl(it ?: getString(R.string.initial_url)) }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             mainViewModel.reloadFlow
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect { kernelView.reload() }
+                .collect { webKernel.reload() }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.addOrUpdateBookmarkSharedFlow.collect {
@@ -259,37 +261,37 @@ class WebFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         onBackPressedCallback.isEnabled = true
-        kernelView.resumeTimers()
-        kernelView.onResume()
-        kernelView.settings.apply {
+        webKernel.resumeTimers()
+        webKernel.onResume()
+        webKernel.settings.apply {
             javaScriptEnabled = true
         }
-        if (!kernelView.webClient.containsAbility(backForwardIconAbility)) {
-            kernelView.webClient.addAbility(backForwardIconAbility)
+        if (!webKernel.webClient.containsAbility(backForwardIconAbility)) {
+            webKernel.webClient.addAbility(backForwardIconAbility)
         }
-        if (!kernelView.webClient.containsAbility(progressAbility)) {
-            kernelView.webClient.addAbility(progressAbility)
+        if (!webKernel.webClient.containsAbility(progressAbility)) {
+            webKernel.webClient.addAbility(progressAbility)
         }
-        if (!kernelView.webClient.containsAbility(pageInfoAbility)) {
-            kernelView.webClient.addAbility(pageInfoAbility)
+        if (!webKernel.webClient.containsAbility(pageInfoAbility)) {
+            webKernel.webClient.addAbility(pageInfoAbility)
         }
     }
 
     override fun onPause() {
         super.onPause()
         onBackPressedCallback.isEnabled = false
-        kernelView.webClient.removeAbility(backForwardIconAbility)
-        kernelView.webClient.removeAbility(progressAbility)
-        kernelView.webClient.removeAbility(pageInfoAbility)
-        kernelView.onPause()
-        kernelView.pauseTimers()
-        kernelView.settings.apply {
+        webKernel.webClient.removeAbility(backForwardIconAbility)
+        webKernel.webClient.removeAbility(progressAbility)
+        webKernel.webClient.removeAbility(pageInfoAbility)
+        webKernel.onPause()
+        webKernel.pauseTimers()
+        webKernel.settings.apply {
             javaScriptEnabled = false
         }
     }
 
     override fun onDestroyView() {
-        binding.webContainer.removeView(kernelView)
+        binding.webContainer.removeView(webKernel.kernelView)
         _binding = null
         super.onDestroyView()
     }
@@ -297,7 +299,7 @@ class WebFragment : BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
         WebInstance.getInstance(requireContext()).release(initConfig.kernelId)
-        kernelView.destroy()
+        webKernel.destroy()
     }
 
     private fun initSwipeDismiss() {
@@ -305,16 +307,16 @@ class WebFragment : BaseFragment() {
             allWebViewModel.onRemoveWebFragment(initConfig)
         }
         binding.swipeLayout.onCollect = {
-            if (!kernelView.url.isNullOrBlank()) {
-                val url = kernelView.url!!
+            if (!webKernel.url.isNullOrBlank()) {
+                val url = webKernel.url!!
                 if (BookmarkManager.getInstance(requireContext()).find(url) != null) {
                     windowViewModel.removeBookmark(url)
                 } else {
                     windowViewModel.addOrUpdateBookmark(
                         Bookmark(
                             url,
-                            kernelView.title,
-                            kernelView.favicon
+                            webKernel.title,
+                            webKernel.favicon
                         )
                     )
                 }

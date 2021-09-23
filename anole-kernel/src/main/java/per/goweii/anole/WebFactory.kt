@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
 import per.goweii.anole.ability.WebAbility
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.UserAgent
 import per.goweii.anole.view.KernelView
 
@@ -19,11 +20,11 @@ class WebFactory(private val kernelView: KernelView) {
             this.instanceBuilder = instanceBuilder
         }
 
-        fun with(context: Context): WebFactory {
+        fun with(context: Context, parent: WebKernel?): WebFactory {
             if (instanceBuilder == null) {
                 throw NullPointerException("instanceBuilder == null")
             }
-            val kernelView = instanceBuilder!!.build(context)
+            val kernelView = instanceBuilder!!.build(context, parent)
             return WebFactory(kernelView)
         }
     }

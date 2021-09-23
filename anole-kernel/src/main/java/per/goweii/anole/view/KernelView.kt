@@ -2,7 +2,6 @@ package per.goweii.anole.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleObserver
@@ -10,10 +9,11 @@ import androidx.lifecycle.LifecycleOwner
 import per.goweii.anole.client.WebClient
 import per.goweii.anole.kernel.WebKernel
 
+
 abstract class KernelView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), WebKernel {
-    override val kernelView: View get() = this
+    override val kernelView: KernelView get() = this
 
     override val webClient: WebClient by lazy { WebClient(this) }
 

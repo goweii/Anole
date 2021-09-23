@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import per.goweii.anole.BuildConfig
 import per.goweii.anole.WebInstanceBuilder
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.kernel.WebSettings
 import per.goweii.anole.utils.currentProcessName
 
@@ -17,6 +18,9 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
     companion object {
         private var hasSetDataDirectorySuffix = false
     }
+
+    var onCreateWindow: ((kernel: WebKernel) -> Unit)? = null
+    var onCloseWindow: ((kernel: WebKernel) -> Unit)? = null
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     protected open fun isWebContentsDebuggingEnabled(): Boolean {
@@ -32,7 +36,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
         return null
     }
 
-    override fun build(context: Context): SystemKernelView {
+    override fun build(context: Context, parent: WebKernel?): SystemKernelView {
         return SystemKernelView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(isWebContentsDebuggingEnabled())
@@ -90,6 +94,15 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
             settings.geolocationEnabled = true
             settings.supportMultipleWindows = true
             settings.javaScriptCanOpenWindowsAutomatically = true
+
+            webClient.addAbility(SystemWindowAbility(
+                onCreateWindow = { kernel, _, _ ->
+                    onCreateWindow?.invoke(kernel)
+                },
+                onCloseWindow = { kernel ->
+                    onCloseWindow?.invoke(kernel)
+                }
+            ))
         }
     }
 }

@@ -12,7 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.ability.WebResourceRequest
 import per.goweii.anole.kernel.WebKernel
-import per.goweii.anole.utils.findActivity
 
 class AppOpenAbility(
     private val onOpenApp: (Context.(
@@ -54,10 +53,9 @@ class AppOpenAbility(
     ): Boolean {
         val scheme = request.uri.scheme
         if (!("http" == scheme || "https" == scheme)) {
-            val activity = activity ?: webView.findActivity()
             activity?.let {
                 mainHandler?.post {
-                    showOpenAppDialog(activity, request.uri)
+                    showOpenAppDialog(it, request.uri)
                 }
             }
             return true

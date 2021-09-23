@@ -79,14 +79,19 @@ class WindowFragment : BaseFragment() {
         }
         findNavController().currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<UrlLoadEntry>("new_url")
-            ?.observe(viewLifecycleOwner) {
-                showAllWebFragment()
-                binding.root.post {
-                    if (it.newWindow) {
-                        allWebFragment.createNewWeb(it.url)
-                    } else {
-                        allWebFragment.loadOnCurWeb(it.url)
+            ?.getLiveData<UrlLoadEntry?>("new_url")
+            ?.apply {
+                observe(viewLifecycleOwner) {
+                    if (it != null) {
+                        showAllWebFragment()
+                        binding.root.post {
+                            if (it.newWindow) {
+                                allWebFragment.createWeb(it.url)
+                            } else {
+                                allWebFragment.loadOnCurWeb(it.url)
+                            }
+                        }
+                        value = null
                     }
                 }
             }
@@ -102,7 +107,7 @@ class WindowFragment : BaseFragment() {
                     val args: WindowFragmentArgs by navArgs()
                     if (!args.initialUrl.isNullOrBlank()) {
                         showAllWebFragment()
-                        allWebFragment.createNewWeb(args.initialUrl)
+                        allWebFragment.createWeb(args.initialUrl)
                     } else {
                         showHomeFragment()
                     }
@@ -190,7 +195,7 @@ class WindowFragment : BaseFragment() {
 
     private fun loadUrlOnNewWeb(url: String?) {
         showAllWebFragment()
-        allWebFragment.createNewWeb(url ?: getString(R.string.initial_url))
+        allWebFragment.createWeb(url ?: getString(R.string.initial_url))
     }
 
     private fun prepareFragments() {

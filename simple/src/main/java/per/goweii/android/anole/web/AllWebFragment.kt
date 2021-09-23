@@ -14,6 +14,7 @@ import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentAllWebBinding
 import per.goweii.android.anole.utils.WebInitConfig
+import per.goweii.android.anole.utils.WebInstance
 import per.goweii.android.anole.utils.parentViewModelsByAndroid
 import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.window.WindowFragment
@@ -48,6 +49,14 @@ class AllWebFragment : BaseFragment() {
         childFragmentManager.addFragmentOnAttachListener { _, fragment ->
             val f = fragment as? WebFragment? ?: return@addFragmentOnAttachListener
             bindGestureForFragment(f)
+        }
+        WebInstance.getInstance(requireContext()).apply {
+            onCreateWindow = {
+                createWeb(null, it.hashCode())
+            }
+            onCloseWindow = {
+                closeWeb(it.hashCode())
+            }
         }
     }
 
@@ -181,15 +190,26 @@ class AllWebFragment : BaseFragment() {
         }
     }
 
-    fun createNewWeb(initialUrl: String?) {
+    fun createWeb(initialUrl: String?, kernelId: Int? = null) {
         if (isDetached) return
         if (!isAdded) return
-        adapter.addWeb(WebInitConfig(initialUrl))
+        val initConfig = kernelId?.let { WebInitConfig(initialUrl, kernelId) }
+            ?: WebInitConfig(initialUrl)
+        adapter.addWeb(initConfig)
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }
         binding.vpAllWeb.post {
             binding.vpAllWeb.setCurrentItem(adapter.itemCount - 1, true)
+        }
+    }
+
+    fun closeWeb(kernelId: Int) {
+        if (isDetached) return
+        if (!isAdded) return
+        adapter.removeWeb(WebInitConfig(null, kernelId))
+        windowViewModel.windowCountLiveData.apply {
+            postValue(adapter.itemCount)
         }
     }
 

@@ -38,11 +38,11 @@ class AllWebAdapter(fragment: AllWebFragment) :
     }
 
     override fun getItemId(position: Int): Long {
-        return System.identityHashCode(webInitConfigList[position]).toLong()
+        return webInitConfigList[position].kernelId.toLong()
     }
 
     override fun containsItem(itemId: Long): Boolean {
-        return webInitConfigList.find { System.identityHashCode(it).toLong() == itemId } != null
+        return webInitConfigList.find { it.kernelId.toLong() == itemId } != null
     }
 
     override fun createFragment(position: Int): Fragment {

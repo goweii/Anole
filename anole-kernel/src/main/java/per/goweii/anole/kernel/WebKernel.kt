@@ -4,9 +4,24 @@ import android.graphics.Bitmap
 import android.os.Message
 import android.print.PrintDocumentAdapter
 import android.view.View
+import android.view.ViewGroup
 import per.goweii.anole.client.WebClient
 
 interface WebKernel {
+    companion object {
+        val View.webKernel: WebKernel?
+            get() {
+                var view: View? = this
+                while (view != null) {
+                    if (view is WebKernel) {
+                        return view
+                    }
+                    view = view.parent as? ViewGroup?
+                }
+                return null
+            }
+    }
+
     val webView: View
 
     val kernelView: View

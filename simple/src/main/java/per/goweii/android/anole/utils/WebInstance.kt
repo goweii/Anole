@@ -6,8 +6,8 @@ import android.util.SparseArray
 import androidx.annotation.UiThread
 import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.*
+import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.kernel.system.SystemWebInstanceBuilder
-import per.goweii.anole.view.KernelView
 
 /**
  * Web实例管理，缓存KernelView，用于Fragment重建时恢复KernelView
@@ -25,39 +25,49 @@ class WebInstance(private val application: Application) {
         }
     }
 
-    private val kernels = SparseArray<KernelView>()
+    private val kernels = SparseArray<WebKernel>()
+
+    var onCreateWindow: ((kernel: WebKernel) -> Unit)? = null
+    var onCloseWindow: ((kernel: WebKernel) -> Unit)? = null
 
     init {
-        WebFactory.setInstanceBuilder(SystemWebInstanceBuilder())
+        val systemWebInstanceBuilder = SystemWebInstanceBuilder()
+        systemWebInstanceBuilder.onCreateWindow = {
+            kernels.put(it.hashCode(), it)
+            onCreateWindow?.invoke(it)
+        }
+        systemWebInstanceBuilder.onCloseWindow = {
+            onCloseWindow?.invoke(it)
+            kernels.remove(it.hashCode())
+        }
+        WebFactory.setInstanceBuilder(systemWebInstanceBuilder)
     }
 
-    fun obtain(kernelId: Int): KernelView {
+    fun obtain(kernelId: Int): WebKernel {
         var kernelView = kernels.get(kernelId)
-        if (kernelView != null) {
-            kernels.remove(kernelId)
-        } else {
+        if (kernelView == null) {
             kernelView = create()
             kernels.put(kernelId, kernelView)
         }
         return kernelView
     }
 
-    fun release(kernelId: Int): KernelView? {
+    fun release(kernelId: Int): WebKernel? {
         val kernelView = kernels.get(kernelId)
         kernels.remove(kernelId)
         return kernelView
     }
 
-    private fun create(): KernelView {
-        return WebFactory.with(application).get().apply {
-            webClient.addAbility(FullscreenVideoAbility())
-            webClient.addAbility(DownloadAbility())
-            webClient.addAbility(AppOpenAbility())
-            webClient.addAbility(FileChooseAbility())
-            webClient.addAbility(ConsoleAbility())
-            webClient.addAbility(PermissionAbility())
-            webClient.addAbility(WindowAbility())
-            webClient.addAbility(CustomErrorPageAbility("errorpages/error.html"))
-        }
+    private fun create(): WebKernel {
+        return WebFactory.with(application, null)
+            .appendDefUserAgent()
+            .registerAbility(FullscreenVideoAbility())
+            .registerAbility(DownloadAbility())
+            .registerAbility(AppOpenAbility())
+            .registerAbility(FileChooseAbility())
+            .registerAbility(ConsoleAbility())
+            .registerAbility(PermissionAbility())
+            .registerAbility(CustomErrorPageAbility("errorpages/error.html"))
+            .get()
     }
 }
