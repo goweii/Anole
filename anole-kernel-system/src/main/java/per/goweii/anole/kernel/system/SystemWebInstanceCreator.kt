@@ -9,12 +9,12 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import per.goweii.anole.BuildConfig
-import per.goweii.anole.WebInstanceBuilder
+import per.goweii.anole.WebInstanceCreator
 import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.kernel.WebSettings
 import per.goweii.anole.utils.currentProcessName
 
-open class SystemWebInstanceBuilder : WebInstanceBuilder {
+open class SystemWebInstanceCreator : WebInstanceCreator {
     companion object {
         private var hasSetDataDirectorySuffix = false
     }
@@ -36,7 +36,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder {
         return null
     }
 
-    override fun build(context: Context, parent: WebKernel?): WebKernel {
+    override fun build(context: Context): WebKernel {
         return SystemKernelView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(isWebContentsDebuggingEnabled())

@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import per.goweii.anole.R
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.ability.WebResourceRequest
 import per.goweii.anole.kernel.WebKernel
@@ -16,18 +17,17 @@ import per.goweii.anole.kernel.WebKernel
 class AppOpenAbility(
     private val onOpenApp: (Context.(
         uri: Uri,
-        callback: (allow: Boolean) -> Unit
+        callback: () -> Unit
     ) -> Dialog) = { uri, callback ->
         AlertDialog.Builder(this)
-            .setTitle("是否允许打开第三方APP？")
+            .setTitle(R.string.anole_open_other_app)
             .setMessage(uri.toString())
-            .setPositiveButton("允许") { dialog, _ ->
+            .setPositiveButton(R.string.anole_allow) { dialog, _ ->
                 dialog.dismiss()
-                callback.invoke(true)
+                callback.invoke()
             }
-            .setNegativeButton("拒绝") { dialog, _ ->
+            .setNegativeButton(R.string.anole_deny) { dialog, _ ->
                 dialog.dismiss()
-                callback.invoke(false)
             }
             .create()
     }
@@ -64,11 +64,10 @@ class AppOpenAbility(
     }
 
     private fun showOpenAppDialog(activity: Activity, reqUri: Uri) {
-        onOpenApp.invoke(activity, reqUri) {
-            if (it) {
-                openApp(activity, reqUri)
-            }
+        openAppDialog = onOpenApp.invoke(activity, reqUri) {
+            openApp(activity, reqUri)
         }
+        openAppDialog?.show()
     }
 
     private fun openApp(activity: Activity, reqUri: Uri) {

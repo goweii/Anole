@@ -1,61 +1,34 @@
 package per.goweii.anole
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.WebKernel
-import per.goweii.anole.utils.UserAgent
 
-@SuppressLint("SetJavaScriptEnabled")
-class WebFactory(private val webKernel: WebKernel) {
-    companion object {
-        private var instanceBuilder: WebInstanceBuilder? = null
+object WebFactory {
+    private var instanceCreator: WebInstanceCreator? = null
+    private var instanceInitializers: ArrayList<WebInstanceInitializer> = ArrayList()
 
-        fun setInstanceBuilder(instanceBuilder: WebInstanceBuilder) {
-            this.instanceBuilder = instanceBuilder
-        }
-
-        fun with(context: Context, parent: WebKernel?): WebFactory {
-            if (instanceBuilder == null) {
-                throw NullPointerException("instanceBuilder == null")
-            }
-            val kernelView = instanceBuilder!!.build(context, parent)
-            return WebFactory(kernelView)
-        }
+    fun setInstanceBuilder(instanceCreator: WebInstanceCreator) {
+        this.instanceCreator = instanceCreator
     }
 
-    fun get(): WebKernel {
+    fun addInstanceInitializer(instanceInitializer: WebInstanceInitializer) {
+        instanceInitializers.add(instanceInitializer)
+    }
+
+    fun removeInstanceInitializer(instanceInitializer: WebInstanceInitializer) {
+        instanceInitializers.remove(instanceInitializer)
+    }
+
+    fun clearInstanceInitializer() {
+        instanceInitializers.clear()
+    }
+
+    fun create(context: Context): WebKernel {
+        if (instanceCreator == null) {
+            throw NullPointerException("instanceBuilder == null")
+        }
+        val webKernel = instanceCreator!!.build(context)
+        instanceInitializers.forEach { it.initialize(webKernel) }
         return webKernel
     }
-
-    fun registerAbility(client: WebAbility) = apply {
-        this.webKernel.webClient.addAbility(client)
-    }
-
-    fun userAgentString(userAgent: String) = apply {
-        webKernel.settings.userAgentString = userAgent
-    }
-
-    fun appendUserAgent(appName: String, appVersionName: String, vararg extInfo: String) = apply {
-        webKernel.settings.userAgentString =
-            UserAgent.from(webKernel.settings.userAgentString ?: "")
-                .append(appName, appVersionName, *extInfo)
-                .toString()
-    }
-
-    fun appendDefUserAgent() = apply {
-        val context = webKernel.kernelView.context.applicationContext
-        val pm = context.packageManager
-        val appName = pm.getApplicationLabel(context.applicationInfo).toString()
-        val appVersionName = pm.getPackageInfo(context.packageName, 0).versionName
-        val android = "Android ${Build.VERSION.RELEASE}"
-        val sdk = "SDK ${Build.VERSION.SDK_INT}"
-        val model = "MODEL ${Build.MODEL}"
-        webKernel.settings.userAgentString =
-            UserAgent.from(webKernel.settings.userAgentString ?: "")
-                .append(appName, appVersionName, android, sdk, model)
-                .toString()
-    }
-
 }

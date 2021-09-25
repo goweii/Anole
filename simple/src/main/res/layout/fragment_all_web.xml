@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
-    android:background="?attr/colorBackground">
+    android:background="?attr/colorPrimaryDark">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp_all_web"

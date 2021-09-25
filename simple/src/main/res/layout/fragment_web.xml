@@ -41,7 +41,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="?attr/colorOnSurfaceSubWeak"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="?attr/textSizeContent" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -52,7 +52,8 @@
             android:layout_marginEnd="?attr/dimenMarginDefault"
             android:padding="?attr/dimenIconButtonPaddingDefault"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/selector_collect" />
+            app:srcCompat="@drawable/selector_collect"
+            app:tint="@color/colorOnPrimary" />
 
     </LinearLayout>
 

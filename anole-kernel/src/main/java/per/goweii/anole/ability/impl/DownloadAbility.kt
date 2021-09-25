@@ -12,6 +12,7 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import per.goweii.anole.Constants
+import per.goweii.anole.R
 import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.utils.FormatUtils
@@ -31,15 +32,22 @@ class DownloadAbility(
         downloadCallback: () -> Unit
     ) -> Dialog) = { url, fileName, _, contentLength, downloadCallback ->
         val msg = StringBuilder()
-            .append("文件名：$fileName").append("\n")
+            .append(getString(R.string.anole_download_filename, fileName))
             .append("\n")
-            .append("文件大小：${FormatUtils.formatContentLength(contentLength)}").append("\n")
             .append("\n")
-            .append("下载地址：$url")
+            .append(
+                getString(
+                    R.string.anole_download_content_length,
+                    FormatUtils.formatContentLength(contentLength)
+                )
+            )
+            .append("\n")
+            .append("\n")
+            .append(getString(R.string.anole_download_url, url))
         AlertDialog.Builder(this)
-            .setTitle("是否下载？")
+            .setTitle(R.string.anole_download_title)
             .setMessage(msg.toString())
-            .setPositiveButton("下载") { dialog, _ ->
+            .setPositiveButton(R.string.anole_download) { dialog, _ ->
                 dialog.dismiss()
                 findActivity()?.let { activity ->
                     ResultUtils.requestPermissionsResult(
@@ -53,16 +61,16 @@ class DownloadAbility(
                     }
                 }
             }
-            .setNegativeButton("取消") { dialog, _ ->
+            .setNegativeButton(R.string.anole_cancel) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
     },
     private val onDownloadExist: (Context.(id: Long) -> Unit) = {
-        Toast.makeText(this, "下载已存在", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.anole_download_exist), Toast.LENGTH_SHORT).show()
     },
     private val onDownloadEnqueue: (Context.(id: Long) -> Unit) = {
-        Toast.makeText(this, "开始下载", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.anole_download_start), Toast.LENGTH_SHORT).show()
     }
 ) : WebAbility() {
     private var downloadRequestDialog: Dialog? = null
@@ -180,7 +188,12 @@ class DownloadAbility(
             }
         }
         if (filename.isNullOrBlank()) {
-            filename = "download_${System.currentTimeMillis()}"
+            val prefix = activity?.getString(R.string.anole_download_filename_prefix)
+            filename = if (prefix.isNullOrBlank()) {
+                "${System.currentTimeMillis()}"
+            } else {
+                "${prefix}_${System.currentTimeMillis()}"
+            }
         }
         if (!mimeType.isNullOrBlank()) {
             val extFromType = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)

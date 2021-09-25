@@ -6,4 +6,24 @@
     <string name="anole_resource_audio_capture">音频捕获</string>
     <string name="anole_resource_protected_media_id">保护的媒体标识符</string>
     <string name="anole_resource_midi_sysex">MIDI</string>
+
+    <string name="anole_request_resource_permissions">网页请求获取以下权限</string>
+    <string name="anole_request_geolocation_permission">网页请求获取定位权限</string>
+    <string name="anole_retain">记住选择</string>
+    <string name="anole_allow_all">全部允许</string>
+    <string name="anole_allow">允许</string>
+    <string name="anole_deny">拒绝</string>
+
+    <string name="anole_download_filename">文件名：%s</string>
+    <string name="anole_download_content_length">文件大小：%s</string>
+    <string name="anole_download_url">下载地址：%s</string>
+    <string name="anole_download_title">是否下载？</string>
+    <string name="anole_download">下载</string>
+    <string name="anole_cancel">取消</string>
+    <string name="anole_download_exist">下载已存在</string>
+    <string name="anole_download_start">开始下载</string>
+
+    <string name="anole_download_filename_prefix">anole_download</string>
+
+    <string name="anole_open_other_app">是否允许打开第三方APP？</string>
 </resources>

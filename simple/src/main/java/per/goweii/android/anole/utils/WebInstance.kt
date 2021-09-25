@@ -8,9 +8,11 @@ import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat
 import per.goweii.android.anole.R
 import per.goweii.anole.WebFactory
+import per.goweii.anole.WebInstanceInitializer
 import per.goweii.anole.ability.impl.*
 import per.goweii.anole.kernel.WebKernel
-import per.goweii.anole.kernel.system.SystemWebInstanceBuilder
+import per.goweii.anole.kernel.system.SystemWebInstanceCreator
+import per.goweii.anole.utils.UserAgent
 
 /**
  * Web实例管理，缓存KernelView，用于Fragment重建时恢复KernelView
@@ -34,29 +36,17 @@ class WebInstance(private val application: Application) {
     var onCloseWindow: ((kernelId: Int) -> Unit)? = null
 
     init {
-        val systemWebInstanceBuilder = SystemWebInstanceBuilder()
-        systemWebInstanceBuilder.onCreateWindow = { kernel, parentKernel ->
-            val parentKernelId = kernels.indexOfValue(parentKernel)
-                .takeIf { it >= 0 }
-                ?.let { kernels.keyAt(it) }
-            WebToken(null, parentKernelId = parentKernelId).let {
-                kernels.put(it.kernelId, kernel)
-                onCreateWindow?.invoke(it)
-            }
-        }
-        systemWebInstanceBuilder.onCloseWindow = { kernel ->
-            kernels.indexOfValue(kernel)
-                .takeIf { it >= 0 }
-                ?.let { kernels.keyAt(it) }
-                ?.let { onCloseWindow?.invoke(it) }
-        }
+        val systemWebInstanceBuilder = SystemWebInstanceCreator()
+        systemWebInstanceBuilder.onCreateWindow = ::onCreateWindow
+        systemWebInstanceBuilder.onCloseWindow = ::onCloseWindow
         WebFactory.setInstanceBuilder(systemWebInstanceBuilder)
+        WebFactory.addInstanceInitializer(InstanceInitializer())
     }
 
     fun obtain(kernelId: Int): WebKernel {
         var kernelView = kernels.get(kernelId)
         if (kernelView == null) {
-            kernelView = create()
+            kernelView = WebFactory.create(application)
             kernels.put(kernelId, kernelView)
         }
         return kernelView
@@ -68,17 +58,45 @@ class WebInstance(private val application: Application) {
         return kernelView
     }
 
-    private fun create(): WebKernel {
-        return WebFactory.with(application, null)
-            .appendDefUserAgent()
-            .registerAbility(FullscreenVideoAbility())
-            .registerAbility(DownloadAbility())
-            .registerAbility(AppOpenAbility())
-            .registerAbility(FileChooseAbility())
-            .registerAbility(ConsoleAbility())
-            .registerAbility(PermissionAbility())
-            .get()
-            .apply {
+    private fun onCreateWindow(kernel: WebKernel, parentKernel: WebKernel) {
+        val parentKernelId = kernels.indexOfValue(parentKernel)
+            .takeIf { it >= 0 }
+            ?.let { kernels.keyAt(it) }
+        WebToken(null, parentKernelId = parentKernelId).let {
+            kernels.put(it.kernelId, kernel)
+            onCreateWindow?.invoke(it)
+        }
+    }
+
+    private fun onCloseWindow(kernel: WebKernel) {
+        kernels.indexOfValue(kernel)
+            .takeIf { it >= 0 }
+            ?.let { kernels.keyAt(it) }
+            ?.let { onCloseWindow?.invoke(it) }
+    }
+
+    private inner class InstanceInitializer : WebInstanceInitializer {
+        override fun initialize(webKernel: WebKernel) {
+            webKernel.apply {
+                val context = webKernel.kernelView.context.applicationContext
+                val pm = context.packageManager
+                val appName = pm.getApplicationLabel(context.applicationInfo).toString()
+                val appVersionName = pm.getPackageInfo(context.packageName, 0).versionName
+                val android = "Android ${Build.VERSION.RELEASE}"
+                val sdk = "SDK ${Build.VERSION.SDK_INT}"
+                val model = "MODEL ${Build.MODEL}"
+                webKernel.settings.userAgentString =
+                    UserAgent.from(webKernel.settings.userAgentString ?: "")
+                        .append(appName, appVersionName, android, sdk, model)
+                        .toString()
+
+                webClient.addAbility(FullscreenVideoAbility())
+                webClient.addAbility(DownloadAbility())
+                webClient.addAbility(AppOpenAbility())
+                webClient.addAbility(FileChooseAbility())
+                webClient.addAbility(ConsoleAbility())
+                webClient.addAbility(PermissionAbility())
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val drawable = ContextCompat.getDrawable(application, R.drawable.scrollbar)
                     webView.scrollBarSize = drawable!!.intrinsicWidth
@@ -91,5 +109,6 @@ class WebInstance(private val application: Application) {
                     webView.scrollBarFadeDuration = 300
                 }
             }
+        }
     }
 }

@@ -60,16 +60,16 @@ class PermissionAbility(
                     }
                 }
             }
-            val permissionCheckedList = permissionNameList.map { true }.toMutableList()
+            val permissionCheckedList = permissionResList.map { true }.toMutableList()
             dialog = AlertDialog.Builder(activity)
-                .setTitle("是否允许网页获取以下权限？")
+                .setTitle(R.string.anole_request_resource_permissions)
                 .setMultiChoiceItems(
                     permissionNameList.toTypedArray(),
                     permissionCheckedList.toBooleanArray()
                 ) { _, which, isChecked ->
                     permissionCheckedList[which] = isChecked
                 }
-                .setPositiveButton("允许") { dialog, _ ->
+                .setPositiveButton(R.string.anole_allow) { dialog, _ ->
                     dialog.dismiss()
                     ResultUtils.requestPermissionsResult(
                         activity,
@@ -78,24 +78,30 @@ class PermissionAbility(
                         }.toTypedArray(),
                         Constants.REQUEST_CODE_PERMISSIONS
                     ) { permissions, grantResults ->
-                        grant(permissionResList.filterIndexed { index, _ ->
-                            grantResults.getOrNull(index) == PackageManager.PERMISSION_GRANTED
-                        }.toTypedArray())
+                        permissionResList.filterIndexed { index, _ ->
+                            permissionSysList[index]
+                                .let { permissions.indexOf(it) }
+                                .let { grantResults.getOrNull(it) }
+                                .let { it == PackageManager.PERMISSION_GRANTED }
+                        }.let { grant(it.toTypedArray()) }
                     }
                 }
-                .setNeutralButton("全部允许") { dialog, _ ->
+                .setNeutralButton(R.string.anole_allow_all) { dialog, _ ->
                     dialog.dismiss()
                     ResultUtils.requestPermissionsResult(
                         activity,
                         permissionSysList.toTypedArray(),
                         Constants.REQUEST_CODE_PERMISSIONS
                     ) { permissions, grantResults ->
-                        grant(permissionResList.filterIndexed { index, _ ->
-                            grantResults.getOrNull(index) == PackageManager.PERMISSION_GRANTED
-                        }.toTypedArray())
+                        permissionResList.filterIndexed { index, _ ->
+                            permissionSysList[index]
+                                .let { permissions.indexOf(it) }
+                                .let { grantResults.getOrNull(it) }
+                                .let { it == PackageManager.PERMISSION_GRANTED }
+                        }.let { grant(it.toTypedArray()) }
                     }
                 }
-                .setNegativeButton("拒绝") { dialog, _ ->
+                .setNegativeButton(R.string.anole_deny) { dialog, _ ->
                     dialog.dismiss()
                     deny()
                 }
@@ -103,13 +109,14 @@ class PermissionAbility(
             dialog?.setOnDismissListener {
                 dialog = null
             }
+            dialog?.setOnCancelListener {
+                deny()
+            }
             dialog?.show()
         }
 
         override fun cancel() {
             dialog?.cancel()
-            dialog = null
-            grant(emptyArray())
         }
     },
     private val geolocationPermissionsProxy: GeolocationPermissionsProxy = object :
@@ -120,18 +127,18 @@ class PermissionAbility(
             dialog?.dismiss()
             var retain = false
             dialog = AlertDialog.Builder(activity)
-                .setTitle("是否允许网页获取定位权限？")
+                .setTitle(R.string.anole_request_geolocation_permission)
                 .setMultiChoiceItems(
-                    arrayOf("记住选择"),
+                    arrayOf(activity.getString(R.string.anole_retain)),
                     booleanArrayOf(retain)
                 ) { _, _, isChecked ->
                     retain = isChecked
                 }
-                .setPositiveButton("允许") { dialog, _ ->
+                .setPositiveButton(R.string.anole_allow) { dialog, _ ->
                     dialog.dismiss()
                     allow(retain)
                 }
-                .setNegativeButton("拒绝") { dialog, _ ->
+                .setNegativeButton(R.string.anole_deny) { dialog, _ ->
                     dialog.dismiss()
                     refuse(retain)
                 }
@@ -139,13 +146,14 @@ class PermissionAbility(
             dialog?.setOnDismissListener {
                 dialog = null
             }
+            dialog?.setOnCancelListener {
+                refuse(false)
+            }
             dialog?.show()
         }
 
         override fun cancel() {
             dialog?.cancel()
-            dialog = null
-            refuse(false)
         }
     }
 ) : WebAbility() {

@@ -27,7 +27,7 @@ class SystemWindowAbility(
         resultMsg: Message
     ): Boolean {
         val kernel = kernel ?: return false
-        val newKernel = WebFactory.with(kernel.kernelView.context, kernel).get()
+        val newKernel = WebFactory.create(kernel.kernelView.context)
         onCreateWindow.invoke(newKernel, isDialog, isUserGesture)
         val transport = resultMsg.obj as WebViewTransport
         transport.webView = newKernel.webView as? WebView?

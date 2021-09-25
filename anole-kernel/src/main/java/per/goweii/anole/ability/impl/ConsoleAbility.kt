@@ -8,7 +8,7 @@ import per.goweii.anole.ability.WebAbility
 import per.goweii.anole.kernel.WebKernel
 
 class ConsoleAbility : WebAbility() {
-    private var tag = "Anole"
+    private var tag = WebKernel::class.java.name
 
     override fun onAttachToKernel(kernel: WebKernel) {
         super.onAttachToKernel(kernel)

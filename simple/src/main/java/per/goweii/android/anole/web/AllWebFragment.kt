@@ -98,9 +98,11 @@ class AllWebFragment : BaseFragment() {
         })
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.switchWebSharedFlow.collect {
-                val index = viewModel.indexOf(it)
-                binding.vpAllWeb.setCurrentItem(index, true)
-                exitChoiceMode()
+                binding.vpAllWeb.post {
+                    val index = viewModel.indexOf(it)
+                    binding.vpAllWeb.setCurrentItem(index, true)
+                    exitChoiceMode()
+                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {

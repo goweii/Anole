@@ -1,5 +1,8 @@
 package per.goweii.anole.utils
 
+import android.content.Context
+import android.os.Build
+
 class UserAgent {
     companion object {
         fun from(userAgentString: String): UserAgent {
@@ -71,6 +74,16 @@ class UserAgent {
             ua.append(")")
         }
         append(ua.toString())
+    }
+
+    fun appendDef(context: Context) = apply {
+        val pm = context.packageManager
+        val appName = pm.getApplicationLabel(context.applicationInfo).toString()
+        val appVersionName = pm.getPackageInfo(context.packageName, 0).versionName
+        val android = "Android ${Build.VERSION.RELEASE}"
+        val sdk = "SDK ${Build.VERSION.SDK_INT}"
+        val model = "MODEL ${Build.MODEL}"
+        append(appName, appVersionName, android, sdk, model)
     }
 
     override fun toString(): String {

@@ -166,6 +166,7 @@ class WebFragment : BaseFragment() {
         }
         progressAbility = ProgressAbility(
             onProgress = {
+                _binding ?: return@ProgressAbility
                 if (binding.pb.max != 100) {
                     binding.pb.max = 100
                 }
@@ -181,14 +182,17 @@ class WebFragment : BaseFragment() {
         )
         pageInfoAbility = PageInfoAbility(
             onReceivedPageUrl = {
+                _binding ?: return@PageInfoAbility
                 binding.ivTopBookmark.isSelected = BookmarkManager.getInstance(requireContext())
                     .find(it ?: "") != null
             },
             onReceivedPageTitle = {
+                _binding ?: return@PageInfoAbility
                 binding.tvTitle.text = it ?: Url.parse(webKernel.url).host ?: ""
                 binding.tvTopTitle.text = it ?: Url.parse(webKernel.url).host ?: ""
             },
             onReceivedPageIcon = {
+                _binding ?: return@PageInfoAbility
                 if (it != null) {
                     binding.ivLogo.setImageBitmap(it)
                     binding.ivTopLogo.setImageBitmap(it)
@@ -200,6 +204,7 @@ class WebFragment : BaseFragment() {
         )
         backForwardIconAbility = BackForwardIconAbility(
             canGoBack = {
+                _binding ?: return@BackForwardIconAbility
                 if (it) {
                     binding.ivBack.setImageResource(R.drawable.ic_back)
                     binding.ivBack.isEnabled = true
@@ -217,6 +222,7 @@ class WebFragment : BaseFragment() {
                 }
             },
             canGoForward = {
+                _binding ?: return@BackForwardIconAbility
                 binding.ivForward.isEnabled = it
                 binding.ivForward.animate().alpha(if (it) 1F else 0.6F).start()
             }
@@ -267,7 +273,6 @@ class WebFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         onBackPressedCallback.isEnabled = true
-        webKernel.resumeTimers()
         webKernel.onResume()
         webKernel.settings.apply {
             javaScriptEnabled = true
@@ -290,7 +295,6 @@ class WebFragment : BaseFragment() {
         webKernel.webClient.removeAbility(progressAbility)
         webKernel.webClient.removeAbility(pageInfoAbility)
         webKernel.onPause()
-        webKernel.pauseTimers()
         webKernel.settings.apply {
             javaScriptEnabled = false
         }
