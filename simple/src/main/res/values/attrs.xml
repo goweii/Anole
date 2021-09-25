@@ -31,6 +31,7 @@
     <attr name="dimenShadowOffsetY" format="dimension" />
     <attr name="dimenElevation1" format="dimension" />
     <attr name="dimenIconLineWidth" format="dimension" />
+    <attr name="dimenDividerSize" format="dimension" />
 
     <attr name="textSizeHeadline1" format="dimension" />
     <attr name="textSizeHeadline2" format="dimension" />

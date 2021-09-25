@@ -7,7 +7,7 @@
     <color name="colorBackground">#F5F5F5</color>
     <color name="colorIconBackground">#1A000000</color>
     <color name="colorEditTextBackground">#0F000000</color>
-    <color name="colorDivider">#0D000000</color>
+    <color name="colorDivider">#1A000000</color>
     <color name="colorEditTextHint">#66000000</color>
     <color name="colorShadow">#0D000000</color>
     <color name="colorSurface">#FFFFFF</color>

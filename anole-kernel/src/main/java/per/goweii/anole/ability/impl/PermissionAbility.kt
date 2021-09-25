@@ -22,7 +22,12 @@ class PermissionAbility(
         RequestPermissionsProxy() {
         private var dialog: Dialog? = null
 
-        override fun show(activity: Activity, origin: Uri, permissions: Array<String>) {
+        override fun show(
+            activity: Activity,
+            kernel: WebKernel,
+            origin: Uri,
+            permissions: Array<String>
+        ) {
             dialog?.dismiss()
             val permissionSysList = arrayListOf<String>()
             val permissionResList = arrayListOf<String>()
@@ -162,8 +167,9 @@ class PermissionAbility(
     override fun onPermissionRequest(request: PermissionRequest?): Boolean {
         val mainHandler = mainHandler ?: return super.onPermissionRequest(request)
         val activity = activity ?: return super.onPermissionRequest(request)
+        val kernel = kernel ?: return super.onPermissionRequest(request)
         request ?: return super.onPermissionRequest(request)
-        mainHandler.post { showPermissionRequestDialog(activity, request) }
+        mainHandler.post { showPermissionRequestDialog(activity, kernel, request) }
         return true
     }
 
@@ -193,10 +199,14 @@ class PermissionAbility(
         return true
     }
 
-    private fun showPermissionRequestDialog(activity: Activity, request: PermissionRequest) {
+    private fun showPermissionRequestDialog(
+        activity: Activity,
+        kernel: WebKernel,
+        request: PermissionRequest
+    ) {
         requestPermissionsProxy.onGrant = { request.grant(it) }
         requestPermissionsProxy.onDeny = { request.deny() }
-        requestPermissionsProxy.show(activity, request.origin, request.resources)
+        requestPermissionsProxy.show(activity, kernel, request.origin, request.resources)
     }
 
     private fun cancelPermissionRequestDialog() {
@@ -225,7 +235,12 @@ class PermissionAbility(
         var onGrant: ((granted: Array<String>) -> Unit)? = null
         var onDeny: (() -> Unit)? = null
 
-        abstract fun show(activity: Activity, origin: Uri, permissions: Array<String>)
+        abstract fun show(
+            activity: Activity,
+            kernel: WebKernel,
+            origin: Uri,
+            permissions: Array<String>
+        )
 
         abstract fun cancel()
 

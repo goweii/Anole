@@ -38,6 +38,7 @@
         <item name="dimenIconButtonSizeDefault">@dimen/dimenIconButtonSizeDefault</item>
         <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>
         <item name="dimenIconLineWidth">@dimen/dimenIconLineWidth</item>
+        <item name="dimenDividerSize">@dimen/dimenDividerSize</item>
 
         <item name="textSizeHeadline1">@dimen/textSizeHeadline1</item>
         <item name="textSizeHeadline2">@dimen/textSizeHeadline2</item>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/layer_design_material_dialog_max_width"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="?attr/dimenCornerRadiusDefault"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/dimenCornerRadiusDefault"
+        android:layout_marginBottom="?attr/dimenCornerRadiusDefault"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:gravity="center"
+            android:text="是否允许网页获取以下权限？"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="?attr/textSizeTitle" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenDividerSize"
+            android:layout_marginBottom="?attr/dimenMarginDefault"
+            android:background="?attr/colorDivider" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/layer_request_permissions_cb_resource_video_capture"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:text="@string/anole_resource_video_capture"
+            android:textColor="?colorOnSurface"
+            android:textSize="?attr/textSizeButton"
+            android:visibility="gone"
+            app:buttonTint="?colorPrimary"
+            tools:visibility="visible" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/layer_request_permissions_cb_resource_audio_capture"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:text="@string/anole_resource_audio_capture"
+            android:textColor="?colorOnSurface"
+            android:textSize="?attr/textSizeButton"
+            android:visibility="gone"
+            app:buttonTint="?colorPrimary"
+            tools:visibility="visible" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/layer_request_permissions_cb_resource_protected_media_id"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:text="@string/anole_resource_protected_media_id"
+            android:textColor="?colorOnSurface"
+            android:textSize="?attr/textSizeButton"
+            android:visibility="gone"
+            app:buttonTint="?colorPrimary"
+            tools:visibility="visible" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/layer_request_permissions_cb_resource_midi_sysex"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:layout_marginStart="?attr/dimenMarginDefault"
+            android:layout_marginEnd="?attr/dimenMarginDefault"
+            android:text="@string/anole_resource_midi_sysex"
+            android:textColor="?colorOnSurface"
+            android:textSize="?attr/textSizeButton"
+            android:visibility="gone"
+            app:buttonTint="?colorPrimary"
+            tools:visibility="visible" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenDividerSize"
+            android:layout_marginTop="?attr/dimenMarginDefault"
+            android:background="?attr/colorDivider" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/layer_request_permissions_tv_grant"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="允许"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="?attr/textSizeButton" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenDividerSize"
+            android:background="?attr/colorDivider" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/layer_request_permissions_tv_grant_all"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="全部允许"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="?attr/textSizeButton" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenDividerSize"
+            android:background="?attr/colorDivider" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/layer_request_permissions_tv_deny"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dimenButtonSizeDefault"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="拒绝"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="?attr/textSizeButton" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
