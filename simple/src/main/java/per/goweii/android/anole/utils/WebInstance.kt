@@ -30,15 +30,18 @@ class WebInstance(private val application: Application) {
 
     private val kernels = SparseArray<WebKernel>()
 
-    var onCreateWindow: ((kernelId: Int) -> Unit)? = null
+    var onCreateWindow: ((webToken: WebToken) -> Unit)? = null
     var onCloseWindow: ((kernelId: Int) -> Unit)? = null
 
     init {
         val systemWebInstanceBuilder = SystemWebInstanceBuilder()
-        systemWebInstanceBuilder.onCreateWindow = { kernel ->
-            WebToken(null, true).let {
+        systemWebInstanceBuilder.onCreateWindow = { kernel, parentKernel ->
+            val parentKernelId = kernels.indexOfValue(parentKernel)
+                .takeIf { it >= 0 }
+                ?.let { kernels.keyAt(it) }
+            WebToken(null, parentKernelId = parentKernelId).let {
                 kernels.put(it.kernelId, kernel)
-                onCreateWindow?.invoke(it.kernelId)
+                onCreateWindow?.invoke(it)
             }
         }
         systemWebInstanceBuilder.onCloseWindow = { kernel ->

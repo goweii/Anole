@@ -11,16 +11,19 @@ import java.util.*
  * @see WebInstance
  *
  * @param initialUrl 初始url
- * @param subsidiary 是否是附属窗口，即子窗口，表示由其他窗口通过js等打开的窗口。
- *                   该类型的窗口应该在回退栈为空时触发关闭。
  * @param kernelId 内核id，标识唯一性
+ * @param parentKernelId 父窗口内核id。
+ * @property subsidiary 是否是附属窗口，即子窗口，表示由其他窗口通过js等打开的窗口。
+ *                   该类型的窗口应该在回退栈为空时触发关闭。
  */
 @Parcelize
 data class WebToken(
     val initialUrl: String?,
-    val subsidiary: Boolean = false,
-    val kernelId: Int = UUID.randomUUID().hashCode()
+    val kernelId: Int = UUID.randomUUID().hashCode(),
+    val parentKernelId: Int? = null
 ) : Parcelable {
+    val subsidiary: Boolean get() = parentKernelId != null && parentKernelId != kernelId
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -20,6 +20,7 @@ import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
 import per.goweii.android.anole.listener
 import per.goweii.android.anole.utils.UrlLoadEntry
+import per.goweii.android.anole.utils.WebToken
 import per.goweii.android.anole.web.AllWebFragment
 
 class WindowFragment : BaseFragment() {
@@ -67,7 +68,7 @@ class WindowFragment : BaseFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.newWindowSharedFlow.collect {
-                allWebFragment.createWeb(it ?: getString(R.string.initial_url))
+                allWebFragment.createWeb(WebToken(it))
             }
         }
         findNavController().currentBackStackEntry
@@ -79,7 +80,7 @@ class WindowFragment : BaseFragment() {
                         viewModel.showWeb()
                         binding.root.post {
                             if (it.newWindow) {
-                                allWebFragment.createWeb(it.url)
+                                allWebFragment.createWeb(WebToken(it.url))
                             } else {
                                 allWebFragment.loadOnCurWeb(it.url)
                             }

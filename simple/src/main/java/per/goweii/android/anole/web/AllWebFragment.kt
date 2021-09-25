@@ -55,7 +55,7 @@ class AllWebFragment : BaseFragment() {
             bindGestureForFragment(f)
         }
         WebInstance.getInstance(requireContext()).apply {
-            onCreateWindow = { createWeb(null, it) }
+            onCreateWindow = { createWeb(it) }
             onCloseWindow = { closeWeb(it) }
         }
     }
@@ -97,19 +97,10 @@ class AllWebFragment : BaseFragment() {
             }
         })
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.onTouchSharedFlow.collect {
+            viewModel.switchWebSharedFlow.collect {
                 val index = viewModel.indexOf(it)
                 binding.vpAllWeb.setCurrentItem(index, true)
                 exitChoiceMode()
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.onRemoveSharedFlow.collect {
-                viewModel.removeWeb(it)
-                adapter.notifyDataSetChanged()
-                windowViewModel.windowCountLiveData.apply {
-                    postValue(adapter.itemCount)
-                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -198,13 +189,10 @@ class AllWebFragment : BaseFragment() {
         }
     }
 
-    fun createWeb(initialUrl: String?, kernelId: Int? = null) {
+    fun createWeb(webToken: WebToken) {
         if (isDetached) return
         if (!isAdded) return
-        val initConfig = kernelId
-            ?.let { WebToken(initialUrl, subsidiary = true, kernelId = kernelId) }
-            ?: WebToken(initialUrl)
-        viewModel.addWeb(initConfig)
+        viewModel.addWeb(webToken)
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }

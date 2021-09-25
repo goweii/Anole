@@ -117,7 +117,7 @@ class WebFragment : BaseFragment() {
             )
         )
         binding.webContainer.onTouch = { _ ->
-            allWebViewModel.onTouchedWebFragment(webToken)
+            allWebViewModel.switchWeb(webToken)
         }
         binding.ivBack.setOnClickListener {
             if (webKernel.canGoBack) {
@@ -304,7 +304,7 @@ class WebFragment : BaseFragment() {
 
     private fun initSwipeDismiss() {
         binding.swipeLayout.onDismiss = {
-            allWebViewModel.onRemoveWebFragment(webToken)
+            allWebViewModel.removeWeb(webToken)
         }
         binding.swipeLayout.onCollect = {
             if (!webKernel.url.isNullOrBlank()) {

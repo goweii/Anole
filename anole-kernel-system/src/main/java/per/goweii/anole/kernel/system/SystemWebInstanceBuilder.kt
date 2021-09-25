@@ -19,7 +19,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder {
         private var hasSetDataDirectorySuffix = false
     }
 
-    var onCreateWindow: ((kernel: WebKernel) -> Unit)? = null
+    var onCreateWindow: ((kernel: WebKernel, parentKernel: WebKernel) -> Unit)? = null
     var onCloseWindow: ((kernel: WebKernel) -> Unit)? = null
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -97,7 +97,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder {
 
             webClient.addAbility(SystemWindowAbility(
                 onCreateWindow = { kernel, _, _ ->
-                    onCreateWindow?.invoke(kernel)
+                    onCreateWindow?.invoke(kernel, this)
                 },
                 onCloseWindow = { kernel ->
                     onCloseWindow?.invoke(kernel)

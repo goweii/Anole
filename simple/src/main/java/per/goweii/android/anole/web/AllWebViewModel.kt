@@ -19,12 +19,10 @@ class AllWebViewModel(
         const val CURRENT_ITEM = "currentItem"
     }
 
-    private val _onTouchSharedFlow = MutableSharedFlow<WebToken>()
-    val onTouchSharedFlow: SharedFlow<WebToken> = _onTouchSharedFlow
-    private val _onRemoveSharedFlow = MutableSharedFlow<WebToken>()
-    val onRemoveSharedFlow: SharedFlow<WebToken> = _onRemoveSharedFlow
     private val _webTokenListStateFlow = MutableStateFlow(ArrayList<WebToken>())
     val webTokenListStateFlow = _webTokenListStateFlow
+    private val _switchWebSharedFlow = MutableSharedFlow<WebToken>()
+    val switchWebSharedFlow: SharedFlow<WebToken> = _switchWebSharedFlow
 
     var currentItem: Int
         get() = savedStateHandle.get<Int>(CURRENT_ITEM) ?: 0
@@ -34,24 +32,14 @@ class AllWebViewModel(
 
     private val webTokenList get() = _webTokenListStateFlow.value
 
-    fun onTouchedWebFragment(webToken: WebToken) {
-        viewModelScope.launch {
-            _onTouchSharedFlow.emit(webToken)
-        }
-    }
-
-    fun onRemoveWebFragment(webToken: WebToken) {
-        viewModelScope.launch {
-            _onRemoveSharedFlow.emit(webToken)
-        }
-    }
-
     fun indexOf(webToken: WebToken): Int {
         return webTokenList.indexOf(webToken)
     }
 
-    fun indexOf(kernelId: Int): Int {
-        return webTokenList.indexOfFirst { it.kernelId == kernelId }
+    fun switchWeb(webToken: WebToken) {
+        viewModelScope.launch {
+            _switchWebSharedFlow.emit(webToken)
+        }
     }
 
     fun addWeb(webToken: WebToken) {
@@ -64,15 +52,16 @@ class AllWebViewModel(
 
     fun removeWeb(webToken: WebToken) {
         viewModelScope.launch {
-            _webTokenListStateFlow.update {
-                ArrayList(it).apply { remove(webToken) }
+            var removedWebToken: WebToken? = null
+            _webTokenListStateFlow.update { oldList ->
+                val newList = ArrayList(oldList)
+                newList.remove(webToken)
+                removedWebToken = oldList.find { webToken == it }
+                newList
             }
-        }
-    }
-
-    fun removeWebAt(index: Int) {
-        _webTokenListStateFlow.update {
-            ArrayList(it).apply { removeAt(index) }
+            val parentId = removedWebToken?.parentKernelId ?: return@launch
+            webTokenList.find { it.kernelId == parentId }
+                ?.let { switchWeb(it) }
         }
     }
 }
