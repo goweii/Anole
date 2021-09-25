@@ -25,10 +25,12 @@ object Libs {
 
     const val androidxWebkit = "androidx.webkit:webkit:${Versions.androidxWebkit}"
 
-    const val androidxLifecycleViewmodelKtx =
+    const val androidxLifecycleViewModelKtx =
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.androidxLifecycle}"
-    const val androidxLifecycleLivedataKtx =
+    const val androidxLifecycleLiveDataKtx =
         "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.androidxLifecycle}"
+    const val androidxLifecycleLiveDataSavedState =
+        "androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.androidxLifecycle}"
     const val androidxLifecycleRuntimeKtx =
         "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.androidxLifecycle}"
     const val androidxLifecycleCompiler =

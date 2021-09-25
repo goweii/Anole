@@ -3,6 +3,7 @@ package per.goweii.android.anole.web
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +41,7 @@ import per.goweii.anole.ability.impl.BackForwardIconAbility
 import per.goweii.anole.ability.impl.PageInfoAbility
 import per.goweii.anole.ability.impl.ProgressAbility
 import per.goweii.anole.kernel.WebKernel
+import per.goweii.anole.kernel.WebSettings
 import per.goweii.layer.core.Layer
 import per.goweii.layer.core.anim.CommonAnimatorCreator
 import per.goweii.layer.popup.PopupLayer
@@ -45,23 +49,19 @@ import per.goweii.layer.visualeffectview.PopupShadowLayout
 
 class WebFragment : BaseFragment() {
     companion object {
-        private const val ARG_INIT_CONFIG = "init_config"
-
-        fun newInstance(initConfig: WebInitConfig): WebFragment {
+        fun newInstance(webToken: WebToken): WebFragment {
             return WebFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_INIT_CONFIG, initConfig)
+                    putParcelable(WebViewModel.ARG_WEB_TOKEN, webToken)
                 }
             }
         }
     }
 
-    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
-    private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
-    private val allWebViewModel by parentViewModelsByAndroid<AllWebViewModel, AllWebFragment>()
-
-    private lateinit var initConfig: WebInitConfig
-    private lateinit var webKernel: WebKernel
+    private val mainViewModel by activityViewModels<MainViewModel>()
+    private val windowViewModel by parentViewModels<WindowFragment, WindowViewModel>()
+    private val allWebViewModel by parentViewModels<AllWebFragment, AllWebViewModel>()
+    private val webViewModel by viewModels<WebViewModel>()
 
     private var _binding: FragmentWebBinding? = null
     private val binding get() = _binding!!
@@ -69,6 +69,9 @@ class WebFragment : BaseFragment() {
     private lateinit var backForwardIconAbility: BackForwardIconAbility
     private lateinit var pageInfoAbility: PageInfoAbility
     private lateinit var progressAbility: ProgressAbility
+
+    private val webToken: WebToken get() = webViewModel.webToken
+    private val webKernel: WebKernel get() = webViewModel.webKernel
 
     private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -80,28 +83,17 @@ class WebFragment : BaseFragment() {
         }
     }
 
-    val curUrl: String? get() = if (::webKernel.isInitialized) webKernel.url else null
-    val curTitle: String? get() = if (::webKernel.isInitialized) webKernel.title else null
-    val curFavicon: Bitmap? get() = if (::webKernel.isInitialized) webKernel.favicon else null
+    val curUrl: String? get() = webKernel.url
+    val curTitle: String? get() = webKernel.title
+    val curFavicon: Bitmap? get() = webKernel.favicon
 
     fun loadUrl(url: String) {
-        if (::webKernel.isInitialized) {
-            webKernel.loadUrl(url)
-        }
+        webKernel.loadUrl(url)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initConfig = requireArguments().getParcelable(ARG_INIT_CONFIG)!!
-        webKernel = WebInstance.getInstance(requireContext()).obtain(initConfig.kernelId)
-        if (initConfig.kernelId != webKernel.hashCode()) {
-            webKernel.loadUrl(initConfig.initialUrl ?: getString(R.string.initial_url))
-        }
     }
 
     override fun onCreateView(
@@ -111,6 +103,13 @@ class WebFragment : BaseFragment() {
     ): View {
         _binding = FragmentWebBinding.inflate(inflater, container, false)
         initSwipeDismiss()
+        webKernel.settings.forceDark =
+            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> WebSettings.ForceDark.FORCE_DARK_ON
+                Configuration.UI_MODE_NIGHT_NO -> WebSettings.ForceDark.FORCE_DARK_OFF
+                else -> WebSettings.ForceDark.FORCE_DARK_AUTO
+            }
+        webKernel.kernelView.removeFromParent()
         binding.webContainer.addView(
             webKernel.kernelView, ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -118,11 +117,15 @@ class WebFragment : BaseFragment() {
             )
         )
         binding.webContainer.onTouch = { _ ->
-            allWebViewModel.onTouchedWebFragment(initConfig)
+            allWebViewModel.onTouchedWebFragment(webToken)
         }
         binding.ivBack.setOnClickListener {
             if (webKernel.canGoBack) {
                 webKernel.goBack()
+            } else {
+                if (webToken.subsidiary) {
+                    allWebViewModel.removeWeb(webToken)
+                }
             }
         }
         binding.ivForward.setOnClickListener {
@@ -142,7 +145,7 @@ class WebFragment : BaseFragment() {
             windowViewModel.switchChoiceMode(null)
         }
         binding.cvCount.setOnLongClickListener {
-            windowViewModel.loadUrlOnNewWindow(
+            windowViewModel.newWindow(
                 DefHome.getInstance(requireContext()).getDefHome()
             )
             return@setOnLongClickListener true
@@ -197,8 +200,21 @@ class WebFragment : BaseFragment() {
         )
         backForwardIconAbility = BackForwardIconAbility(
             canGoBack = {
-                binding.ivBack.isEnabled = it
-                binding.ivBack.animate().alpha(if (it) 1F else 0.6F).start()
+                if (it) {
+                    binding.ivBack.setImageResource(R.drawable.ic_back)
+                    binding.ivBack.isEnabled = true
+                    binding.ivBack.animate().alpha(1F).start()
+                } else {
+                    if (webToken.subsidiary) {
+                        binding.ivBack.setImageResource(R.drawable.ic_close_window)
+                        binding.ivBack.isEnabled = true
+                        binding.ivBack.animate().alpha(1F).start()
+                    } else {
+                        binding.ivBack.setImageResource(R.drawable.ic_back)
+                        binding.ivBack.isEnabled = false
+                        binding.ivBack.animate().alpha(0.6F).start()
+                    }
+                }
             },
             canGoForward = {
                 binding.ivForward.isEnabled = it
@@ -222,16 +238,6 @@ class WebFragment : BaseFragment() {
                     R.dimen.dimenMarginHalf
                 )
             }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            windowViewModel.goBackOrForwardSharedFlow
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect { webKernel.goBackOrForward(it) }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            windowViewModel.loadUrlSharedFlow
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect { webKernel.loadUrl(it ?: getString(R.string.initial_url)) }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             mainViewModel.reloadFlow
@@ -296,15 +302,9 @@ class WebFragment : BaseFragment() {
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        WebInstance.getInstance(requireContext()).release(initConfig.kernelId)
-        webKernel.destroy()
-    }
-
     private fun initSwipeDismiss() {
         binding.swipeLayout.onDismiss = {
-            allWebViewModel.onRemoveWebFragment(initConfig)
+            allWebViewModel.onRemoveWebFragment(webToken)
         }
         binding.swipeLayout.onCollect = {
             if (!webKernel.url.isNullOrBlank()) {

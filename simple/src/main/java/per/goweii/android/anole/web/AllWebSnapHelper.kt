@@ -32,7 +32,8 @@ class AllWebSnapHelper(
     }
 
     override fun findTargetSnapPosition(
-        layoutManager: RecyclerView.LayoutManager, velocityX: Int,
+        layoutManager: RecyclerView.LayoutManager,
+        velocityX: Int,
         velocityY: Int
     ): Int {
         if (layoutManager !is ScrollVectorProvider) {

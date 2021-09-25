@@ -2,15 +2,15 @@ package per.goweii.android.anole.main
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
 import per.goweii.android.anole.NavGraphMainDirections
 import per.goweii.android.anole.base.BaseActivity
 import per.goweii.android.anole.databinding.ActivityMainBinding
-import per.goweii.android.anole.utils.viewModelsByAndroid
 
 class MainActivity : BaseActivity() {
-    private val viewModel: MainViewModel by viewModelsByAndroid()
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -25,7 +25,7 @@
         <activity
             android:name=".main.MainActivity"
             android:allowBackup="true"
-            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|fontScale|density|locale|layoutDirection|colorMode|fontWeightAdjustment|keyboard|navigation"
             android:exported="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustNothing|stateHidden">

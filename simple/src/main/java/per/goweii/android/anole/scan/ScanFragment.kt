@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentScanBinding
@@ -16,7 +17,6 @@ import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
 import per.goweii.android.anole.utils.UrlLoadEntry
-import per.goweii.android.anole.utils.activityViewModelsByAndroid
 import per.goweii.codex.processor.zxing.ZXingScanProcessor
 
 @SuppressLint("MissingPermission")
@@ -25,7 +25,7 @@ class ScanFragment : BaseFragment() {
         private const val REQ_CODE_CAMERA = 1001
     }
 
-    private val mainViewModel by activityViewModelsByAndroid<MainViewModel>()
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private lateinit var binding: FragmentScanBinding
 
     override fun onCreateView(

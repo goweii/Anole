@@ -18,6 +18,7 @@ class SystemKernelView @JvmOverloads constructor(
     override val webView: WebView = WebView(context)
 
     init {
+        webView.overScrollMode = OVER_SCROLL_NEVER
         addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         setDownloadListener(webClient)
         webView.webViewClient = SystemWebViewClient(webClient)
@@ -246,11 +247,17 @@ class SystemKernelView @JvmOverloads constructor(
     }
 
     override fun setFindListener(listener: FindListener?) {
-        if (listener == null) {
-            webView.setFindListener(null)
-        } else {
-            webView.setFindListener { activeMatchOrdinal, numberOfMatches, isDoneCounting ->
-                listener.onFindResultReceived(activeMatchOrdinal, numberOfMatches, isDoneCounting)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (listener == null) {
+                webView.setFindListener(null)
+            } else {
+                webView.setFindListener { activeMatchOrdinal, numberOfMatches, isDoneCounting ->
+                    listener.onFindResultReceived(
+                        activeMatchOrdinal,
+                        numberOfMatches,
+                        isDoneCounting
+                    )
+                }
             }
         }
     }

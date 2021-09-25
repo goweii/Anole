@@ -1,52 +1,37 @@
 package per.goweii.android.anole.web
 
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import per.goweii.android.anole.utils.WebInitConfig
+import per.goweii.android.anole.utils.WebToken
+import per.goweii.android.anole.utils.WebTokenDiffCallback
 
 class AllWebAdapter(fragment: AllWebFragment) :
     FragmentStateAdapter(fragment.childFragmentManager, fragment.lifecycle) {
-    private val webInitConfigList = arrayListOf<WebInitConfig>()
+    private val webTokenList = arrayListOf<WebToken>()
 
-    fun indexOf(webInitConfig: WebInitConfig): Int {
-        return webInitConfigList.indexOf(webInitConfig)
-    }
-
-    fun indexOf(kernelId: Int): Int {
-        return webInitConfigList.indexOfFirst { it.kernelId == kernelId }
-    }
-
-    fun addWeb(webInitConfig: WebInitConfig) {
-        webInitConfigList.add(webInitConfig)
-        notifyItemInserted(webInitConfigList.lastIndex)
-    }
-
-    fun removeWeb(webInitConfig: WebInitConfig) {
-        val index = webInitConfigList.indexOf(webInitConfig)
-        removeWebAt(index)
-    }
-
-    fun removeWebAt(index: Int) {
-        if (index in webInitConfigList.indices) {
-            webInitConfigList.removeAt(index)
-            notifyItemRemoved(index)
-        }
+    fun submitWebTokens(list: List<WebToken>) {
+        val diffCallback = WebTokenDiffCallback(webTokenList, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        webTokenList.clear()
+        webTokenList.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun getItemCount(): Int {
-        return webInitConfigList.size
+        return webTokenList.size
     }
 
     override fun getItemId(position: Int): Long {
-        return webInitConfigList[position].kernelId.toLong()
+        return webTokenList[position].hashCode().toLong()
     }
 
     override fun containsItem(itemId: Long): Boolean {
-        return webInitConfigList.find { it.kernelId.toLong() == itemId } != null
+        return webTokenList.find { it.hashCode().toLong() == itemId } != null
     }
 
     override fun createFragment(position: Int): Fragment {
-        val initConfig = webInitConfigList[position]
+        val initConfig = webTokenList[position]
         return WebFragment.newInstance(initConfig)
     }
 }

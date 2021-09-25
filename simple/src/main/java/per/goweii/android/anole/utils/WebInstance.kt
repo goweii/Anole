@@ -2,8 +2,11 @@ package per.goweii.android.anole.utils
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.util.SparseArray
 import androidx.annotation.UiThread
+import androidx.core.content.ContextCompat
+import per.goweii.android.anole.R
 import per.goweii.anole.WebFactory
 import per.goweii.anole.ability.impl.*
 import per.goweii.anole.kernel.WebKernel
@@ -27,18 +30,22 @@ class WebInstance(private val application: Application) {
 
     private val kernels = SparseArray<WebKernel>()
 
-    var onCreateWindow: ((kernel: WebKernel) -> Unit)? = null
-    var onCloseWindow: ((kernel: WebKernel) -> Unit)? = null
+    var onCreateWindow: ((kernelId: Int) -> Unit)? = null
+    var onCloseWindow: ((kernelId: Int) -> Unit)? = null
 
     init {
         val systemWebInstanceBuilder = SystemWebInstanceBuilder()
-        systemWebInstanceBuilder.onCreateWindow = {
-            kernels.put(it.hashCode(), it)
-            onCreateWindow?.invoke(it)
+        systemWebInstanceBuilder.onCreateWindow = { kernel ->
+            WebToken(null, true).let {
+                kernels.put(it.kernelId, kernel)
+                onCreateWindow?.invoke(it.kernelId)
+            }
         }
-        systemWebInstanceBuilder.onCloseWindow = {
-            onCloseWindow?.invoke(it)
-            kernels.remove(it.hashCode())
+        systemWebInstanceBuilder.onCloseWindow = { kernel ->
+            kernels.indexOfValue(kernel)
+                .takeIf { it >= 0 }
+                ?.let { kernels.keyAt(it) }
+                ?.let { onCloseWindow?.invoke(it) }
         }
         WebFactory.setInstanceBuilder(systemWebInstanceBuilder)
     }
@@ -67,7 +74,19 @@ class WebInstance(private val application: Application) {
             .registerAbility(FileChooseAbility())
             .registerAbility(ConsoleAbility())
             .registerAbility(PermissionAbility())
-            .registerAbility(CustomErrorPageAbility("errorpages/error.html"))
             .get()
+            .apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val drawable = ContextCompat.getDrawable(application, R.drawable.scrollbar)
+                    webView.scrollBarSize = drawable!!.intrinsicWidth
+                    webView.isVerticalScrollBarEnabled = true
+                    webView.isHorizontalScrollBarEnabled = true
+                    webView.isScrollbarFadingEnabled = true
+                    webView.isNestedScrollingEnabled = true
+                    webView.verticalScrollbarThumbDrawable = drawable
+                    webView.horizontalScrollbarThumbDrawable = drawable
+                    webView.scrollBarFadeDuration = 300
+                }
+            }
     }
 }

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -13,17 +14,16 @@ import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentAllWebBinding
-import per.goweii.android.anole.utils.WebInitConfig
 import per.goweii.android.anole.utils.WebInstance
-import per.goweii.android.anole.utils.parentViewModelsByAndroid
-import per.goweii.android.anole.utils.viewModelsByAndroid
+import per.goweii.android.anole.utils.WebToken
+import per.goweii.android.anole.utils.parentViewModels
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
 import kotlin.math.abs
 
 class AllWebFragment : BaseFragment() {
-    private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
-    private val viewModel by viewModelsByAndroid<AllWebViewModel>()
+    private val windowViewModel by parentViewModels<WindowFragment, WindowViewModel>()
+    private val viewModel by viewModels<AllWebViewModel>()
 
     private var _binding: FragmentAllWebBinding? = null
     private val binding get() = _binding!!
@@ -42,7 +42,11 @@ class AllWebFragment : BaseFragment() {
         binding.vpAllWeb.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
 
-    private var currentItem: Int = -1
+    private var currentItem: Int
+        get() = viewModel.currentItem
+        set(value) {
+            viewModel.currentItem = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +55,8 @@ class AllWebFragment : BaseFragment() {
             bindGestureForFragment(f)
         }
         WebInstance.getInstance(requireContext()).apply {
-            onCreateWindow = {
-                createWeb(null, it.hashCode())
-            }
-            onCloseWindow = {
-                closeWeb(it.hashCode())
-            }
+            onCreateWindow = { createWeb(null, it) }
+            onCloseWindow = { closeWeb(it) }
         }
     }
 
@@ -90,9 +90,6 @@ class AllWebFragment : BaseFragment() {
             adapter = AllWebAdapter(this)
         }
         binding.vpAllWeb.adapter = adapter
-        if (currentItem in 0 until adapter.itemCount) {
-            binding.vpAllWeb.setCurrentItem(currentItem, false)
-        }
         binding.vpAllWeb.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -101,19 +98,30 @@ class AllWebFragment : BaseFragment() {
         })
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onTouchSharedFlow.collect {
-                val index = adapter.indexOf(it)
+                val index = viewModel.indexOf(it)
                 binding.vpAllWeb.setCurrentItem(index, true)
                 exitChoiceMode()
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onRemoveSharedFlow.collect {
-                adapter.removeWeb(it)
+                viewModel.removeWeb(it)
                 adapter.notifyDataSetChanged()
                 windowViewModel.windowCountLiveData.apply {
                     postValue(adapter.itemCount)
                 }
             }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.webTokenListStateFlow.collect {
+                adapter.submitWebTokens(it)
+                windowViewModel.windowCountLiveData.apply {
+                    postValue(adapter.itemCount)
+                }
+            }
+        }
+        if (currentItem in 0 until adapter.itemCount) {
+            binding.vpAllWeb.setCurrentItem(currentItem, false)
         }
     }
 
@@ -193,9 +201,10 @@ class AllWebFragment : BaseFragment() {
     fun createWeb(initialUrl: String?, kernelId: Int? = null) {
         if (isDetached) return
         if (!isAdded) return
-        val initConfig = kernelId?.let { WebInitConfig(initialUrl, kernelId) }
-            ?: WebInitConfig(initialUrl)
-        adapter.addWeb(initConfig)
+        val initConfig = kernelId
+            ?.let { WebToken(initialUrl, subsidiary = true, kernelId = kernelId) }
+            ?: WebToken(initialUrl)
+        viewModel.addWeb(initConfig)
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }
@@ -207,7 +216,7 @@ class AllWebFragment : BaseFragment() {
     fun closeWeb(kernelId: Int) {
         if (isDetached) return
         if (!isAdded) return
-        adapter.removeWeb(WebInitConfig(null, kernelId))
+        viewModel.removeWeb(WebToken(null, kernelId = kernelId))
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }
@@ -226,6 +235,7 @@ class AllWebFragment : BaseFragment() {
     }
 
     fun enterChoiceMode() {
+        if (!::transformer.isInitialized) return
         ValueAnimator.ofFloat(transformer.faction, 1F).apply {
             addUpdateListener {
                 transformer.faction = it.animatedValue as Float
@@ -234,6 +244,7 @@ class AllWebFragment : BaseFragment() {
     }
 
     fun exitChoiceMode() {
+        if (!::transformer.isInitialized) return
         ValueAnimator.ofFloat(transformer.faction, 0F).apply {
             addUpdateListener {
                 transformer.faction = it.animatedValue as Float

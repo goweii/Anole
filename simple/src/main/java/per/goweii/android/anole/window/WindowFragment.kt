@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,17 +20,14 @@ import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
 import per.goweii.android.anole.listener
 import per.goweii.android.anole.utils.UrlLoadEntry
-import per.goweii.android.anole.utils.viewModelsByAndroid
 import per.goweii.android.anole.web.AllWebFragment
 
 class WindowFragment : BaseFragment() {
-    private val viewModel by viewModelsByAndroid<WindowViewModel>()
+    private val viewModel by viewModels<WindowViewModel>()
     private lateinit var binding: FragmentWindowBinding
 
     private lateinit var homeFragment: HomeFragment
     private lateinit var allWebFragment: AllWebFragment
-
-    private var currentFragment: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +43,6 @@ class WindowFragment : BaseFragment() {
         prepareFragments()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.switchChoiceModeSharedFlow.collect {
-                showAllWebFragment()
                 if (it == true) {
                     allWebFragment.enterChoiceMode()
                 } else if (it == false) {
@@ -60,21 +57,17 @@ class WindowFragment : BaseFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showHomeModeSharedFlow.collect {
-                showHomeFragment()
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showWebModeSharedFlow.collect {
-                showAllWebFragment()
+            viewModel.homeStateFlow.collect {
                 if (it) {
-                    allWebFragment.enterChoiceMode()
+                    showHomeFragment()
+                } else {
+                    showAllWebFragment()
                 }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadUrlOnNewWindowSharedFlow.collect {
-                loadUrlOnNewWeb(it)
+            viewModel.newWindowSharedFlow.collect {
+                allWebFragment.createWeb(it ?: getString(R.string.initial_url))
             }
         }
         findNavController().currentBackStackEntry
@@ -83,7 +76,7 @@ class WindowFragment : BaseFragment() {
             ?.apply {
                 observe(viewLifecycleOwner) {
                     if (it != null) {
-                        showAllWebFragment()
+                        viewModel.showWeb()
                         binding.root.post {
                             if (it.newWindow) {
                                 allWebFragment.createWeb(it.url)
@@ -95,30 +88,16 @@ class WindowFragment : BaseFragment() {
                     }
                 }
             }
-        when {
-            HomeFragment::class.java.name == currentFragment -> {
-                showHomeFragment()
-            }
-            AllWebFragment::class.java.name == currentFragment -> {
-                showAllWebFragment()
-            }
-            else -> {
-                viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-                    val args: WindowFragmentArgs by navArgs()
-                    if (!args.initialUrl.isNullOrBlank()) {
-                        showAllWebFragment()
-                        allWebFragment.createWeb(args.initialUrl)
-                    } else {
-                        showHomeFragment()
-                    }
-                }
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+            val args: WindowFragmentArgs by navArgs()
+            if (!args.initialUrl.isNullOrBlank()) {
+                viewModel.newWindow(args.initialUrl)
             }
         }
     }
 
     private fun showHomeFragment() {
         if (homeFragment.isVisible) return
-        currentFragment = HomeFragment::class.java.name
 
         fun runHideWebAnim(finish: () -> Unit) {
             if (!allWebFragment.isVisible) {
@@ -157,7 +136,6 @@ class WindowFragment : BaseFragment() {
 
     private fun showAllWebFragment() {
         if (allWebFragment.isVisible) return
-        currentFragment = AllWebFragment::class.java.name
 
         fun runHideHomeAnim(finish: () -> Unit) {
             if (!homeFragment.isVisible) {
@@ -194,8 +172,6 @@ class WindowFragment : BaseFragment() {
     }
 
     private fun loadUrlOnNewWeb(url: String?) {
-        showAllWebFragment()
-        allWebFragment.createWeb(url ?: getString(R.string.initial_url))
     }
 
     private fun prepareFragments() {

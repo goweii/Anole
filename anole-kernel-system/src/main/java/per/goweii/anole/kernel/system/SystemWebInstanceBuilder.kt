@@ -14,7 +14,7 @@ import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.kernel.WebSettings
 import per.goweii.anole.utils.currentProcessName
 
-open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
+open class SystemWebInstanceBuilder : WebInstanceBuilder {
     companion object {
         private var hasSetDataDirectorySuffix = false
     }
@@ -36,7 +36,7 @@ open class SystemWebInstanceBuilder : WebInstanceBuilder<SystemKernelView> {
         return null
     }
 
-    override fun build(context: Context, parent: WebKernel?): SystemKernelView {
+    override fun build(context: Context, parent: WebKernel?): WebKernel {
         return SystemKernelView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(isWebContentsDebuggingEnabled())

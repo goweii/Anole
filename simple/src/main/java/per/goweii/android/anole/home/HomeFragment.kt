@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -15,15 +16,14 @@ import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
 import per.goweii.android.anole.utils.DefHome
-import per.goweii.android.anole.utils.parentViewModelsByAndroid
-import per.goweii.android.anole.utils.viewModelsByAndroid
+import per.goweii.android.anole.utils.parentViewModels
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel
 
 class HomeFragment : BaseFragment() {
-    private val windowViewModel by parentViewModelsByAndroid<WindowViewModel, WindowFragment>()
-    private val viewModel: HomeViewModel by viewModelsByAndroid()
+    private val windowViewModel by parentViewModels<WindowFragment, WindowViewModel>()
+    private val viewModel: HomeViewModel by viewModels()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -46,7 +46,7 @@ class HomeFragment : BaseFragment() {
         binding.rvBookmark.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvBookmark.adapter = bookmarkAdapter
         bookmarkAdapter?.onClickItem = {
-            windowViewModel.loadUrlOnNewWindow(it.url)
+            windowViewModel.newWindow(it.url)
         }
         bookmarkAdapter?.onLongClickItem = {
             windowViewModel.removeBookmark(it.url)
@@ -60,15 +60,15 @@ class HomeFragment : BaseFragment() {
                     )
                 )
         }
-        binding.ivMenu.setOnClickListener {
+        binding.cvMenu.setOnClickListener {
             findNavController().navigate(
                 WindowFragmentDirections.actionWindowFragmentToMenuDialogFragment()
             )
         }
-        binding.rlWindows.setOnClickListener {
+        binding.cvWindows.setOnClickListener {
             val count = windowViewModel.windowCountLiveData.value?.coerceAtLeast(0) ?: 0
             if (count == 0) {
-                windowViewModel.loadUrlOnNewWindow(
+                windowViewModel.newWindow(
                     DefHome.getInstance(requireContext()).getDefHome()
                 )
             } else {

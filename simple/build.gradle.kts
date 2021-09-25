@@ -61,6 +61,11 @@ dependencies {
 
     implementation(Libs.androidxCoreKtx)
     implementation(Libs.androidxAppcompat)
+    implementation(Libs.androidxLifecycleViewModelKtx)
+    implementation(Libs.androidxLifecycleLiveDataKtx)
+    implementation(Libs.androidxLifecycleLiveDataSavedState)
+    implementation(Libs.androidxLifecycleRuntimeKtx)
+    implementation(Libs.androidxLifecycleCommonJava8)
     implementation(Libs.androidxNavigationFragmentKtx)
     implementation(Libs.androidxNavigationUiKtx)
 

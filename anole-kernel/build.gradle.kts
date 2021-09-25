@@ -46,8 +46,8 @@ dependencies {
     implementation(Libs.androidxCoreKtx)
     implementation(Libs.androidxAppcompat)
 
-    implementation(Libs.androidxLifecycleViewmodelKtx)
-    implementation(Libs.androidxLifecycleLivedataKtx)
+    implementation(Libs.androidxLifecycleViewModelKtx)
+    implementation(Libs.androidxLifecycleLiveDataKtx)
     implementation(Libs.androidxLifecycleRuntimeKtx)
     //kapt(Libs.androidx_lifecycle_compiler)
     implementation(Libs.androidxLifecycleCommonJava8)
