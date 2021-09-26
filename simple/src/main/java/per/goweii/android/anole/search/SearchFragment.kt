@@ -56,6 +56,7 @@ class SearchFragment : BaseFragment() {
             }
         }
         binding.urlInputView.setText(args.url)
+        binding.urlInputView.requestFocusAndShowIm()
     }
 
     override fun onDestroyView() {

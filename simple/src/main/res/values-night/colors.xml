@@ -9,7 +9,7 @@
     <color name="colorEditTextBackground">#1AFFFFFF</color>
     <color name="colorDivider">#4D000000</color>
     <color name="colorEditTextHint">#66FFFFFF</color>
-    <color name="colorShadow">#4D3F51B5</color>
+    <color name="colorShadow">#4D000000</color>
     <color name="colorSurface">#222222</color>
     <color name="colorSurfaceAbove">#1AFFFFFF</color>
     <color name="colorOnPrimary">#E6000000</color>

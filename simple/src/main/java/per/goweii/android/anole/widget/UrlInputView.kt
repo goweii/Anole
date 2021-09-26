@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.doOnAttach
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -68,6 +69,14 @@ class UrlInputView @JvmOverloads constructor(
             val url = Url.parse(text).toUrl()
                 ?: DefSearch.getInstance(context).getDefSearch().getSearchUrl(text)
             onEnter?.invoke(url)
+        }
+    }
+
+    fun requestFocusAndShowIm() {
+        doOnAttach {
+            it.post {
+                etText.requestFocus()
+            }
         }
     }
 
