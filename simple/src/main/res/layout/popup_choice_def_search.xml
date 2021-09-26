@@ -1,37 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<per.goweii.layer.visualeffectview.PopupShadowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<per.goweii.layer.visualeffectview.RoundedShadowLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:popupArrowHeight="16dp"
-    app:popupArrowOffset="32dp"
-    app:popupArrowRadius="3dp"
-    app:popupArrowSide="top"
-    app:popupArrowWidth="20dp"
-    app:popupCornerRadius="?attr/dimenCornerRadiusDefault"
+    app:roundedCornerRadius="?attr/dimenIconButtonSizeHalf"
     app:shadowColor="?attr/colorShadow"
     app:shadowOffsetY="?attr/dimenShadowOffsetY"
     app:shadowRadius="?attr/dimenShadowRadius"
     app:shadowSolidColor="?attr/colorSurface">
 
-    <per.goweii.layer.core.widget.MaxSizeFrameLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/popup_choice_def_search_rv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="300dp">
+        android:clipToPadding="false"
+        android:padding="?attr/dimenMarginThin"
+        tools:ignore="SpeakableTextPresentCheck"
+        tools:itemCount="3"
+        tools:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/rv_item_choice_def_search"
+        tools:orientation="vertical" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/popup_choice_def_search_rv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:padding="8dp"
-            tools:ignore="SpeakableTextPresentCheck"
-            tools:itemCount="3"
-            tools:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/rv_item_choice_def_search"
-            tools:orientation="horizontal" />
-
-    </per.goweii.layer.core.widget.MaxSizeFrameLayout>
-
-</per.goweii.layer.visualeffectview.PopupShadowLayout>
+</per.goweii.layer.visualeffectview.RoundedShadowLayout>

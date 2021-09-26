@@ -1,6 +1,5 @@
 package per.goweii.android.anole.web
 
-import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Configuration
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,8 +20,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.R
@@ -31,7 +27,6 @@ import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWebBinding
 import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
-import per.goweii.android.anole.main.ChoiceDefSearchAdapter
 import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.*
 import per.goweii.android.anole.window.WindowFragment
@@ -42,10 +37,6 @@ import per.goweii.anole.ability.impl.PageInfoAbility
 import per.goweii.anole.ability.impl.ProgressAbility
 import per.goweii.anole.kernel.WebKernel
 import per.goweii.anole.kernel.WebSettings
-import per.goweii.layer.core.Layer
-import per.goweii.layer.core.anim.CommonAnimatorCreator
-import per.goweii.layer.popup.PopupLayer
-import per.goweii.layer.visualeffectview.PopupShadowLayout
 
 class WebFragment : BaseFragment() {
     companion object {
@@ -326,63 +317,6 @@ class WebFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    private fun showChoiceDefSearchPopup(ivIcon: ImageView) {
-        PopupLayer(ivIcon)
-            .setContentView(R.layout.popup_choice_def_search)
-            .setContentAnimator(
-                object : Layer.AnimatorCreator {
-                    override fun createInAnimator(view: View): Animator {
-                        view as PopupShadowLayout
-                        return CommonAnimatorCreator()
-                            .addAttr(
-                                CommonAnimatorCreator.ScaleAttr()
-                                    .setPivot(view.realArrowOffset, 0F)
-                                    .setFrom(0.2F, 0.2F)
-                                    .setTo(1F, 1F)
-                            )
-                            .addAttr(
-                                CommonAnimatorCreator.AlphaAttr()
-                                    .from(0F)
-                                    .to(1F)
-                            )
-                            .createInAnimator(view)
-                    }
-
-                    override fun createOutAnimator(view: View): Animator {
-                        view as PopupShadowLayout
-                        return CommonAnimatorCreator()
-                            .addAttr(
-                                CommonAnimatorCreator.ScaleAttr()
-                                    .setPivot(view.realArrowOffset, 0F)
-                                    .setFrom(0.2F, 0.2F)
-                                    .setTo(1F, 1F)
-                            )
-                            .addAttr(
-                                CommonAnimatorCreator.AlphaAttr()
-                                    .from(0F)
-                                    .to(1F)
-                            )
-                            .createOutAnimator(view)
-                    }
-                }
-            )
-            .addOnBindDataListener { layer ->
-                val rv = layer.requireView<RecyclerView>(R.id.popup_choice_def_search_rv)
-                rv.layoutManager = LinearLayoutManager(
-                    rv.context, LinearLayoutManager.HORIZONTAL, false
-                )
-                rv.adapter = ChoiceDefSearchAdapter(
-                    DefSearch.getInstance(requireContext()).getAllSearch()
-                ).apply {
-                    onChoice = {
-                        DefSearch.getInstance(requireContext()).saveDefSearch(it)
-                        layer.dismiss()
-                    }
-                }
-            }
-            .show()
     }
 
     var onGesture: ((e: MotionEvent) -> Unit)? = null

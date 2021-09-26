@@ -21,49 +21,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_back"
-        android:layout_width="wrap_content"
+    <per.goweii.android.anole.widget.UrlInputView
+        android:id="@+id/url_input_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="?attr/dimenIconButtonPaddingDefault"
-        android:src="@drawable/ic_back"
-        app:layout_constraintBottom_toBottomOf="@+id/et_search"
-        app:layout_constraintEnd_toStartOf="@+id/et_search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/et_search" />
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingTop="?attr/dimenMarginHalf"
-        android:paddingBottom="?attr/dimenMarginHalf"
+        android:layout_marginStart="?attr/dimenMarginDefault"
+        android:layout_marginEnd="?attr/dimenMarginDefault"
         android:background="@drawable/shape_edittext_bg"
-        android:gravity="center_vertical"
-        android:hint="@string/search_hint"
-        android:importantForAutofill="auto"
-        android:inputType="text"
-        android:paddingStart="?attr/dimenMarginDefault"
-        android:paddingEnd="?attr/dimenMarginDefault"
-        android:singleLine="true"
-        android:textAppearance="?attr/textAppearanceBody1"
-        android:textColor="?attr/colorOnSurface"
-        android:textColorHint="?attr/colorEditTextHint"
         android:transitionName="@string/transition_name_search"
         app:layout_constraintBottom_toBottomOf="@+id/v_action_bar"
-        app:layout_constraintEnd_toStartOf="@+id/iv_search"
-        app:layout_constraintStart_toEndOf="@+id/iv_back"
-        app:layout_constraintTop_toTopOf="@+id/v_action_bar" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="?attr/dimenIconButtonPaddingDefault"
-        android:src="@drawable/ic_search"
-        app:layout_constraintBottom_toBottomOf="@+id/et_search"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/et_search"
-        app:layout_constraintTop_toTopOf="@+id/et_search" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/v_action_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

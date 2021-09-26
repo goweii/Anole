@@ -21,10 +21,13 @@
     <attr name="dimenMarginBig" format="dimension" />
     <attr name="dimenMarginDefault" format="dimension" />
     <attr name="dimenMarginHalf" format="dimension" />
+    <attr name="dimenMarginThin" format="dimension" />
     <attr name="dimenCornerRadiusDefault" format="dimension" />
     <attr name="dimenCornerRadiusBig" format="dimension" />
     <attr name="dimenButtonSizeDefault" format="dimension" />
+    <attr name="dimenButtonSizeHalf" format="dimension" />
     <attr name="dimenIconButtonSizeDefault" format="dimension" />
+    <attr name="dimenIconButtonSizeHalf" format="dimension" />
     <attr name="dimenIconButtonPaddingDefault" format="dimension" />
     <attr name="dimenNavIconBtnSize" format="dimension" />
     <attr name="dimenShadowRadius" format="dimension" />

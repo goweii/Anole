@@ -4,10 +4,13 @@
     <dimen name="dimenMarginBig">32dp</dimen>
     <dimen name="dimenMarginDefault">16dp</dimen>
     <dimen name="dimenMarginHalf">8dp</dimen>
+    <dimen name="dimenMarginThin">4dp</dimen>
     <dimen name="dimenCornerRadiusDefault">12dp</dimen>
     <dimen name="dimenCornerRadiusBig">24dp</dimen>
     <dimen name="dimenButtonSizeDefault">48dp</dimen>
+    <dimen name="dimenButtonSizeHalf">24dp</dimen>
     <dimen name="dimenIconButtonSizeDefault">48dp</dimen>
+    <dimen name="dimenIconButtonSizeHalf">24dp</dimen>
     <dimen name="dimenIconButtonPaddingDefault">12dp</dimen>
     <dimen name="dimenNavIconBtnSize">48dp</dimen>
     <dimen name="dimenShadowRadius">12dp</dimen>

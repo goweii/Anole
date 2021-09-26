@@ -1,21 +1,27 @@
 package per.goweii.android.anole.widget
 
+import android.animation.Animator
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.LayoutUrlInputBinding
-import per.goweii.android.anole.home.Bookmark
+import per.goweii.android.anole.main.ChoiceDefSearchAdapter
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
+import per.goweii.layer.core.Layer
+import per.goweii.layer.core.anim.AnimatorHelper
+import per.goweii.layer.popup.PopupLayer
 
 class UrlInputView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -33,44 +39,20 @@ class UrlInputView @JvmOverloads constructor(
 
     private val currText: String? get() = etText.text?.toString()
 
-    var icon: Bitmap? = null
-        private set
-    var url: String? = null
-        private set
-    var title: String? = null
-        private set
-    var collected: Boolean = false
-        private set
-
     var onEnter: ((url: String) -> Unit)? = null
-    var onSearch: ((key: String) -> Unit)? = null
-    var onCollect: ((bookmark: Bookmark) -> Unit)? = null
-    var onUnCollect: ((url: String) -> Unit)? = null
-    var onDefSearch: ((ImageView) -> Unit)? = null
 
     init {
-        etText.setSelectAllOnFocus(true)
         etText.imeOptions = EditorInfo.IME_ACTION_GO
         etText.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_GO -> {
-                    val url = Url.parse(currText)
-                    if (url.maybeUrl) {
-                        onEnter?.invoke(url.toUrl()!!)
-                    } else {
-                        if (!currText.isNullOrBlank()) {
-                            onSearch?.invoke(currText!!)
-                        }
-                    }
+                    ivAction.performClick()
                 }
             }
-            etText.clearFocus()
             return@setOnEditorActionListener true
         }
         etText.setOnFocusChangeListener { _, hasFocus ->
-            setText()
-            setIcon()
-            setAction()
+            updateState()
             if (hasFocus) {
                 inputMethodManager.showSoftInput(etText, 0)
             } else {
@@ -78,111 +60,96 @@ class UrlInputView @JvmOverloads constructor(
             }
         }
         etText.addTextChangedListener {
-            setIcon()
-            setAction()
+            updateState()
         }
         ivAction.setOnClickListener {
-            if (etText.isFocused) {
-                etText.text = null
-            } else {
-                if (!url.isNullOrBlank()) {
-                    if (it.isSelected) {
-                        onUnCollect?.invoke(url!!)
-                    } else {
-                        onCollect?.invoke(Bookmark(url!!, title, icon))
-                    }
-                }
-            }
+            val text = currText ?: return@setOnClickListener
+            etText.clearFocus()
+            val url = Url.parse(text).toUrl()
+                ?: DefSearch.getInstance(context).getDefSearch().getSearchUrl(text)
+            onEnter?.invoke(url)
         }
     }
 
-    fun setIcon(icon: Bitmap?) {
-        this.icon = icon
-        setIcon()
+    fun setText(text: String?) {
+        etText.setText(text)
     }
 
-    fun setTitle(title: String?) {
-        this.title = title
-        setText()
+    private fun updateState() {
+        updateIcon()
+        updateAction()
     }
 
-    fun setUrl(url: String?) {
-        this.url = url
-        setText()
-    }
-
-    fun setCollected(collected: Boolean) {
-        this.collected = collected
-        setAction()
-    }
-
-    private fun setText() {
-        if (etText.isFocused) {
-            etText.setText(url)
+    private fun updateIcon() {
+        val url = Url.parse(currText)
+        if (url.maybeUrl) {
+            ivIcon.setImageResource(R.drawable.ic_browser)
+            ivIcon.setOnClickListener(null)
         } else {
-            if (title.isNullOrBlank()) {
-                val url = Url.parse(url)
-                etText.setText(url.host)
-            } else {
-                val url = Url.parse(title)
-                if (url.isUrl) {
-                    etText.setText(url.host)
-                } else {
-                    etText.setText(title)
+            DefSearch.getInstance(context).getDefSearch().apply {
+                when {
+                    logoRes != null -> ivIcon.load(logoRes!!)
+                    logoUrl != null -> ivIcon.load(logoUrl!!)
+                    else -> ivIcon.setImageResource(R.drawable.ic_browser)
                 }
+            }
+            ivIcon.setOnClickListener {
+                showChoiceDefSearchPopup()
             }
         }
     }
 
-    private fun setIcon() {
-        if (etText.isFocused) {
+    private fun updateAction() {
+        if (currText.isNullOrEmpty()) {
+            ivAction.setImageDrawable(null)
+        } else {
             val url = Url.parse(currText)
             if (url.maybeUrl) {
-                ivIcon.setImageResource(R.drawable.ic_browser)
-                ivIcon.setOnClickListener(null)
+                ivAction.setImageResource(R.drawable.ic_enter)
             } else {
-                DefSearch.getInstance(context).getDefSearch().apply {
-                    when {
-                        logoRes != null -> ivIcon.load(logoRes!!)
-                        logoUrl != null -> ivIcon.load(logoUrl!!)
-                        else -> ivIcon.setImageResource(R.drawable.ic_browser)
-                    }
-                }
-                ivIcon.setOnClickListener {
-                    onDefSearch?.invoke(ivIcon)
-                }
-            }
-        } else {
-            ivIcon.setOnClickListener(null)
-            if (icon != null) {
-                ivIcon.setImageBitmap(icon)
-            } else {
-                val url = Url.parse(url)
-                if (url.maybeUrl) {
-                    if (url.isHttps) {
-                        ivIcon.setImageResource(R.drawable.ic_safe)
-                    } else {
-                        ivIcon.setImageResource(R.drawable.ic_harm)
-                    }
-                } else {
-                    ivIcon.setImageResource(R.drawable.ic_browser)
-                }
+                ivAction.setImageResource(R.drawable.ic_search)
             }
         }
     }
 
-    private fun setAction() {
-        if (etText.isFocused) {
-            ivAction.setImageResource(R.drawable.ic_clear)
-        } else {
-            val url = Url.parse(url)
-            if (url.maybeUrl) {
-                ivAction.setImageResource(R.drawable.selector_collect)
-                ivAction.isSelected = collected
-            } else {
-                ivAction.setImageDrawable(null)
-            }
-        }
-    }
+    private fun showChoiceDefSearchPopup() {
+        val offsetY = (context.resources.getDimensionPixelSize(R.dimen.dimenShadowRadius)
+                + context.resources.getDimensionPixelSize(R.dimen.dimenShadowOffsetY)
+                + context.resources.getDimensionPixelSize(R.dimen.dimenMarginThin) * 2)
+        PopupLayer(ivIcon)
+            .setHorizontal(PopupLayer.Align.Horizontal.CENTER)
+            .setVertical(PopupLayer.Align.Vertical.ALIGN_TOP)
+            .setDirection(PopupLayer.Align.Direction.VERTICAL)
+            .setInside(false)
+            .setOffsetYpx(-offsetY.toFloat())
+            .setContentView(R.layout.popup_choice_def_search)
+            .setContentAnimator(object : Layer.AnimatorCreator {
+                override fun createInAnimator(view: View): Animator {
+                    return AnimatorHelper.createZoomAlphaInAnim(view, view.width / 2, offsetY)
+                }
 
+                override fun createOutAnimator(view: View): Animator {
+                    return AnimatorHelper.createZoomAlphaOutAnim(view, view.width / 2, offsetY)
+                }
+            })
+            .addOnBindDataListener { layer ->
+                val rv = layer.requireView<RecyclerView>(R.id.popup_choice_def_search_rv)
+                rv.layoutManager = LinearLayoutManager(
+                    rv.context, LinearLayoutManager.VERTICAL, false
+                )
+                val allSelectList = arrayListOf<DefSearch.CustomSearch>()
+                allSelectList.addAll(DefSearch.getInstance(context).getAllSearch())
+                val defSearch = DefSearch.getInstance(context).getDefSearch()
+                allSelectList.remove(defSearch)
+                allSelectList.add(0, defSearch)
+                rv.adapter = ChoiceDefSearchAdapter(allSelectList).apply {
+                    onChoice = {
+                        DefSearch.getInstance(context).saveDefSearch(it)
+                        updateState()
+                        layer.dismiss()
+                    }
+                }
+            }
+            .show()
+    }
 }
