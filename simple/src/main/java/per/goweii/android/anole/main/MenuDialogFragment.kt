@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -46,6 +48,17 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
                 dialog.window?.setDimAmount(dimAmount)
             }
         })
+        dialog.setOnShowListener {
+            val window = dialog.window!!
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+            val systemUiVisibility = window.decorView.systemUiVisibility
+            window.decorView.systemUiVisibility = systemUiVisibility or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        }
         return dialog
     }
 

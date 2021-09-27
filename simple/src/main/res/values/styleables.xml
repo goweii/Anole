@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WindowInsetsView">
+        <attr name="windowInsets" format="flags">
+            <flag name="statusBars" value="0x001" />
+            <flag name="navigationBars" value="0x002" />
+            <flag name="captionBar" value="0x004" />
+            <flag name="ime" value="0x008" />
+            <flag name="systemGestures" value="0x010" />
+            <flag name="mandatorySystemGestures" value="0x020" />
+            <flag name="tappableElement" value="0x040" />
+            <flag name="displayCutout" value="0x080" />
+            <flag name="systemBars" value="0x007" />
+        </attr>
+    </declare-styleable>
+</resources>

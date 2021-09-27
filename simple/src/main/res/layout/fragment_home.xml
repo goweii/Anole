@@ -64,82 +64,92 @@
         tools:listitem="@layout/item_bookmark"
         tools:spanCount="5" />
 
-    <androidx.constraintlayout.widget.Guideline
+    <per.goweii.android.anole.widget.WindowInsetsView
         android:id="@+id/guideline_bottom_bar"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="?attr/actionBarSize" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_menu"
-        android:layout_width="?attr/dimenNavIconBtnSize"
-        android:layout_height="?attr/dimenNavIconBtnSize"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="9999dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cv_windows"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_menu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackground"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_menu"
-            tools:ignore="ContentDescription" />
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_windows"
-        android:layout_width="?attr/dimenNavIconBtnSize"
-        android:layout_height="?attr/dimenNavIconBtnSize"
-        android:layout_marginEnd="?attr/dimenMarginHalf"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="9999dp"
-        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cv_menu"
-        app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
+        app:layout_constraintStart_toStartOf="parent"
+        app:windowInsets="navigationBars">
 
-        <RelativeLayout
-            android:id="@+id/rl_windows"
-            android:background="?attr/selectableItemBackground"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?attr/actionBarSize">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_windows"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_windows"
-                tools:ignore="ContentDescription" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_menu"
+                android:layout_width="?attr/dimenNavIconBtnSize"
+                android:layout_height="?attr/dimenNavIconBtnSize"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="9999dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cv_windows"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_windows_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/iv_windows"
-                android:layout_alignBottom="@+id/iv_windows"
-                android:layout_gravity="center"
-                android:layout_marginEnd="-1dp"
-                android:layout_marginBottom="-1dp"
-                android:background="?attr/colorSurface"
-                android:includeFontPadding="false"
-                android:text="@string/add_window"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold"
-                android:typeface="monospace" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_menu"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_menu"
+                    tools:ignore="ContentDescription" />
 
-        </RelativeLayout>
+            </androidx.cardview.widget.CardView>
 
-    </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_windows"
+                android:layout_width="?attr/dimenNavIconBtnSize"
+                android:layout_height="?attr/dimenNavIconBtnSize"
+                android:layout_marginEnd="?attr/dimenMarginHalf"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="9999dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cv_menu"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RelativeLayout
+                    android:id="@+id/rl_windows"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_windows"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_windows"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_windows_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/iv_windows"
+                        android:layout_alignBottom="@+id/iv_windows"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="-1dp"
+                        android:layout_marginBottom="-1dp"
+                        android:background="?attr/colorSurface"
+                        android:includeFontPadding="false"
+                        android:text="@string/add_window"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold"
+                        android:typeface="monospace" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </per.goweii.android.anole.widget.WindowInsetsView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
