@@ -2,7 +2,7 @@ package per.goweii.android.anole.web
 
 import android.view.View
 import androidx.annotation.FloatRange
-import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.viewpager2.widget.ViewPager2
 import per.goweii.android.anole.R
 import per.goweii.android.anole.widget.SwipeActionLayout
@@ -32,13 +32,13 @@ class WebPageTransformer(
         page.translationX = -(page.width - (page.width * scale) - gap) * position
         val swipeActionLayout = page.findViewById<SwipeActionLayout>(R.id.swipe_layout)
         val webContainer = page.findViewById<WebContainer>(R.id.web_container)
-        val motionLayout = page.findViewById<MotionLayout>(R.id.motion_layout)
-        motionLayout.elevation = elevation
-        val outlineProvider = WindowOutlineProvider.attachToView(motionLayout)
+        val constraintLayout = page.findViewById<ConstraintLayout>(R.id.constraint_layout)
+        constraintLayout.elevation = elevation
+        val outlineProvider = WindowOutlineProvider.attachToView(constraintLayout)
         outlineProvider.update {
             outlineTopPadding = webContainer.top * faction.coerceAtLeast(0F)
             outlineBottomPadding =
-                (motionLayout.height - webContainer.bottom) * faction.coerceAtLeast(0F)
+                (constraintLayout.height - webContainer.bottom) * faction.coerceAtLeast(0F)
             outlineCornerRadius = cornerRadius * faction
         }
         when (faction) {

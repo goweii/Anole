@@ -22,17 +22,17 @@
         <action
             android:id="@+id/action_windowFragment_to_searchFragment"
             app:destination="@id/searchFragment"
-            app:enterAnim="@anim/zoom_big_enter"
-            app:exitAnim="@anim/no_anim"
-            app:popEnterAnim="@anim/no_anim"
-            app:popExitAnim="@anim/zoom_small_exit" />
+            app:enterAnim="@anim/bottom_alpha_enter"
+            app:exitAnim="@anim/zoom_small_exit"
+            app:popEnterAnim="@anim/zoom_big_enter"
+            app:popExitAnim="@anim/bottom_alpha_exit" />
         <action
             android:id="@+id/action_windowFragment_to_settingFragment"
             app:destination="@id/settingFragment"
-            app:enterAnim="@anim/zoom_big_enter"
-            app:exitAnim="@anim/no_anim"
-            app:popEnterAnim="@anim/no_anim"
-            app:popExitAnim="@anim/zoom_small_exit" />
+            app:enterAnim="@anim/right_alpha_enter"
+            app:exitAnim="@anim/zoom_small_exit"
+            app:popEnterAnim="@anim/zoom_big_enter"
+            app:popExitAnim="@anim/right_alpha_exit" />
         <action
             android:id="@+id/action_windowFragment_to_scanFragment"
             app:destination="@id/scanActivity"

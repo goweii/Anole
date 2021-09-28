@@ -69,7 +69,11 @@ class WebFragment : BaseFragment() {
             if (webKernel.canGoBack) {
                 webKernel.goBack()
             } else {
-                windowViewModel.showHome()
+                if (webToken.subsidiary) {
+                    allWebViewModel.removeWeb(webToken)
+                } else {
+                    windowViewModel.showHome()
+                }
             }
         }
     }
@@ -226,7 +230,6 @@ class WebFragment : BaseFragment() {
         view.doOnAttach {
             val topInset = ViewCompat.getRootWindowInsets(view)
                 ?.getInsets(WindowInsetsCompat.Type.systemBars())?.top ?: 0
-            binding.vStatusBar.layoutParams.height = topInset
             binding.llTop.layoutParams?.let { lp ->
                 lp as ViewGroup.MarginLayoutParams
                 lp.topMargin = topInset - resources.getDimensionPixelSize(

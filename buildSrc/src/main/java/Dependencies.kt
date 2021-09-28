@@ -40,6 +40,7 @@ object Libs {
 
     const val constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.0"
     const val material = "com.google.android.material:material:1.4.0"
+    const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
 
     const val coil = "io.coil-kt:coil:1.3.2"
 

@@ -74,6 +74,7 @@ dependencies {
 
     implementation(Libs.constraintlayout)
     implementation(Libs.material)
+    implementation(Libs.flexbox)
 
     implementation(Libs.coil)
 

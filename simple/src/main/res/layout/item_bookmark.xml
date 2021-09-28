@@ -19,7 +19,7 @@
             android:id="@+id/iv_logo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?attr/selectableItemBackground"
             android:padding="?attr/dimenIconButtonPaddingDefault"
             android:scaleType="fitCenter"
             tools:src="@drawable/ic_bookmark" />

@@ -2,21 +2,21 @@ package per.goweii.android.anole.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import per.goweii.android.anole.R
 
-class WindowInsetsView @JvmOverloads constructor(
+class WindowInsetsConstraintView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val windowInsetsViewHelper = WindowInsetsViewHelper(this)
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.WindowInsetsView)
+        context.obtainStyledAttributes(attrs, R.styleable.WindowInsetsConstraintView)
             .use { typedArray ->
                 windowInsetsViewHelper.windowInsets =
-                    typedArray.getInt(R.styleable.WindowInsetsView_windowInsets, 0)
+                    typedArray.getInt(R.styleable.WindowInsetsConstraintView_windowInsets, 0)
             }
     }
 }

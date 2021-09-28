@@ -25,7 +25,7 @@ class MenuAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.root.setOnClickListener {
+            binding.ivIcon.setOnClickListener {
                 list[adapterPosition].action.invoke()
             }
         }

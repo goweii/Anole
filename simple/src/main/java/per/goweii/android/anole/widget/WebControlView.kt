@@ -24,7 +24,7 @@ class WebControlView @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.layout_bottom_nav, this)
-        motionLayout = findViewById(R.id.motion_layout)
+        motionLayout = findViewById(R.id.constraint_layout)
         ivBack = findViewById(R.id.iv_back)
         ivForward = findViewById(R.id.iv_forward)
         ivMenu = findViewById(R.id.iv_menu)

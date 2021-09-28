@@ -57,22 +57,12 @@
 
     </LinearLayout>
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/motion_layout"
+    <per.goweii.android.anole.widget.WindowInsetsConstraintView
+        android:id="@+id/constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorSurface"
-        app:layoutDescription="@xml/layout_bottom_nav_scene">
-
-        <per.goweii.android.anole.widget.WindowInsetsView
-            android:id="@+id/v_status_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:windowInsets="statusBars"
-            tools:layout_height="30dp" />
+        app:windowInsets="systemBars">
 
         <per.goweii.android.anole.widget.WebContainer
             android:id="@+id/web_container"
@@ -81,24 +71,14 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline_bottom_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <per.goweii.android.anole.widget.WindowInsetsView
-            android:id="@+id/insets_bottom"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:windowInsets="navigationBars" />
-
-        <View
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_bottom_bar"
             android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintBottom_toTopOf="@id/insets_bottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="?attr/actionBarSize" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_back"
@@ -108,7 +88,7 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="9999dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -130,7 +110,7 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="9999dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cv_back"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -152,7 +132,7 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="9999dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/cv_home"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -175,7 +155,7 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="9999dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -204,7 +184,7 @@
             android:paddingBottom="?attr/dimenMarginHalf"
             android:singleLine="true"
             android:transitionName="@string/transition_name_search"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/cv_menu"
             app:layout_constraintStart_toEndOf="@+id/cv_forward"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
@@ -218,7 +198,7 @@
             app:cardBackgroundColor="#00000000"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_title"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -239,7 +219,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tv_title"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar">
 
@@ -271,6 +251,6 @@
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_bar"
             tools:progress="5" />
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </per.goweii.android.anole.widget.WindowInsetsConstraintView>
 
 </per.goweii.android.anole.widget.SwipeActionLayout>

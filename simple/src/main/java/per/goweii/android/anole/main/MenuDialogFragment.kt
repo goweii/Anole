@@ -1,6 +1,7 @@
 package per.goweii.android.anole.main
 
 import android.app.Dialog
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -48,6 +49,9 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
                 dialog.window?.setDimAmount(dimAmount)
             }
         })
+        dialog.behavior.isFitToContents = true
+        dialog.behavior.skipCollapsed = true
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         dialog.setOnShowListener {
             val window = dialog.window!!
             WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -74,12 +78,12 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.dialogMenuRv.apply {
-            layoutManager = GridLayoutManager(
-                context,
-                4,
-                GridLayoutManager.VERTICAL,
-                false
-            )
+            layoutManager =
+                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    GridLayoutManager(requireContext(), 6, GridLayoutManager.VERTICAL, false)
+                } else {
+                    GridLayoutManager(requireContext(), 4, GridLayoutManager.VERTICAL, false)
+                }
             adapter = MenuAdapter(buildActions())
         }
     }
@@ -87,6 +91,21 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        _binding?.dialogMenuRv?.let {
+            val lm = it.layoutManager
+            if (lm is GridLayoutManager) {
+                if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    lm.spanCount = 6
+                } else {
+                    lm.spanCount = 4
+                }
+                it.requestLayout()
+            }
+        }
     }
 
     private fun buildActions(): List<MenuAction> {
