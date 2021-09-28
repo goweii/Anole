@@ -65,7 +65,7 @@
         <item name="textSizeMinimum">@dimen/textSizeMinimum</item>
     </style>
 
-    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="enableEdgeToEdge">true</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -79,6 +79,56 @@
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorProgressBar">@color/colorProgressBar</item>
+        <item name="colorBackground">@color/colorBackground</item>
+        <item name="colorIconBackground">@color/colorIconBackground</item>
+        <item name="colorEditTextBackground">@color/colorEditTextBackground</item>
+        <item name="colorDivider">@color/colorDivider</item>
+        <item name="colorEditTextHint">@color/colorEditTextHint</item>
+        <item name="colorShadow">@color/colorShadow</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorSurfaceAbove">@color/colorSurfaceAbove</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurfaceSubWeak">@color/colorOnSurfaceSubWeak</item>
+        <item name="colorOnSurfaceWeak">@color/colorOnSurfaceWeak</item>
+        <item name="colorOnSurfaceWeakest">@color/colorOnSurfaceWeakest</item>
+
+        <item name="dimenShadowOffsetY">@dimen/dimenShadowOffsetY</item>
+        <item name="dimenShadowRadius">@dimen/dimenShadowRadius</item>
+        <item name="dimenMarginBig">@dimen/dimenMarginBig</item>
+        <item name="dimenMarginDefault">@dimen/dimenMarginDefault</item>
+        <item name="dimenMarginHalf">@dimen/dimenMarginHalf</item>
+        <item name="dimenMarginThin">@dimen/dimenMarginThin</item>
+        <item name="dimenCornerRadiusDefault">@dimen/dimenCornerRadiusDefault</item>
+        <item name="dimenCornerRadiusBig">@dimen/dimenCornerRadiusBig</item>
+        <item name="dimenButtonSizeDefault">@dimen/dimenButtonSizeDefault</item>
+        <item name="dimenButtonSizeHalf">@dimen/dimenButtonSizeHalf</item>
+        <item name="dimenNavIconBtnSize">@dimen/dimenNavIconBtnSize</item>
+        <item name="dimenElevation1">@dimen/dimenElevation1</item>
+        <item name="dimenIconButtonSizeDefault">@dimen/dimenIconButtonSizeDefault</item>
+        <item name="dimenIconButtonSizeHalf">@dimen/dimenIconButtonSizeHalf</item>
+        <item name="dimenIconButtonPaddingDefault">@dimen/dimenIconButtonPaddingDefault</item>
+        <item name="dimenIconLineWidth">@dimen/dimenIconLineWidth</item>
+        <item name="dimenDividerSize">@dimen/dimenDividerSize</item>
+
+        <item name="textSizeHeadline1">@dimen/textSizeHeadline1</item>
+        <item name="textSizeHeadline2">@dimen/textSizeHeadline2</item>
+        <item name="textSizeHeadline3">@dimen/textSizeHeadline3</item>
+        <item name="textSizeHeadline4">@dimen/textSizeHeadline4</item>
+        <item name="textSizeHeadline5">@dimen/textSizeHeadline5</item>
+        <item name="textSizeTitle">@dimen/textSizeTitle</item>
+        <item name="textSizeSubtitle">@dimen/textSizeSubtitle</item>
+        <item name="textSizeSmallTitle">@dimen/textSizeSmallTitle</item>
+        <item name="textSizeContent">@dimen/textSizeContent</item>
+        <item name="textSizeButton">@dimen/textSizeButton</item>
+        <item name="textSizeAuxiliary">@dimen/textSizeAuxiliary</item>
+        <item name="textSizeTimestamp">@dimen/textSizeTimestamp</item>
+        <item name="textSizeMinimum">@dimen/textSizeMinimum</item>
     </style>
 
     <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
