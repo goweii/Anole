@@ -17,4 +17,7 @@
     <declare-styleable name="WindowInsetsConstraintView">
         <attr name="windowInsets" />
     </declare-styleable>
+    <declare-styleable name="IconCardView">
+        <attr name="android:src" />
+    </declare-styleable>
 </resources>

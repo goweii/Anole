@@ -10,9 +10,18 @@ class DefSearch(private val application: Application) {
     private val sp by lazy { application.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE) }
 
     private val customSearchList = arrayListOf(
-        CustomSearch("https://www.baidu.com/s?wd=%s").apply { logoRes = R.drawable.ic_baidu },
-        CustomSearch("https://www.google.com/search?q=%s").apply { logoRes = R.drawable.ic_google },
-        CustomSearch("https://www.bing.com/search?q=%s").apply { logoRes = R.drawable.ic_bing },
+        CustomSearch("https://www.baidu.com/s?wd=%s").apply {
+            name = application.getString(R.string.baidu)
+            logoRes = R.drawable.ic_baidu
+        },
+        CustomSearch("https://www.google.com/search?q=%s").apply {
+            name = application.getString(R.string.google)
+            logoRes = R.drawable.ic_google
+        },
+        CustomSearch("https://www.bing.com/search?q=%s").apply {
+            name = application.getString(R.string.bing)
+            logoRes = R.drawable.ic_bing
+        },
     )
 
     fun getAllSearch(): List<CustomSearch> {
@@ -68,6 +77,7 @@ class DefSearch(private val application: Application) {
     data class CustomSearch(
         val url: String
     ) {
+        var name: String? = null
         var logoRes: Int? = null
         var logoUrl: String? = null
 

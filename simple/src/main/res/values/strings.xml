@@ -11,4 +11,8 @@
 
     <string name="transition_name_search" translatable="false">transition_search</string>
 
+    <string name="google">谷歌</string>
+    <string name="baidu">百度</string>
+    <string name="bing">必应</string>
+
 </resources>

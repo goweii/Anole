@@ -7,14 +7,15 @@
     app:windowInsets="systemBars">
 
     <RelativeLayout
+        android:id="@+id/rl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="?attr/dimenIconButtonSizeDefault"
-            android:layout_height="?attr/dimenIconButtonSizeDefault"
+        <per.goweii.android.anole.widget.IconCardView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:scaleType="centerInside"
             android:src="@drawable/ic_back" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -25,6 +26,38 @@
             android:textColor="?attr/colorOnSurface"
             android:textSize="?attr/textSizeTitle"
             android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_def_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:minHeight="?attr/dimenButtonSizeDefault"
+        android:padding="?attr/dimenMarginDefault"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rl_action_bar">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="默认搜索"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="?attr/textSizeContent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_def_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="百度"
+            android:textColor="?attr/colorOnSurfaceSubWeak"
+            android:textSize="?attr/textSizeContent" />
 
     </RelativeLayout>
 

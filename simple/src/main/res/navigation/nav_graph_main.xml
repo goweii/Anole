@@ -62,7 +62,11 @@
         android:id="@+id/settingFragment"
         android:name="per.goweii.android.anole.settings.SettingFragment"
         android:label="SettingFragment"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting">
+        <action
+            android:id="@+id/action_settingFragment_to_selectDefSearchDialogFragment"
+            app:destination="@id/selectDefSearchDialogFragment" />
+    </fragment>
     <fragment
         android:id="@+id/scanActivity"
         android:name="per.goweii.android.anole.scan.ScanFragment"
@@ -73,4 +77,9 @@
         android:name="per.goweii.android.anole.main.MenuDialogFragment"
         android:label="MenuDialogFragment"
         tools:layout="@layout/dialog_menu" />
+    <dialog
+        android:id="@+id/selectDefSearchDialogFragment"
+        android:name="per.goweii.android.anole.settings.SelectDefSearchDialogFragment"
+        android:label="SelectDefSearchDialogFragment"
+        tools:layout="@layout/dialog_select_def_search" />
 </navigation>

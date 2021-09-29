@@ -1,29 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <per.goweii.android.anole.widget.WindowInsetsConstraintView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     app:windowInsets="systemBars">
 
-    <per.goweii.android.anole.widget.WindowInsetsView
-        android:id="@+id/v_status_bar"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_action_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:windowInsets="statusBars"
-        tools:layout_height="30dp" />
-
-    <View
-        android:id="@+id/v_action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/v_status_bar" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="?attr/actionBarSize" />
 
     <per.goweii.android.anole.widget.UrlInputView
         android:id="@+id/url_input_view"
@@ -33,9 +21,9 @@
         android:layout_marginEnd="?attr/dimenMarginDefault"
         android:background="@drawable/shape_edittext_bg"
         android:transitionName="@string/transition_name_search"
-        app:layout_constraintBottom_toBottomOf="@+id/v_action_bar"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_action_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/v_action_bar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </per.goweii.android.anole.widget.WindowInsetsConstraintView>
