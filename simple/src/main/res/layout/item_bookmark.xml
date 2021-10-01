@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="vertical"
-    android:padding="?attr/dimenMarginHalf">
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_logo"
         android:layout_width="?attr/dimenIconButtonSizeDefault"
         android:layout_height="?attr/dimenIconButtonSizeDefault"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="?attr/dimenMarginHalf"
+        android:layout_marginTop="?attr/dimenMarginHalf"
+        android:layout_marginEnd="?attr/dimenMarginHalf"
         app:cardBackgroundColor="?attr/colorSurfaceAbove"
         app:cardCornerRadius="9999dp"
         app:cardElevation="0dp">
@@ -30,7 +34,12 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/cv_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="?attr/dimenMarginHalf"
         android:layout_marginTop="?attr/dimenMarginHalf"
+        android:layout_marginEnd="?attr/dimenMarginHalf"
+        android:layout_marginBottom="?attr/dimenMarginHalf"
         android:ellipsize="end"
         android:gravity="center"
         android:lines="1"
@@ -39,4 +48,16 @@
         android:textSize="?attr/textSizeAuxiliary"
         tools:text="收藏" />
 
-</LinearLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cv_logo"
+        android:layout_alignEnd="@+id/cv_logo"
+        android:layout_marginTop="-5dp"
+        android:layout_marginEnd="-5dp"
+        android:src="@drawable/ic_close_solid"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</RelativeLayout>

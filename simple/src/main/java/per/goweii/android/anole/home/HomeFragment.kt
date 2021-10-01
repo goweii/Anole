@@ -1,10 +1,12 @@
 package per.goweii.android.anole.home
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -28,7 +30,18 @@ class HomeFragment : BaseFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            bookmarkAdapter?.editMode = false
+        }
+    }
+
     private var bookmarkAdapter: BookmarkAdapter? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +57,9 @@ class HomeFragment : BaseFragment() {
         if (bookmarkAdapter == null) {
             bookmarkAdapter = BookmarkAdapter()
         }
+        binding.root.setOnClickListener {
+            bookmarkAdapter?.editMode = false
+        }
         binding.rvBookmark.layoutManager =
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 GridLayoutManager(requireContext(), 6, GridLayoutManager.VERTICAL, false)
@@ -51,10 +67,16 @@ class HomeFragment : BaseFragment() {
                 GridLayoutManager(requireContext(), 4, GridLayoutManager.VERTICAL, false)
             }
         binding.rvBookmark.adapter = bookmarkAdapter
+        bookmarkAdapter?.onEditModeChanged = {
+            onBackPressedCallback.isEnabled = it
+        }
+        bookmarkAdapter?.onItemSwap = { from, to ->
+            viewModel.swapBookmark(from, to)
+        }
         bookmarkAdapter?.onClickItem = {
             windowViewModel.newWindow(it.url)
         }
-        bookmarkAdapter?.onLongClickItem = {
+        bookmarkAdapter?.onRemoveItem = {
             windowViewModel.removeBookmark(it.url)
         }
         binding.tvSearch.setOnClickListener {
@@ -83,18 +105,18 @@ class HomeFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.bookmarkLiveData.collect {
+            viewModel.bookmarkFlow.collect {
                 bookmarkAdapter?.setData(it)
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.addOrUpdateBookmarkSharedFlow.collect {
-                addOrUpdateBookmark(it)
+                viewModel.addBookmark(it)
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             windowViewModel.removeBookmarkSharedFlow.collect {
-                removeBookmark(it)
+                viewModel.removeBookmark(it)
             }
         }
         windowViewModel.windowCountLiveData.observe(viewLifecycleOwner) {
@@ -123,23 +145,6 @@ class HomeFragment : BaseFragment() {
                 }
                 it.requestLayout()
             }
-        }
-    }
-
-    private fun addOrUpdateBookmark(bookmark: Bookmark) {
-        val oldBookmark = BookmarkManager.getInstance(requireContext()).add(bookmark)
-        if (oldBookmark !== bookmark) {
-            bookmarkAdapter?.updateData(bookmark)
-        } else {
-            bookmarkAdapter?.addData(bookmark)
-        }
-    }
-
-    private fun removeBookmark(url: String?) {
-        url ?: return
-        val oldBookmark = BookmarkManager.getInstance(requireContext()).remove(url)
-        if (oldBookmark != null) {
-            bookmarkAdapter?.removeData(oldBookmark)
         }
     }
 }

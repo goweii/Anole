@@ -1,7 +1,6 @@
 package per.goweii.android.anole.home
 
 import android.content.Context
-import android.graphics.Bitmap
 
 class BookmarkManager(context: Context) {
     companion object {
@@ -47,10 +46,6 @@ class BookmarkManager(context: Context) {
         }
         save()
         return bookmark
-    }
-
-    fun add(url: String, title: String, logo: Bitmap?): Bookmark {
-        return add(Bookmark(url, title, logo))
     }
 
     fun add(bookmark: Bookmark): Bookmark {
