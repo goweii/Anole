@@ -44,22 +44,27 @@ class AllWebViewModel(
 
     fun addWeb(webToken: WebToken) {
         viewModelScope.launch {
-            _webTokenListStateFlow.update {
-                ArrayList(it).apply { add(webToken) }
+            _webTokenListStateFlow.update { oldList ->
+                val newList = ArrayList(oldList)
+                val index = oldList.indexOfFirst { webToken.parentKernelId == it.kernelId }
+                    .takeIf { it >= 0 }
+                    ?.let { it + 1 }
+                    ?: oldList.size
+                newList.add(index, webToken)
+                newList
             }
+            switchWeb(webToken)
         }
     }
 
     fun removeWeb(webToken: WebToken) {
         viewModelScope.launch {
-            var removedWebToken: WebToken? = null
             _webTokenListStateFlow.update { oldList ->
                 val newList = ArrayList(oldList)
                 newList.remove(webToken)
-                removedWebToken = oldList.find { webToken == it }
                 newList
             }
-            val parentId = removedWebToken?.parentKernelId ?: return@launch
+            val parentId = webToken.parentKernelId ?: return@launch
             webTokenList.find { it.kernelId == parentId }
                 ?.let { switchWeb(it) }
         }

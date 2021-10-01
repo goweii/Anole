@@ -198,9 +198,6 @@ class AllWebFragment : BaseFragment() {
         windowViewModel.windowCountLiveData.apply {
             postValue(adapter.itemCount)
         }
-        binding.vpAllWeb.post {
-            binding.vpAllWeb.setCurrentItem(adapter.itemCount - 1, true)
-        }
     }
 
     fun closeWeb(kernelId: Int) {
