@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.ItemBookmarkBinding
-import java.util.*
+import per.goweii.android.anole.utils.ext.move
 
 class BookmarkAdapter : RecyclerView.Adapter<BookmarkAdapter.Holder>() {
     private val list = arrayListOf<Bookmark>()
@@ -181,10 +181,10 @@ class BookmarkAdapter : RecyclerView.Adapter<BookmarkAdapter.Holder>() {
         ): Boolean {
             val fromPosition = viewHolder.adapterPosition
             val toPosition = target.adapterPosition
-            Collections.swap(list, fromPosition, toPosition)
-            notifyItemMoved(fromPosition, toPosition)
             val fromBookmark = list[fromPosition]
             val toBookmark = list[toPosition]
+            list.move(fromPosition, toPosition)
+            notifyItemMoved(fromPosition, toPosition)
             onItemSwap?.invoke(fromBookmark, toBookmark)
             return true
         }

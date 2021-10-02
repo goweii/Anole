@@ -16,7 +16,7 @@ import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentAllWebBinding
 import per.goweii.android.anole.utils.WebInstance
 import per.goweii.android.anole.utils.WebToken
-import per.goweii.android.anole.utils.parentViewModels
+import per.goweii.android.anole.utils.ext.parentViewModels
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowViewModel
 import kotlin.math.abs

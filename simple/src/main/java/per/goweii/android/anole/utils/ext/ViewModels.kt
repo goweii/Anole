@@ -1,4 +1,4 @@
-package per.goweii.android.anole.utils
+package per.goweii.android.anole.utils.ext
 
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment

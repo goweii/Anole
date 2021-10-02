@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import per.goweii.android.anole.base.BaseAndroidViewModel
-import java.util.*
+import per.goweii.android.anole.utils.ext.move
 
 class HomeViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val _bookmarkFlow = MutableStateFlow<List<Bookmark>>(emptyList())
@@ -27,17 +27,15 @@ class HomeViewModel(application: Application) : BaseAndroidViewModel(application
         refreshBookmark()
     }
 
-    fun swapBookmark(from: Bookmark, to: Bookmark) {
+    fun swapBookmark(fromBookmark: Bookmark, toBookmark: Bookmark) {
         val list = BookmarkManager.getInstance(getApplication()).get()
-        val fromIndex = list.indexOf(from).takeIf { it >= 0 } ?: return
-        val toIndex = list.indexOf(to).takeIf { it >= 0 } ?: return
-        Collections.swap(list, fromIndex, toIndex)
+        list.move(fromBookmark, toBookmark)
         BookmarkManager.getInstance(getApplication()).save()
     }
 
     fun refreshBookmark() {
         viewModelScope.launch {
-            val list = BookmarkManager.getInstance(getApplication()).get().reversed()
+            val list = BookmarkManager.getInstance(getApplication()).get()
             _bookmarkFlow.emit(list)
         }
     }

@@ -15,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import per.goweii.android.anole.R
 import per.goweii.android.anole.databinding.DialogSelectDefSearchBinding
 import per.goweii.android.anole.utils.DefSearch
-import per.goweii.android.anole.utils.parentViewModels
+import per.goweii.android.anole.utils.ext.parentViewModels
 
 class SelectDefSearchDialogFragment : BottomSheetDialogFragment() {
     private val settingViewModel by parentViewModels<SettingFragment, SettingViewModel>()

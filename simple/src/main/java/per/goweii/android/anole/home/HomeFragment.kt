@@ -19,7 +19,7 @@ import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentHomeBinding
 import per.goweii.android.anole.utils.DefHome
-import per.goweii.android.anole.utils.parentViewModels
+import per.goweii.android.anole.utils.ext.parentViewModels
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel

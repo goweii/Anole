@@ -22,7 +22,7 @@ class BookmarkManager(context: Context) {
     private val sp = context.getSharedPreferences(SP_BOOKMARK, Context.MODE_PRIVATE)
     private val bookmarks = arrayListOf<Bookmark>()
 
-    fun get(): List<Bookmark> {
+    fun get(): MutableList<Bookmark> {
         if (bookmarks.isEmpty()) {
             sp.getStringSet(SP_BOOKMARK_NAME, null)?.forEach { json ->
                 Bookmark.fromJson(json)?.let { bookmark ->
@@ -58,7 +58,7 @@ class BookmarkManager(context: Context) {
             save()
             oldBookmark
         } else {
-            bookmarks.add(bookmark)
+            bookmarks.add(0, bookmark)
             save()
             bookmark
         }

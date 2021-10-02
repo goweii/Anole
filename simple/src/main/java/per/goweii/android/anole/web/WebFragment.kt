@@ -28,7 +28,11 @@ import per.goweii.android.anole.databinding.FragmentWebBinding
 import per.goweii.android.anole.home.Bookmark
 import per.goweii.android.anole.home.BookmarkManager
 import per.goweii.android.anole.main.MainViewModel
-import per.goweii.android.anole.utils.*
+import per.goweii.android.anole.utils.DefHome
+import per.goweii.android.anole.utils.Url
+import per.goweii.android.anole.utils.WebToken
+import per.goweii.android.anole.utils.ext.parentViewModels
+import per.goweii.android.anole.utils.ext.removeFromParent
 import per.goweii.android.anole.window.WindowFragment
 import per.goweii.android.anole.window.WindowFragmentDirections
 import per.goweii.android.anole.window.WindowViewModel

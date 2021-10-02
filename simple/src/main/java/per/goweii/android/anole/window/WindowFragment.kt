@@ -18,9 +18,9 @@ import per.goweii.android.anole.R
 import per.goweii.android.anole.base.BaseFragment
 import per.goweii.android.anole.databinding.FragmentWindowBinding
 import per.goweii.android.anole.home.HomeFragment
-import per.goweii.android.anole.listener
 import per.goweii.android.anole.utils.UrlLoadEntry
 import per.goweii.android.anole.utils.WebToken
+import per.goweii.android.anole.utils.ext.listener
 import per.goweii.android.anole.web.AllWebFragment
 
 class WindowFragment : BaseFragment() {

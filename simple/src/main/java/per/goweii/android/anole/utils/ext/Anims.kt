@@ -1,4 +1,4 @@
-package per.goweii.android.anole
+package per.goweii.android.anole.utils.ext
 
 import android.view.animation.Animation
 
