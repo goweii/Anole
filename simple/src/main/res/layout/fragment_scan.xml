@@ -15,13 +15,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <per.goweii.codex.decorator.finder.wechat.WeChatFinderView
+    <per.goweii.codex.decorator.frozen.FrozenView
+        android:id="@+id/frozen_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <per.goweii.codex.decorator.finder.ios.IOSFinderView
         android:id="@+id/finder_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:finderResultPointInnerColor="?attr/colorPrimary"
-        app:finderResultPointOuterColor="?attr/colorPrimaryDark"
-        app:finderScanLineColor="?attr/colorPrimary"
+        app:finderCircleInnerColor="?attr/colorPrimary"
+        app:finderCornerRadius="15%"
+        app:finderFoundColor="@color/colorPrimary"
+        app:finderIsCircleRadius="8%"
+        app:finderSideLength="2%"
+        app:finderStrokeWidth="3%"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

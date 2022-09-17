@@ -142,7 +142,7 @@ class UrlInputView @JvmOverloads constructor(
                 }
             })
             .addOnBindDataListener { layer ->
-                val rv = layer.requireView<RecyclerView>(R.id.popup_choice_def_search_rv)
+                val rv = layer.requireViewById<RecyclerView>(R.id.popup_choice_def_search_rv)
                 rv.layoutManager = LinearLayoutManager(
                     rv.context, LinearLayoutManager.VERTICAL, false
                 )

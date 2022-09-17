@@ -1,5 +1,3 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     @Suppress("JcenterRepositoryObsolete")
     repositories {
@@ -9,9 +7,9 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.1.0-alpha11")
         classpath(kotlin("gradle-plugin"))
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-alpha08")
+        classpath("com.android.tools.build:gradle:7.1.0")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2")
     }
 }
 
@@ -22,7 +20,6 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { setUrl("https://jitpack.io") }
-        maven { setUrl("https://gitee.com/goweii/maven-repository/raw/master/releases/") }
     }
 }
 

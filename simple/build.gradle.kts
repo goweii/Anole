@@ -84,9 +84,11 @@ dependencies {
     implementation(Libs.codexCore)
     implementation(Libs.codexProcessorZxing)
     implementation(Libs.codexDecoratorFinderWechat)
+    implementation(Libs.codexDecoratorFinderIOS)
     implementation(Libs.codexDecoratorFrozen)
     implementation(Libs.codexDecoratorGesture)
     implementation(Libs.codexDecoratorVibrate)
+    implementation(Libs.codexDecoratorBeep)
 
     implementation(Libs.smartRefreshLayout)
     implementation(Libs.smartRefreshHorizontal)

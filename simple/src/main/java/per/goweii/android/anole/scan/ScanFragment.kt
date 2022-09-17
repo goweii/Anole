@@ -17,6 +17,10 @@ import per.goweii.android.anole.main.MainViewModel
 import per.goweii.android.anole.utils.DefSearch
 import per.goweii.android.anole.utils.Url
 import per.goweii.android.anole.utils.UrlLoadEntry
+import per.goweii.codex.CodeResult
+import per.goweii.codex.decorator.beep.BeepDecorator
+import per.goweii.codex.decorator.gesture.GestureDecorator
+import per.goweii.codex.decorator.vibrate.VibrateDecorator
 import per.goweii.codex.processor.zxing.ZXingScanProcessor
 
 @SuppressLint("MissingPermission")
@@ -34,6 +38,7 @@ class ScanFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentScanBinding.inflate(layoutInflater, container, false)
+        bindScanner()
         return binding.root
     }
 
@@ -42,21 +47,22 @@ class ScanFragment : BaseFragment() {
         binding.ivClose.setOnClickListener {
             findNavController().navigateUp()
         }
+    }
+
+    private fun bindScanner() {
         binding.codeScanner.apply {
             addProcessor(ZXingScanProcessor())
-            addDecorator(binding.finderView)
+            addDecorator(
+                binding.frozenView,
+                binding.finderView,
+                VibrateDecorator(),
+                GestureDecorator(),
+                BeepDecorator()
+            )
             onFound {
-                val text = it.first().text
-                val url = Url.parse(text).toUrl() ?: DefSearch.getInstance(requireContext())
-                    .getDefSearch().getSearchUrl(text)
-                findNavController().apply {
-                    previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("new_url", UrlLoadEntry(url, true))
-                    popBackStack()
-                }
+                handleFount(it)
             }
-            bindToLifecycle(this@ScanFragment.viewLifecycleOwner)
+            bindToLifecycle(viewLifecycleOwner)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -71,6 +77,20 @@ class ScanFragment : BaseFragment() {
         } else {
             binding.codeScanner.startScan()
         }
+    }
+
+    private fun handleFount(list: List<CodeResult>) {
+        val text = list.first().text
+        val url = Url.parse(text).toUrl()
+            ?: DefSearch.getInstance(requireContext()).getDefSearch().getSearchUrl(text)
+        binding.root.postDelayed({
+            findNavController().apply {
+                previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("new_url", UrlLoadEntry(url, true))
+                popBackStack()
+            }
+        }, 600)
     }
 
     override fun onRequestPermissionsResult(

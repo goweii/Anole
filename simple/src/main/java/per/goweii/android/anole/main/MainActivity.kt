@@ -1,5 +1,6 @@
 package per.goweii.android.anole.main
 
+import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -8,6 +9,7 @@ import androidx.navigation.findNavController
 import per.goweii.android.anole.NavGraphMainDirections
 import per.goweii.android.anole.base.BaseActivity
 import per.goweii.android.anole.databinding.ActivityMainBinding
+import per.goweii.android.anole.utils.DefSearch
 
 class MainActivity : BaseActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -29,7 +31,16 @@ class MainActivity : BaseActivity() {
     private fun parseIntentToOpenUrl(intent: Intent) {
         if (intent.action == Intent.ACTION_VIEW) {
             binding.navHostFragmentMain.findNavController()
-                .navigate(NavGraphMainDirections.actionGlobalWindowFragment(intent.data?.toString()))
+                .navigate(NavGraphMainDirections.actionGlobalWindowFragment(intent.dataString))
+        } else if (intent.action == Intent.ACTION_WEB_SEARCH) {
+            binding.navHostFragmentMain.findNavController()
+                .navigate(
+                    NavGraphMainDirections.actionGlobalWindowFragment(
+                        DefSearch.getInstance(this)
+                            .getDefSearch()
+                            .getSearchUrl(intent.getStringExtra(SearchManager.QUERY) ?: "")
+                    )
+                )
         }
     }
 }

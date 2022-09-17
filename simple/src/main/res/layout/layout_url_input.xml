@@ -9,7 +9,7 @@
         android:id="@+id/iv_icon"
         android:layout_width="?attr/dimenButtonSizeDefault"
         android:layout_height="?attr/dimenButtonSizeDefault"
-        android:padding="12dp"
+        android:padding="?attr/dimenIconButtonPaddingDefault"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_browser" />
 
@@ -29,7 +29,7 @@
         android:id="@+id/iv_action"
         android:layout_width="?attr/dimenButtonSizeDefault"
         android:layout_height="?attr/dimenButtonSizeDefault"
-        android:padding="12dp"
+        android:padding="?attr/dimenIconButtonPaddingDefault"
         android:scaleType="fitCenter" />
 
 </LinearLayout>
