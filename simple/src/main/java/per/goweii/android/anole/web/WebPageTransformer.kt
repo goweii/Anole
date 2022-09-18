@@ -5,6 +5,7 @@ import androidx.annotation.FloatRange
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.viewpager2.widget.ViewPager2
 import per.goweii.android.anole.R
+import per.goweii.android.anole.utils.ScreenRoundedCornerUtils
 import per.goweii.android.anole.widget.SwipeActionLayout
 import per.goweii.android.anole.widget.WebContainer
 
@@ -15,7 +16,15 @@ class WebPageTransformer(
     private val gap: Float,
     private val cornerRadius: Float
 ) : ViewPager2.PageTransformer {
+    private var screenRoundedCornerRadius: Float = 0F
+
     var viewPager: ViewPager2? = null
+        set(value) {
+            screenRoundedCornerRadius = value?.let {
+                ScreenRoundedCornerUtils.getScreenRoundedCornerRadius(value)
+            } ?: 0F
+            field = value
+        }
 
     var faction: Float = 0F
         set(value) {
@@ -37,9 +46,12 @@ class WebPageTransformer(
         val outlineProvider = WindowOutlineProvider.attachToView(constraintLayout)
         outlineProvider.update {
             outlineTopPadding = webContainer.top * faction.coerceAtLeast(0F)
-            outlineBottomPadding =
-                (constraintLayout.height - webContainer.bottom) * faction.coerceAtLeast(0F)
-            outlineCornerRadius = cornerRadius * faction
+            outlineBottomPadding = (constraintLayout.height - webContainer.bottom) * faction.coerceAtLeast(0F)
+            outlineCornerRadius = if (screenRoundedCornerRadius > 0F) {
+                screenRoundedCornerRadius
+            } else {
+                cornerRadius * faction
+            }
         }
         when (faction) {
             0F -> {
