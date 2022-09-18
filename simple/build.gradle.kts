@@ -47,8 +47,7 @@ android {
         val variant = this
         outputs.all {
             if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
-                outputFileName =
-                    "anole-${variant.buildType.name}-${defaultConfig.versionName}-${defaultConfig.versionCode}.apk"
+                outputFileName = "anole-${variant.buildType.name}-${defaultConfig.versionName}-${defaultConfig.versionCode}.apk"
             }
         }
     }

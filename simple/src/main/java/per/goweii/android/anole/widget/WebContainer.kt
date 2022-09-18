@@ -2,6 +2,7 @@ package per.goweii.android.anole.widget
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -33,18 +34,22 @@ class WebContainer @JvmOverloads constructor(
             }
         }
         velocityTracker.addMovement(ev)
-        velocityTracker.computeCurrentVelocity(1000)
-        when {
-            velocityTracker.yVelocity > minVelocity -> {
-                if (currDirection <= 0) {
-                    currDirection = 1
-                    onDragDown?.invoke()
-                }
-            }
-            velocityTracker.yVelocity < -minVelocity -> {
-                if (currDirection >= 0) {
-                    currDirection = -1
-                    onDragUp?.invoke()
+        when (ev.action) {
+            MotionEvent.ACTION_UP -> {
+                velocityTracker.computeCurrentVelocity(1000)
+                when {
+                    velocityTracker.yVelocity > minVelocity -> {
+                        if (currDirection <= 0) {
+                            currDirection = 1
+                            onDragDown?.invoke()
+                        }
+                    }
+                    velocityTracker.yVelocity < -minVelocity -> {
+                        if (currDirection >= 0) {
+                            currDirection = -1
+                            onDragUp?.invoke()
+                        }
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ package per.goweii.android.anole.web
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -128,7 +129,6 @@ class AllWebFragment : BaseFragment() {
     }
 
     private fun bindGestureForFragment(fragment: WebFragment) {
-        val minFlingVelocity = ViewConfiguration.get(context).scaledMinimumFlingVelocity
         val enterChoiceFaction = 0.5F
         val location = intArrayOf(0, 0)
         fragment.onGesture = { e ->
@@ -159,7 +159,8 @@ class AllWebFragment : BaseFragment() {
         fragment.onGestureEnd = { vx, vy ->
             willChoiceMode = false
             binding.vpAllWeb.removeCallbacks(willChoiceModeHapticFeedbackRunnable)
-            if (abs(vy) > abs(vx) && vy < -minFlingVelocity) {
+            val flingVelocity = ViewConfiguration.get(context).scaledMaximumFlingVelocity * 0.2
+            if (abs(vy) > abs(vx) && vy < -flingVelocity) {
                 exitChoiceMode()
                 windowViewModel.showHome()
             } else {
